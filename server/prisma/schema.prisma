@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    Int    @id @default(autoincrement())
+  name  String
+  email String @unique
+}
+
+//ezequielrickert@Ezequiels-MacBook-Air payup % npx prisma migrate dev --name init
+// Need to install the following packages:
+// prisma@6.6.0
+// Ok to proceed? (y)
+//
+// Error: Could not find Prisma Schema that is required for this command.
+// You can either provide it with `--schema` argument,
+// set it in your `prisma.config.ts`,
+// set it as `prisma.schema` in your package.json,
+// or put it into the default location (`./prisma/schema.prisma`, or `./schema.prisma`.
+// Checked following paths:
+//
+// schema.prisma: file not found
+// prisma/schema.prisma: file not found
+//
+// See also https://pris.ly/d/prisma-schema-location
+// ezequielrickert@Ezequiels-MacBook-Air payup % cd server
+// ezequielrickert@Ezequiels-MacBook-Air server % npx prisma migrate dev --name init
+// Environment variables loaded from .env
+// Prisma schema loaded from prisma/schema.prisma
+// Datasource "db": PostgreSQL database "mydb", schema "public" at "db:5432"
+//
+// Error: P1001: Can't reach database server at `db:5432`
+//
+// Please make sure your database server is running at `db:5432`.
+// ezequielrickert@Ezequiels-MacBook-Air server % 

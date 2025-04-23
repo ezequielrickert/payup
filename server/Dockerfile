@@ -1,12 +1,12 @@
-# Dockerfile
-FROM node:18
+# Dockerfile for the server application
+FROM node:18-alpine
 
-WORKDIR /app
+WORKDIR /app/server
 
 COPY package*.json ./
 RUN npm install
 
-COPY .. .
+COPY . .
 
 RUN npm run build
 

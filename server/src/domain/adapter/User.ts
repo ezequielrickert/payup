@@ -1,4 +1,4 @@
-import { IUser } from './IUser';
+import { IUser } from '../port/IUser';
 
 export class User implements IUser {
     id: string;

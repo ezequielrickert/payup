@@ -1,10 +1,11 @@
 import { User as PrismaUser } from '@prisma/client';  // Obtains the Type that Prisma generates and handles
-import { prismaClient } from '../../lib/prisma'; // Obtains the Singleton Client
-import { User } from '../../domain/entities/user/User';
-import { IUserRepository } from '../../domain/ports/IUserRepository';
-import {IUser} from "../../domain/entities/user/IUser";
+import { prismaClient } from '../../../lib/prisma'; // Obtains the Singleton Client
+import { User } from '../../../domain/adapter/User';
+import { IUserRepository } from '../../port/IUserRepository';
+import {IUser} from "../../../domain/port/IUser";
 
 export class PrismaUserRepository implements IUserRepository {
+
     async findById(id: string): Promise<IUser | null> {
         const user = await prismaClient.user.findUnique({ where: { id: Number(id) } });
         return user ? this.prismaToDomain(user) : null;

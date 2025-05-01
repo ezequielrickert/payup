@@ -5,3 +5,4 @@ export interface IUserController {
     createUser(user: UserDto): Promise<void>;
     getUserByEmail(email: string): Promise<UserDto | null>;
 }
+// Controller no suele usar interfaz

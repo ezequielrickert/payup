@@ -5,8 +5,10 @@ import { IUserController } from '../controller/port/IUserController';
 export function createUserRouter(userController: IUserController): Router {
     const router = Router();
     
-    // See that the methods in the routs of this class only handle the recieved request and errors and don't contain any business logic
-    
+    // SeeCon that the methods in the routs of this class only handle the recieved request and errors and don't contain any business logic
+    // pepitoController.getUserById
+
+    // Considerar que estos llamen al contraller y que el controller devuelva el async res response para que no haya que hacer un try catch en cada uno de los metodos y eso lo maneje el controller
     router.get('/:id', async (req, res) => {
         try {
             const user = await userController.getUserById(req.params.id);

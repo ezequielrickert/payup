@@ -5,6 +5,7 @@ import {User} from "../../domain/adapter/User";
 
 export class UserController implements IUserController {
 
+    //Aca el Controler no necesariamente tiene que recibir dto. Puede recibir String y despues pasarlo a dto.
     constructor(private userService: IUserService) {
         this.userService = userService;
     }

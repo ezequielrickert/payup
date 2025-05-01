@@ -9,6 +9,8 @@ export class UserService implements IUserService {
     // because we CAN NOT couple application layer to INFRASTRUCTURE models like Prisma
     constructor(private readonly userRepo: IUserRepository) {}
 
+    // La idea es que application reciba dto y envie dto
+    // Dentro del service lo transforma al de dominio
     async findById(id: string): Promise<IUser | null> {
         return this.userRepo.findById(id);
     }

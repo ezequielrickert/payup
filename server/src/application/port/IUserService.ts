@@ -1,7 +1,7 @@
-import {IUser} from "../../domain/port/IUser";
+import {UserDto} from "../../dto/UserDto";
 
 export interface IUserService {
-    findById(id: string): Promise<IUser | null>;
-    save(user: IUser): Promise<void>;
-    findByEmail(email: string): Promise<IUser | null>;
+    findById(id: string): Promise<UserDto | null>;
+    save(user: UserDto): Promise<void>;
+    findByEmail(email: string): Promise<UserDto | null>;
 }

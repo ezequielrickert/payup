@@ -1,5 +1,5 @@
 export interface IUser {
-    id: string; // Remover ID ya que el ORM se encarga despues de agregarlo. NUNCA crear el usuario con ID
+    // No ID included as ORM is the one responsible for generating it
     name: string;
     email: string;
 }

@@ -5,13 +5,11 @@ import { User } from '../../domain/adapter/User';
 describe('User entity', () => {
 
     it('should create a valid adapter', () => {
-        const id = 'adapter-123';
         const name = 'John Doe';
         const email = 'john@example.com';
 
-        const user = new User(id, name, email);
+        const user = new User(name, email);
 
-        assert.strictEqual(user.id, id);
         assert.strictEqual(user.name, name);
         assert.strictEqual(user.email, email);
     });
@@ -22,7 +20,7 @@ describe('User entity', () => {
         const invalidEmail = 'invalid-email';
 
         assert.throws(() => {
-            new User(id, name, invalidEmail);
+            new User(name, invalidEmail);
         }, /Invalid email address/);
     });
 });

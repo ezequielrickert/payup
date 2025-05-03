@@ -1,7 +1,7 @@
 import express from 'express';
 import {PrismaUserRepository} from "./repository/adapter/prisma/PrismaUserRepository";
 import {UserService} from "./application/adapter/UserService";
-import {UserController} from "./controller/adapter/UserController";
+import {UserController} from "./controller/UserController";
 import {createUserRouter} from "./router/UserRouter";
 
 

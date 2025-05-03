@@ -16,6 +16,7 @@ export class PrismaUserRepository implements IUserRepository {
         return user ? this.prismaToDomain(user) : null;
     }
 
+    // ID is created and stored by Prisma ORM
     async save(user: IUser): Promise<void> {
         await prismaClient.user.create({
             data: {
@@ -27,6 +28,6 @@ export class PrismaUserRepository implements IUserRepository {
 
     // This method is used to convert the PrismaUser object to the User object from our domain
     private prismaToDomain(prismaUser: PrismaUser): IUser {
-        return new User(prismaUser.id.toString(), prismaUser.name, prismaUser.email);
+        return new User(prismaUser.name, prismaUser.email);
     }
 }

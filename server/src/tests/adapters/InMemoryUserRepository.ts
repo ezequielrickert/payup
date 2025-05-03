@@ -5,12 +5,14 @@ import { IUserRepository } from '../../repository/port/IUserRepository';
 export class InMemoryUserRepository implements IUserRepository {
     private users: Map<string, IUser> = new Map();
 
+    private id: number = 0;
+
     async findById(id: string): Promise<IUser | null> {
         return this.users.get(id) || null;
     }
 
     async save(user: IUser): Promise<void> {
-        this.users.set(user.id, user);
+        this.users.set((this.id + 1).toString(), user);
     }
 
     async findByEmail(email: string): Promise<IUser | null> {

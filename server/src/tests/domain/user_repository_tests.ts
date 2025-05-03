@@ -11,16 +11,15 @@ describe('UserRepository', () => {
 
     beforeEach(() => {
         userRepository = new InMemoryUserRepository();
-        testUser = new User('adapter-123', 'John Doe', 'john@example.com');
+        testUser = new User('John Doe', 'john@example.com');
     });
 
     it('should save and find a adapter by id', async () => {
         await userRepository.save(testUser);
 
-        const foundUser = await userRepository.findById(testUser.id);
+        const foundUser = await userRepository.findById('1');
 
         assert.notStrictEqual(foundUser, null);
-        assert.strictEqual(foundUser?.id, testUser.id);
         assert.strictEqual(foundUser?.name, testUser.name);
         assert.strictEqual(foundUser?.email, testUser.email);
     });
@@ -37,7 +36,7 @@ describe('UserRepository', () => {
         const foundUser = await userRepository.findByEmail(testUser.email);
 
         assert.notStrictEqual(foundUser, null);
-        assert.strictEqual(foundUser?.id, testUser.id);
+        assert.strictEqual(foundUser?.name, testUser.name);
     });
 
     it('should return null when finding by non-existent email', async () => {

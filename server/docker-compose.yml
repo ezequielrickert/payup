@@ -1,0 +1,29 @@
+# docker-compose.yml for the server application
+version: "3.8"
+
+services:
+  db:
+    image: postgres:13
+    ports:
+      - '${DB_PORT}:5432'
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://your_user:your_password@db:5432/mydb?schema=public
+    depends_on:
+      - db
+    command: npm run dev
+
+volumes:
+  db_data:

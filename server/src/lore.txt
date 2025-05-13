@@ -1,0 +1,8 @@
+Documento de Lore de las capas, no prestarle atencion
+
+
+Manejo de errores
+
+Repository solo se encarga de trabajar con la DB
+Aplication orquesta acciones y por lo tanto es el encargado de plantear los chequeos necesarios para errores
+En caso de que haya algun error Aplication tira el error y controler lo agarra para informarlo

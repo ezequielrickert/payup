@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'; // There is a direct coupling with express but this is not a problem
 import { UserDto } from "../dto/UserDto";
 import { IUserService } from "../application/port/IUserService";
-import { User } from "../domain/adapter/User";
 
 export class UserController {
 

@@ -1,20 +1,62 @@
-import {describe, it} from "node:test";
-import {InMemoryUserRepository} from "../adapters/InMemoryUserRepository";
-import {UserService} from "../../application/adapter/UserService";
-import {User} from "../../domain/adapter/User";
-import assert from "node:assert";
+import { describe, it, expect } from '@jest/globals';
+import { InMemoryUserRepository } from '../adapters/InMemoryUserRepository';
+import { UserService } from '../../application/adapter/UserService';
+import {UserDto} from "../../dto/UserDto";
 
 describe('UserService', () => {
 
-    it('should save and find user', async () => {
+    it('should save and find user by id', async () => {
         const repo = new InMemoryUserRepository();
         const service = new UserService(repo);
 
-        const user = new User('Alice', 'alice@example.com');
+        const user = new UserDto('Alice', 'alice@example.com');
 
         await service.save(user);
         const found = await service.findById('1');
 
-        assert.strictEqual(found?.email, 'alice@example.com');
+        expect(found?.email).toBe('alice@example.com');
     });
+
+    it('should find user by email', async () => {
+        const repo = new InMemoryUserRepository();
+        const service = new UserService(repo);
+
+        const user = new UserDto('Alice', 'alice@example.com');
+
+        await service.save(user);
+        const found = await service.findByEmail('alice@example.com');
+
+        expect(found?.email).toBe('alice@example.com');
+    });
+
+    it('should return null for non-existing user id', async () => {
+        const repo = new InMemoryUserRepository();
+        const service = new UserService(repo);
+
+        const found = await service.findById('999');
+
+        expect(found).toBeNull();
+    });
+
+    it('should return null for non-existing email', async () => {
+        const repo = new InMemoryUserRepository();
+        const service = new UserService(repo);
+
+        const found = await service.findByEmail('jhon@email.com');
+
+        expect(found).toBeNull();
+    });
+
+    it('should not save user with existing email', async () => {
+        const repo = new InMemoryUserRepository();
+        const service = new UserService(repo);
+
+        const user1 = new UserDto('Alice', 'alice@example.com');
+        const user2 = new UserDto('Bob', 'alice@example.com');
+
+        await service.save(user1);
+
+        await expect(service.save(user2)).rejects.toThrow(`User with email ${user2.email} already exists`);
+    });
+
 });

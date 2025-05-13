@@ -1,5 +1,5 @@
-import { describe, it } from 'node:test';
-import assert from "node:assert";
+// User.test.ts
+import { describe, it, expect } from '@jest/globals';
 import { User } from '../../domain/adapter/User';
 
 describe('User entity', () => {
@@ -10,17 +10,16 @@ describe('User entity', () => {
 
         const user = new User(name, email);
 
-        assert.strictEqual(user.name, name);
-        assert.strictEqual(user.email, email);
+        expect(user.name).toBe(name);
+        expect(user.email).toBe(email);
     });
 
     it('should throw an error when email is invalid', () => {
-        const id = 'adapter-123';
         const name = 'John Doe';
         const invalidEmail = 'invalid-email';
 
-        assert.throws(() => {
+        expect(() => {
             new User(name, invalidEmail);
-        }, /Invalid email address/);
+        }).toThrow(/Invalid email address/);
     });
 });

@@ -22,6 +22,10 @@ export class UserService implements IUserService {
     async save(user: UserDto): Promise<void> {
         // Validate and create domain object from interface
         // Note2: Here we can couple to the actual implementation because the application layer CAN USE DOMAIN Entities
+        const existingUser = await this.userRepo.findByEmail(user.email);
+        if (existingUser) {
+            throw new Error(`User with email ${user.email} already exists`);
+        }
         const domainUser = this.mapToDomain(user);
         await this.userRepo.save(domainUser);
     }

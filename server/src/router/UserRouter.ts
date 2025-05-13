@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import {UserController} from "../controller/UserController";
 
-// Factory method will inject dependencies for the actual controller implementation
 export function createUserRouter(userController: UserController): Router {
     const router = Router();
     

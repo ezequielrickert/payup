@@ -9,7 +9,7 @@ describe('UserService', () => {
         const repo = new InMemoryUserRepository();
         const service = new UserService(repo);
 
-        const user = new UserDto('Alice', 'alice@example.com');
+        const user = new UserDto('Alice', 'alice@example.com', "securepassword");
 
         await service.save(user);
         const found = await service.findById('1');
@@ -21,7 +21,7 @@ describe('UserService', () => {
         const repo = new InMemoryUserRepository();
         const service = new UserService(repo);
 
-        const user = new UserDto('Alice', 'alice@example.com');
+        const user = new UserDto('Alice', 'alice@example.com', "securepassword");
 
         await service.save(user);
         const found = await service.findByEmail('alice@example.com');
@@ -51,8 +51,8 @@ describe('UserService', () => {
         const repo = new InMemoryUserRepository();
         const service = new UserService(repo);
 
-        const user1 = new UserDto('Alice', 'alice@example.com');
-        const user2 = new UserDto('Bob', 'alice@example.com');
+        const user1 = new UserDto('Alice', 'alice@example.com', "securepassword");
+        const user2 = new UserDto('Bob', 'alice@example.com', "securepassword");
 
         await service.save(user1);
 

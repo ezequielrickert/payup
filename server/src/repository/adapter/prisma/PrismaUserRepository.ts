@@ -22,12 +22,15 @@ export class PrismaUserRepository implements IUserRepository {
             data: {
                 name: user.name,
                 email: user.email,
+                password: user.password,
+                cvu: user.cvu
             },
         });
     }
 
     // This method is used to convert the PrismaUser object to the User object from our domain
     private prismaToDomain(prismaUser: PrismaUser): IUser {
-        return new User(prismaUser.name, prismaUser.email);
+        // Here the prisma user pasess the cvu to create the user todo
+        return new User(prismaUser.name, prismaUser.email, prismaUser.password, prismaUser.cvu);
     }
 }

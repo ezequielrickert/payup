@@ -1,17 +1,20 @@
-// User.test.ts
 import { describe, it, expect } from '@jest/globals';
 import { User } from '../../domain/adapter/User';
 
 describe('User entity', () => {
 
-    it('should create a valid adapter', () => {
+    it('should create a valid user', () => {
         const name = 'John Doe';
         const email = 'john@example.com';
+        const password = 'securepassword';
+        const cvu = 1234567890;
 
-        const user = new User(name, email);
+        const user = new User(name, email, password, 1234567890);
 
         expect(user.name).toBe(name);
         expect(user.email).toBe(email);
+        expect(user.password).toBe("securepassword");
+        expect(user.cvu).toBe(1234567890);
     });
 
     it('should throw an error when email is invalid', () => {
@@ -19,7 +22,7 @@ describe('User entity', () => {
         const invalidEmail = 'invalid-email';
 
         expect(() => {
-            new User(name, invalidEmail);
+            new User(name, invalidEmail, "securepassword", 1234567890);
         }).toThrow(/Invalid email address/);
     });
 });

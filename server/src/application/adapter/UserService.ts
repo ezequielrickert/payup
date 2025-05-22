@@ -37,10 +37,16 @@ export class UserService implements IUserService {
     }
 
     private mapToDto(user: IUser): UserDto {
-        return new UserDto(user.name, user.email);
+        return new UserDto(user.name, user.email, user.password);
     }
 
     private mapToDomain(user: UserDto): IUser {
-        return new User(user.name, user.email);
+        // Add method to create random CVU
+        return new User(user.name, user.email, user.password, this.generateRandomCvu());
+    }
+
+    private generateRandomCvu(): number {
+        // Generate a random CVU number (10 digits)
+        return Math.floor(Math.random() * 9000000000) + 1000000000;
     }
 }

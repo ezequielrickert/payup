@@ -31,7 +31,7 @@ describe("UserController", () => {
         });
 
         it("should return user if found", async () => {
-            const user: UserDto = { email: "test@example.com", name: "Test User" };
+            const user: UserDto = { email: "test@example.com", name: "Test User", password: "securepassword" };
             fakeUserService.usersList.push(user);
             req.params = { id: "1" };
 
@@ -43,7 +43,7 @@ describe("UserController", () => {
 
     describe("createUser", () => {
         it("should create a user and return 201", async () => {
-            const user: UserDto = { email: "test@example.com", name: "Test User" };
+            const user: UserDto = { email: "test@example.com", name: "Test User", password: "securepassword" };
             req.body = user;
 
             await userController.createUser(req as Request, res as Response);
@@ -54,7 +54,7 @@ describe("UserController", () => {
         });
 
         it("should return 400 if user already exists", async () => {
-            const user: UserDto = { email: "test@example.com", name: "Test User" };
+            const user: UserDto = { email: "test@example.com", name: "Test User", password: "securepassword" };
             fakeUserService.usersList.push(user);
             req.body = user;
 
@@ -85,7 +85,7 @@ describe("UserController", () => {
         });
 
         it("should return user if found", async () => {
-            const user: UserDto = { email: "test@example.com", name: "Test User" };
+            const user: UserDto = { email: "test@example.com", name: "Test User", password: "securepassword" };
             fakeUserService.usersList.push(user);
             req.query = { email: "test@example.com" };
 

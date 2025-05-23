@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import { ChevronLeft, DollarSign, CreditCard, Building2, Smartphone, Plus, AlertCircle } from 'lucide-react';
 import { LoadForm, User } from '../../types/types';
-import { formatCurrency, isValidAmount } from '../../utils/formatters';
-import { Header } from '../ui/Header';
+import { formatCurrency, isValidAmount } from '../../utils/formatters.ts';
+import { Header } from '../ui/Header.tsx';
 
 interface LoadMoneyScreenProps {
     user: User;
@@ -11,10 +12,10 @@ interface LoadMoneyScreenProps {
 }
 
 export const LoadMoneyScreen: React.FC<LoadMoneyScreenProps> = ({
-                                                                    user,
-                                                                    onLoadMoney,
-                                                                    onNavigateBack
-                                                                }) => {
+    user,
+    onLoadMoney,
+    onNavigateBack
+}) => {
     const [form, setForm] = useState<LoadForm>({
         amount: '',
         method: 'card'
@@ -96,153 +97,422 @@ export const LoadMoneyScreen: React.FC<LoadMoneyScreenProps> = ({
     };
 
     return (
-        <div className="screen-container">
+        <StyledWrapper>
             <Header
                 title="Cargar Dinero"
                 showBack
                 onBack={onNavigateBack}
             />
 
-            <div className="screen-content space-y-6">
-                {/* Saldo actual */}
-                <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-green-800">Saldo actual:</span>
-                        <span className="text-lg font-bold text-green-900">
-              {formatCurrency(user.balance)}
-            </span>
+            <div className="screen-content">
+                {/* Current Balance */}
+                <BalanceCard>
+                    <div className="balance-info">
+                        <span className="label">Saldo actual:</span>
+                        <span className="amount">
+                            {formatCurrency(user.balance)}
+                        </span>
                     </div>
-                </div>
+                </BalanceCard>
 
-                {/* Formulario */}
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="card space-y-6">
-                        {/* Error general */}
+                {/* Form */}
+                <form onSubmit={handleSubmit}>
+                    <FormCard>
+                        {/* General Error */}
                         {errors.general && (
-                            <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center">
-                                <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
-                                <span className="text-sm text-red-800">{errors.general}</span>
-                            </div>
+                            <ErrorMessage>
+                                <AlertCircle className="icon" />
+                                <span>{errors.general}</span>
+                            </ErrorMessage>
                         )}
 
-                        {/* Método de pago */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-3">
-                                Método de carga
-                            </label>
-                            <div className="space-y-3">
+                        {/* Payment Method */}
+                        <FormSection>
+                            <Label>Método de carga</Label>
+                            <div className="methods">
                                 {paymentMethods.map((method) => {
                                     const IconComponent = method.icon;
                                     return (
-                                        <label
+                                        <MethodOption
                                             key={method.id}
-                                            className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all duration-200 ${
-                                                form.method === method.id
-                                                    ? 'border-primary-500 bg-primary-50'
-                                                    : 'border-gray-300 hover:bg-gray-50'
-                                            }`}
+                                            selected={form.method === method.id}
+                                            onClick={() => !isLoading && setForm(prev => ({ ...prev, method: method.id as 'card' | 'bank' | 'debin' }))}
                                         >
                                             <input
                                                 type="radio"
                                                 name="method"
                                                 value={method.id}
                                                 checked={form.method === method.id}
-                                                onChange={(e) => setForm(prev => ({ ...prev, method: e.target.value as 'card' | 'bank' | 'debin' }))}
+                                                onChange={() => {}}
                                                 className="sr-only"
                                                 disabled={isLoading}
                                             />
-                                            <IconComponent className="w-6 h-6 text-gray-600 mr-4" />
-                                            <div className="flex-1">
-                                                <div className="font-medium text-gray-900">{method.name}</div>
-                                                <div className="text-sm text-gray-600">{method.description}</div>
+                                            <IconComponent className="method-icon" />
+                                            <div className="method-info">
+                                                <div className="method-name">{method.name}</div>
+                                                <div className="method-description">{method.description}</div>
                                             </div>
                                             {form.method === method.id && (
-                                                <div className="w-4 h-4 bg-primary-600 rounded-full"></div>
+                                                <div className="selected-indicator"></div>
                                             )}
-                                        </label>
+                                        </MethodOption>
                                     );
                                 })}
                             </div>
-                        </div>
+                        </FormSection>
 
-                        {/* Montos predefinidos */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-3">
-                                Montos rápidos
-                            </label>
-                            <div className="grid grid-cols-2 gap-3">
+                        {/* Quick Amounts */}
+                        <FormSection>
+                            <Label>Montos rápidos</Label>
+                            <QuickAmounts>
                                 {predefinedAmounts.map((amount) => (
-                                    <button
+                                    <QuickAmountButton
                                         key={amount}
                                         type="button"
                                         onClick={() => handlePredefinedAmount(amount)}
-                                        className={`p-3 border rounded-lg text-center transition-all duration-200 ${
-                                            form.amount === amount.toString()
-                                                ? 'border-primary-500 bg-primary-50 text-primary-700'
-                                                : 'border-gray-300 hover:bg-gray-50'
-                                        }`}
+                                        selected={form.amount === amount.toString()}
                                         disabled={isLoading}
                                     >
                                         {formatCurrency(amount)}
-                                    </button>
+                                    </QuickAmountButton>
                                 ))}
-                            </div>
-                        </div>
+                            </QuickAmounts>
+                        </FormSection>
 
-                        {/* Monto personalizado */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Monto personalizado
-                            </label>
-                            <div className="relative">
-                                <DollarSign className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                                <input
+                        {/* Custom Amount */}
+                        <FormSection>
+                            <Label>Monto personalizado</Label>
+                            <InputWrapper>
+                                <DollarSign className="input-icon" />
+                                <Input
                                     type="text"
                                     value={form.amount}
                                     onChange={(e) => handleAmountChange(e.target.value)}
-                                    className={`input-field pl-10 ${errors.amount ? 'border-red-500' : ''}`}
                                     placeholder="0.00"
+                                    hasError={!!errors.amount}
                                     disabled={isLoading}
                                 />
-                            </div>
+                            </InputWrapper>
                             {errors.amount && (
-                                <p className="mt-1 text-sm text-red-600">{errors.amount}</p>
+                                <ErrorText>{errors.amount}</ErrorText>
                             )}
-                            <p className="mt-1 text-xs text-gray-500">
+                            <HelpText>
                                 Monto mínimo: $100 - Máximo: $500.000
-                            </p>
-                        </div>
-                    </div>
+                            </HelpText>
+                        </FormSection>
+                    </FormCard>
 
-                    {/* Botón de carga */}
-                    <button
+                    {/* Submit Button */}
+                    <SubmitButton
                         type="submit"
                         disabled={isLoading || !form.amount}
-                        className="btn-primary w-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading ? (
                             <>
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                <LoadingSpinner />
                                 Procesando...
                             </>
                         ) : (
                             <>
-                                <Plus className="w-5 h-5 mr-2" />
+                                <Plus className="button-icon" />
                                 Cargar Dinero
                             </>
                         )}
-                    </button>
+                    </SubmitButton>
                 </form>
 
-                {/* Información de seguridad */}
-                <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-                    <h4 className="font-medium text-blue-900 mb-2">💳 Información de seguridad</h4>
-                    <p className="text-sm text-blue-800">
+                {/* Security Info */}
+                <InfoCard>
+                    <h4>💳 Información de seguridad</h4>
+                    <p>
                         Esta es una simulación. En la app real se integraría con proveedores de pago seguros
                         y certificados para proteger tu información financiera.
                     </p>
-                </div>
+                </InfoCard>
             </div>
-        </div>
+        </StyledWrapper>
     );
 };
+
+const StyledWrapper = styled.div`
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #1a1a1a, #2d2d2d);
+    color: #fff;
+    
+    .screen-content {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+`;
+
+const BalanceCard = styled.div`
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 16px;
+    padding: 16px;
+
+    .balance-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .label {
+        color: #22c55e;
+        font-weight: 500;
+    }
+
+    .amount {
+        color: #fff;
+        font-size: 20px;
+        font-weight: 600;
+    }
+`;
+
+const FormCard = styled.div`
+    background: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+`;
+
+const FormSection = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .methods {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+`;
+
+const Label = styled.label`
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    font-weight: 500;
+`;
+
+interface MethodOptionProps {
+    selected: boolean;
+}
+
+const MethodOption = styled.label<MethodOptionProps>`
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-radius: 12px;
+    background: ${props => props.selected ? 'rgba(0, 191, 255, 0.1)' : '#222'};
+    border: 1px solid ${props => props.selected ? '#00bfff' : '#333'};
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        background: ${props => props.selected ? 'rgba(0, 191, 255, 0.15)' : '#2a2a2a'};
+    }
+
+    .method-icon {
+        width: 24px;
+        height: 24px;
+        color: ${props => props.selected ? '#00bfff' : 'rgba(255, 255, 255, 0.6)'};
+        margin-right: 16px;
+    }
+
+    .method-info {
+        flex: 1;
+    }
+
+    .method-name {
+        color: #fff;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+
+    .method-description {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 14px;
+    }
+
+    .selected-indicator {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #00bfff;
+    }
+`;
+
+const QuickAmounts = styled.div`
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+`;
+
+interface QuickAmountButtonProps {
+    selected: boolean;
+}
+
+const QuickAmountButton = styled.button<QuickAmountButtonProps>`
+    padding: 12px;
+    border-radius: 12px;
+    background: ${props => props.selected ? 'rgba(0, 191, 255, 0.1)' : '#222'};
+    border: 1px solid ${props => props.selected ? '#00bfff' : '#333'};
+    color: ${props => props.selected ? '#00bfff' : '#fff'};
+    font-weight: 500;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+        background: ${props => props.selected ? 'rgba(0, 191, 255, 0.15)' : '#2a2a2a'};
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+`;
+
+const InputWrapper = styled.div`
+    position: relative;
+
+    .input-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        color: rgba(255, 255, 255, 0.4);
+    }
+`;
+
+interface InputProps {
+    hasError: boolean;
+}
+
+const Input = styled.input<InputProps>`
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    background: #222;
+    border: 1px solid ${props => props.hasError ? '#ef4444' : '#333'};
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    transition: all 0.2s;
+
+    &:focus {
+        outline: none;
+        border-color: #00bfff;
+        box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.2);
+    }
+
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+`;
+
+const ErrorMessage = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 12px;
+    color: #ef4444;
+
+    .icon {
+        width: 20px;
+        height: 20px;
+    }
+`;
+
+const ErrorText = styled.p`
+    color: #ef4444;
+    font-size: 14px;
+    margin-top: 4px;
+`;
+
+const HelpText = styled.p`
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+`;
+
+const SubmitButton = styled.button`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 16px;
+    background: #00bfff;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 600;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+        background: #0099ff;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .button-icon {
+        width: 20px;
+        height: 20px;
+    }
+`;
+
+const LoadingSpinner = styled.div`
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+`;
+
+const InfoCard = styled.div`
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 16px;
+    padding: 16px;
+
+    h4 {
+        color: #fff;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        line-height: 1.5;
+    }
+`;

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import { ChevronLeft, DollarSign, Send, AlertCircle } from 'lucide-react';
 import { TransferForm, User } from '../../types/types';
-import { formatCurrency, isValidAmount, isValidEmail } from '../../utils/formatters';
-import { Header } from '../ui/Header';
+import { formatCurrency, isValidAmount, isValidEmail } from '../../utils/formatters.ts';
+import { Header } from '../ui/Header.tsx';
 
 interface TransferScreenProps {
     user: User;
@@ -11,10 +12,10 @@ interface TransferScreenProps {
 }
 
 export const TransferScreen: React.FC<TransferScreenProps> = ({
-                                                                  user,
-                                                                  onTransfer,
-                                                                  onNavigateBack
-                                                              }) => {
+    user,
+    onTransfer,
+    onNavigateBack
+}) => {
     const [form, setForm] = useState<TransferForm>({
         recipient: '',
         amount: '',
@@ -32,14 +33,14 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
 
         const newErrors: { recipient?: string; amount?: string; general?: string } = {};
 
-        // Validar destinatario
+        // Validate recipient
         if (!form.recipient) {
             newErrors.recipient = 'El destinatario es requerido';
         } else if (!isValidEmail(form.recipient)) {
             newErrors.recipient = 'Ingresá un email válido';
         }
 
-        // Validar monto
+        // Validate amount
         if (!form.amount) {
             newErrors.amount = 'El monto es requerido';
         } else if (!isValidAmount(form.amount)) {
@@ -61,7 +62,7 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
             try {
                 const amount = parseFloat(form.amount);
                 await onTransfer(form.recipient, amount, form.description);
-                // El formulario se limpia en el componente padre
+                // Form is cleared in parent component
             } catch (error) {
                 setErrors({ general: 'Error al realizar la transferencia. Intentá nuevamente.' });
             } finally {
@@ -71,131 +72,334 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
     };
 
     const handleAmountChange = (value: string) => {
-        // Solo permitir números y punto decimal
+        // Only allow numbers and decimal point
         if (value === '' || /^\d*\.?\d*$/.test(value)) {
             setForm(prev => ({ ...prev, amount: value }));
         }
     };
 
     return (
-        <div className="screen-container">
+        <StyledWrapper>
             <Header
                 title="Enviar Dinero"
                 showBack
                 onBack={onNavigateBack}
             />
 
-            <div className="screen-content space-y-6">
-                {/* Saldo disponible */}
-                <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-blue-800">Saldo disponible:</span>
-                        <span className="text-lg font-bold text-blue-900">
-              {formatCurrency(user.balance)}
-            </span>
+            <div className="screen-content">
+                {/* Available Balance */}
+                <BalanceCard>
+                    <div className="balance-info">
+                        <span className="label">Saldo disponible:</span>
+                        <span className="amount">
+                            {formatCurrency(user.balance)}
+                        </span>
                     </div>
-                </div>
+                </BalanceCard>
 
-                {/* Formulario */}
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="card space-y-6">
-                        {/* Error general */}
+                {/* Form */}
+                <form onSubmit={handleSubmit}>
+                    <FormCard>
+                        {/* General Error */}
                         {errors.general && (
-                            <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center">
-                                <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
-                                <span className="text-sm text-red-800">{errors.general}</span>
-                            </div>
+                            <ErrorMessage>
+                                <AlertCircle className="icon" />
+                                <span>{errors.general}</span>
+                            </ErrorMessage>
                         )}
 
-                        {/* Destinatario */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Destinatario (Email)
-                            </label>
-                            <input
+                        {/* Recipient */}
+                        <FormSection>
+                            <Label>Destinatario (Email)</Label>
+                            <Input
                                 type="email"
                                 value={form.recipient}
                                 onChange={(e) => setForm(prev => ({ ...prev, recipient: e.target.value }))}
-                                className={`input-field ${errors.recipient ? 'border-red-500' : ''}`}
                                 placeholder="juan@email.com"
+                                hasError={!!errors.recipient}
                                 disabled={isLoading}
                             />
                             {errors.recipient && (
-                                <p className="mt-1 text-sm text-red-600">{errors.recipient}</p>
+                                <ErrorText>{errors.recipient}</ErrorText>
                             )}
-                        </div>
+                        </FormSection>
 
-                        {/* Monto */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Monto
-                            </label>
-                            <div className="relative">
-                                <DollarSign className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                                <input
+                        {/* Amount */}
+                        <FormSection>
+                            <Label>Monto</Label>
+                            <InputWrapper>
+                                <DollarSign className="input-icon" />
+                                <Input
                                     type="text"
                                     value={form.amount}
                                     onChange={(e) => handleAmountChange(e.target.value)}
-                                    className={`input-field pl-10 ${errors.amount ? 'border-red-500' : ''}`}
                                     placeholder="0.00"
+                                    hasError={!!errors.amount}
                                     disabled={isLoading}
                                 />
-                            </div>
+                            </InputWrapper>
                             {errors.amount && (
-                                <p className="mt-1 text-sm text-red-600">{errors.amount}</p>
+                                <ErrorText>{errors.amount}</ErrorText>
                             )}
-                        </div>
+                        </FormSection>
 
-                        {/* Descripción */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Descripción (opcional)
-                            </label>
-                            <input
+                        {/* Description */}
+                        <FormSection>
+                            <Label>Descripción (opcional)</Label>
+                            <Input
                                 type="text"
                                 value={form.description}
                                 onChange={(e) => setForm(prev => ({ ...prev, description: e.target.value }))}
-                                className="input-field"
                                 placeholder="¿Para qué es esta transferencia?"
                                 maxLength={100}
                                 disabled={isLoading}
                             />
-                            <p className="mt-1 text-xs text-gray-500">
+                            <HelpText>
                                 {form.description.length}/100 caracteres
-                            </p>
-                        </div>
-                    </div>
+                            </HelpText>
+                        </FormSection>
+                    </FormCard>
 
-                    {/* Botón de envío */}
-                    <button
+                    {/* Submit Button */}
+                    <SubmitButton
                         type="submit"
                         disabled={isLoading || !form.recipient || !form.amount}
-                        className="btn-primary w-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading ? (
                             <>
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                <LoadingSpinner />
                                 Enviando...
                             </>
                         ) : (
                             <>
-                                <Send className="w-5 h-5 mr-2" />
+                                <Send className="button-icon" />
                                 Enviar Dinero
                             </>
                         )}
-                    </button>
+                    </SubmitButton>
                 </form>
 
-                {/* Información adicional */}
-                <div className="bg-gray-50 rounded-xl p-4 border">
-                    <h4 className="font-medium text-gray-900 mb-2">Información importante:</h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
+                {/* Additional Info */}
+                <InfoCard>
+                    <h4>Información importante:</h4>
+                    <ul>
                         <li>• Las transferencias son inmediatas</li>
                         <li>• Verificá bien el email del destinatario</li>
                         <li>• Las transferencias no se pueden cancelar</li>
                     </ul>
-                </div>
+                </InfoCard>
             </div>
-        </div>
+        </StyledWrapper>
     );
 };
+
+const StyledWrapper = styled.div`
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #1a1a1a, #2d2d2d);
+    color: #fff;
+    
+    .screen-content {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+`;
+
+const BalanceCard = styled.div`
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 16px;
+    padding: 16px;
+
+    .balance-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .label {
+        color: #3b82f6;
+        font-weight: 500;
+    }
+
+    .amount {
+        color: #fff;
+        font-size: 20px;
+        font-weight: 600;
+    }
+`;
+
+const FormCard = styled.div`
+    background: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+`;
+
+const FormSection = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+`;
+
+const Label = styled.label`
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    font-weight: 500;
+`;
+
+const InputWrapper = styled.div`
+    position: relative;
+
+    .input-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        color: rgba(255, 255, 255, 0.4);
+    }
+`;
+
+interface InputProps {
+    hasError?: boolean;
+}
+
+const Input = styled.input<InputProps>`
+    width: 100%;
+    padding: 12px;
+    padding-left: ${props => props.type === 'text' && props.value === 'amount' ? '40px' : '12px'};
+    background: #222;
+    border: 1px solid ${props => props.hasError ? '#ef4444' : '#333'};
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    transition: all 0.2s;
+
+    &:focus {
+        outline: none;
+        border-color: #00bfff;
+        box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.2);
+    }
+
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+`;
+
+const ErrorMessage = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 12px;
+    color: #ef4444;
+
+    .icon {
+        width: 20px;
+        height: 20px;
+    }
+`;
+
+const ErrorText = styled.p`
+    color: #ef4444;
+    font-size: 14px;
+    margin-top: 4px;
+`;
+
+const HelpText = styled.p`
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+`;
+
+const SubmitButton = styled.button`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 16px;
+    background: #00bfff;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 600;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+        background: #0099ff;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .button-icon {
+        width: 20px;
+        height: 20px;
+    }
+`;
+
+const LoadingSpinner = styled.div`
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+`;
+
+const InfoCard = styled.div`
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px;
+
+    h4 {
+        color: #fff;
+        font-weight: 500;
+        margin-bottom: 12px;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        line-height: 1.5;
+
+        li {
+            margin-bottom: 8px;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+`;

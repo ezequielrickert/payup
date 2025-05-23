@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import { CreditCard, Mail, Lock } from 'lucide-react';
-import { SignUpForm } from '../../types/types';
-import { isValidEmail } from '../../utils/formatters';
+import styled from 'styled-components';
+
+interface SignUpForm {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
+}
 
 interface SignUpScreenProps {
   onSignUp: (email: string, password: string) => void;
@@ -12,13 +18,37 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
   onSignUp,
   onSwitchToRegister
 }) => {
-  const [form, setForm] = useState<SignUpForm>({ email: '', password: '', confirmPassword: ''});
-  const [errors, setErrors] = useState<{ email?: string; password?: string, confirmPassword?: string}>({});
+  const [form, setForm] = useState<SignUpForm>({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    firstName: '',
+    lastName: ''
+  });
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+    firstName?: string;
+    lastName?: string;
+  }>({});
+
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newErrors: { email?: string; password?: string } = {};
+    const newErrors: typeof errors = {};
+
+    if (!form.firstName) {
+      newErrors.firstName = 'El nombre es requerido';
+    }
+
+    if (!form.lastName) {
+      newErrors.lastName = 'El apellido es requerido';
+    }
 
     if (!form.email) {
       newErrors.email = 'El email es requerido';
@@ -30,8 +60,8 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
       newErrors.password = 'La contraseña es requerida';
     }
 
-    if (!form.password || form.password !== form.confirmPassword) {
-      newErrors.password = 'La contraseña no coincide';
+    if (!form.confirmPassword || form.password !== form.confirmPassword) {
+      newErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
 
     setErrors(newErrors);
@@ -42,96 +72,242 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
   };
 
   return (
-    <div className="screen-container">
-      <div className="min-h-screen bg-gradient-to-br from-primary-600 to-purple-700 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
-          {/* Logo y título */}
-          <div className="text-center mb-8">
-            <div className="bg-primary-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CreditCard className="w-8 h-8 text-primary-600" />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Mi Billetera</h1>
-            <p className="text-gray-600">Registrá tu nueva cuenta</p>
-          </div>
+    <StyledWrapper>
+      <form className="form" onSubmit={handleSubmit}>
+        <p className="title">Registro</p>
+        <p className="message">Registrate ahora y obtené acceso completo a nuestra app.</p>
+        
+        <div className="flex">
+          <label>
+            <input
+              className="input"
+              type="text"
+              placeholder=""
+              value={form.firstName}
+              onChange={(e) => setForm(prev => ({...prev, firstName: e.target.value}))}
+              required
+            />
+            <span>Nombre</span>
+            {errors.firstName && <p className="error">{errors.firstName}</p>}
+          </label>
 
-          {/* Formulario */}
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email
-                    </label>
-                    <div className="relative">
-                        <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400"/>
-                        <input
-                            type="email"
-                            value={form.email}
-                            onChange={(e) => setForm(prev => ({...prev, email: e.target.value}))}
-                            className={`input-field pl-10 ${errors.email ? 'border-red-500' : ''}`}
-                            placeholder="tu@email.com"
-                        />
-                    </div>
-                    {errors.email && (
-                        <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                    )}
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Contraseña
-                    </label>
-                    <div className="relative">
-                        <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400"/>
-                        <input
-                            type="password"
-                            value={form.password}
-                            onChange={(e) => setForm(prev => ({...prev, password: e.target.value}))}
-                            className={`input-field pl-10 ${errors.password ? 'border-red-500' : ''}`}
-                            placeholder="Ingrese una contraseña"
-                        />
-                    </div>
-                    {errors.password && (
-                        <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-                    )}
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Contraseña
-                    </label>
-                    <div className="relative">
-                        <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400"/>
-                        <input
-                            type="password"
-                            value={form.confirmPassword}
-                            onChange={(e) => setForm(prev => ({...prev, confirmPassword: e.target.value}))}
-                            className={`input-field pl-10 ${errors.confirmPassword ? 'border-red-500' : ''}`}
-                            placeholder="Confirmar la contraseña"
-                        />
-                    </div>
-                    {errors.confirmPassword && (
-                        <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
-                    )}
-                </div>
-
-                <button type="submit" className="btn-primary w-full">
-                    Crear cuenta
-                </button>
-            </form>
-
-            {/* Link a login */}
-            <div className="mt-6 text-center">
-                <p className="text-gray-600">
-                    ¿No tenés cuenta?{' '}
-                    <button
-                        onClick={onSwitchToRegister}
-                        className="text-primary-600 font-semibold hover:text-primary-700 hover:underline transition-colors duration-200"
-                    >
-                        Registrate
-                    </button>
-                </p>
-            </div>
+          <label>
+            <input
+              className="input"
+              type="text"
+              placeholder=""
+              value={form.lastName}
+              onChange={(e) => setForm(prev => ({...prev, lastName: e.target.value}))}
+              required
+            />
+            <span>Apellido</span>
+            {errors.lastName && <p className="error">{errors.lastName}</p>}
+          </label>
         </div>
-      </div>
-    </div>
+
+        <label>
+          <input
+            className="input"
+            type="email"
+            placeholder=""
+            value={form.email}
+            onChange={(e) => setForm(prev => ({...prev, email: e.target.value}))}
+            required
+          />
+          <span>Email</span>
+          {errors.email && <p className="error">{errors.email}</p>}
+        </label>
+
+        <label>
+          <input
+            className="input"
+            type="password"
+            placeholder=""
+            value={form.password}
+            onChange={(e) => setForm(prev => ({...prev, password: e.target.value}))}
+            required
+          />
+          <span>Contraseña</span>
+          {errors.password && <p className="error">{errors.password}</p>}
+        </label>
+
+        <label>
+          <input
+            className="input"
+            type="password"
+            placeholder=""
+            value={form.confirmPassword}
+            onChange={(e) => setForm(prev => ({...prev, confirmPassword: e.target.value}))}
+            required
+          />
+          <span>Confirmar contraseña</span>
+          {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
+        </label>
+
+        <button className="submit" type="submit">Crear cuenta</button>
+        <p className="signin">
+          ¿Ya tenés una cuenta? <a href="#" onClick={onSwitchToRegister}>Iniciá sesión</a>
+        </p>
+      </form>
+    </StyledWrapper>
   );
 };
+
+const StyledWrapper = styled.div`
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to bottom right, #4F46E5, #7C3AED);
+  padding: 20px;
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 350px;
+    padding: 20px;
+    border-radius: 20px;
+    position: relative;
+    background-color: #1a1a1a;
+    color: #fff;
+    border: 1px solid #333;
+  }
+
+  .title {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -1px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 30px;
+    color: #00bfff;
+  }
+
+  .title::before {
+    width: 18px;
+    height: 18px;
+  }
+
+  .title::after {
+    width: 18px;
+    height: 18px;
+    animation: pulse 1s linear infinite;
+  }
+
+  .title::before,
+  .title::after {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    left: 0px;
+    background-color: #00bfff;
+  }
+
+  .message, 
+  .signin {
+    font-size: 14.5px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .signin {
+    text-align: center;
+  }
+
+  .signin a:hover {
+    text-decoration: underline royalblue;
+  }
+
+  .signin a {
+    color: #00bfff;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .flex {
+    display: flex;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .form label {
+    position: relative;
+    width: 100%;
+  }
+
+  .form label .input {
+    background-color: #333;
+    color: #fff;
+    width: 100%;
+    padding: 20px 05px 05px 10px;
+    outline: 0;
+    border: 1px solid rgba(105, 105, 105, 0.397);
+    border-radius: 10px;
+  }
+
+  .form label .input + span {
+    color: rgba(255, 255, 255, 0.5);
+    position: absolute;
+    left: 10px;
+    top: 0px;
+    font-size: 0.9em;
+    cursor: text;
+    transition: 0.3s ease;
+  }
+
+  .form label .input:placeholder-shown + span {
+    top: 12.5px;
+    font-size: 0.9em;
+  }
+
+  .form label .input:focus + span,
+  .form label .input:valid + span {
+    color: #00bfff;
+    top: 0px;
+    font-size: 0.7em;
+    font-weight: 600;
+  }
+
+  .input {
+    font-size: medium;
+  }
+
+  .submit {
+    border: none;
+    outline: none;
+    padding: 10px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 16px;
+    transform: .3s ease;
+    background-color: #00bfff;
+  }
+
+  .submit:hover {
+    background-color: #00bfff96;
+  }
+
+  .error {
+    color: #ff4444;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  @keyframes pulse {
+    from {
+      transform: scale(0.9);
+      opacity: 1;
+    }
+
+    to {
+      transform: scale(1.8);
+      opacity: 0;
+    }
+  }
+`;
+
+export default SignUpScreen;

@@ -1,183 +1,476 @@
 import React from 'react';
+import styled from 'styled-components';
 import {
     CreditCard,
     Plus,
     Send,
     Minus,
-    History,
+    History as HistoryIcon,
     Eye,
     EyeOff,
     ArrowDownLeft,
-    ArrowUpRight
+    ArrowUpRight,
+    LogOut
 } from 'lucide-react';
 import { User, Transaction } from '../../types/types';
 import { formatCurrency, formatDate } from '../../utils/formatters';
-import { Header } from '../ui/Header';
+import { Card } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { theme } from '../../styles/theme';
+
+type Screen = 'login' | 'signup' | 'dashboard' | 'load' | 'transfer' | 'withdraw' | 'history';
 
 interface DashboardScreenProps {
     user: User;
     transactions: Transaction[];
     showBalance: boolean;
     onToggleBalance: () => void;
-    onNavigate: (screen: string) => void;
+    onNavigate: (screen: Screen) => void;
     onLogout: () => void;
 }
 
 export const DashboardScreen: React.FC<DashboardScreenProps> = ({
-                                                                    user,
-                                                                    transactions,
-                                                                    showBalance,
-                                                                    onToggleBalance,
-                                                                    onNavigate,
-                                                                    onLogout
-                                                                }) => {
+    user,
+    transactions,
+    showBalance,
+    onToggleBalance,
+    onNavigate,
+    onLogout
+}) => {
     return (
-        <div className="screen-container">
-            <Header
-                title="Mi Billetera"
-                showUser
-                onUserClick={onLogout}
-            />
+        <StyledWrapper>
+            <Header>
+                <div className="logo">Mi Billetera</div>
+                <Button 
+                    variant="ghost" 
+                    icon={<LogOut />} 
+                    onClick={onLogout}
+                    size="sm"
+                >
+                    Cerrar sesión
+                </Button>
+            </Header>
 
-            <div className="screen-content space-y-6">
-                {/* Tarjeta de Saldo */}
-                <div className="bg-gradient-to-r from-primary-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
-                    <div className="flex justify-between items-start mb-4">
+            <main>
+                {/* Balance Card */}
+                <Card variant="primary" className="balance-card" padding="xl">
+                    <div className="balance-header">
                         <div>
-                            <p className="text-primary-100 text-sm font-medium">Saldo disponible</p>
-                            <div className="flex items-center mt-2">
+                            <p className="label">Saldo disponible</p>
+                            <div className="amount-container">
                                 {showBalance ? (
-                                    <span className="text-3xl font-bold">
-                    {formatCurrency(user.balance)}
-                  </span>
+                                    <span className="amount">
+                                        {formatCurrency(user.balance)}
+                                    </span>
                                 ) : (
-                                    <span className="text-3xl font-bold">••••••</span>
+                                    <span className="amount">••••••</span>
                                 )}
-                                <button
+                                <Button
+                                    variant="ghost"
+                                    icon={showBalance ? <EyeOff /> : <Eye />}
                                     onClick={onToggleBalance}
-                                    className="ml-3 text-primary-100 hover:text-white transition-colors duration-200"
-                                >
-                                    {showBalance ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                                </button>
+                                    size="sm"
+                                />
                             </div>
                         </div>
-                        <CreditCard className="w-8 h-8 text-primary-200" />
+                        <CreditCard className="card-icon" />
                     </div>
-                    <p className="text-primary-100 text-sm font-medium">{user.email}</p>
-                </div>
+                    <p className="email">{user.email}</p>
+                </Card>
 
-                {/* Acciones Rápidas */}
-                <div className="grid grid-cols-2 gap-4">
-                    <button
-                        onClick={() => onNavigate('load')}
-                        className="card hover:shadow-md transition-all duration-200 transform hover:scale-105"
-                    >
-                        <div className="flex flex-col items-center text-center">
-                            <div className="bg-green-100 p-3 rounded-full mb-3">
-                                <Plus className="w-6 h-6 text-green-600" />
-                            </div>
-                            <span className="font-semibold text-gray-900">Cargar</span>
-                            <span className="text-sm text-gray-600">Dinero</span>
+                {/* Quick Actions */}
+                <section className="actions-grid">
+                    <Card onClick={() => onNavigate('load')} className="action-card" padding="lg">
+                        <div className="icon-container success">
+                            <Plus className="icon" />
                         </div>
-                    </button>
+                        <span className="action-title">Cargar</span>
+                        <span className="action-subtitle">Dinero</span>
+                    </Card>
 
-                    <button
-                        onClick={() => onNavigate('transfer')}
-                        className="card hover:shadow-md transition-all duration-200 transform hover:scale-105"
-                    >
-                        <div className="flex flex-col items-center text-center">
-                            <div className="bg-blue-100 p-3 rounded-full mb-3">
-                                <Send className="w-6 h-6 text-blue-600" />
-                            </div>
-                            <span className="font-semibold text-gray-900">Enviar</span>
-                            <span className="text-sm text-gray-600">Dinero</span>
+                    <Card onClick={() => onNavigate('transfer')} className="action-card" padding="lg">
+                        <div className="icon-container primary">
+                            <Send className="icon" />
                         </div>
-                    </button>
+                        <span className="action-title">Enviar</span>
+                        <span className="action-subtitle">Dinero</span>
+                    </Card>
 
-                    <button
-                        onClick={() => onNavigate('withdraw')}
-                        className="card hover:shadow-md transition-all duration-200 transform hover:scale-105"
-                    >
-                        <div className="flex flex-col items-center text-center">
-                            <div className="bg-red-100 p-3 rounded-full mb-3">
-                                <Minus className="w-6 h-6 text-red-600" />
-                            </div>
-                            <span className="font-semibold text-gray-900">Extraer</span>
-                            <span className="text-sm text-gray-600">Dinero</span>
+                    <Card onClick={() => onNavigate('withdraw')} className="action-card" padding="lg">
+                        <div className="icon-container error">
+                            <Minus className="icon" />
                         </div>
-                    </button>
+                        <span className="action-title">Extraer</span>
+                        <span className="action-subtitle">Dinero</span>
+                    </Card>
 
-                    <button
-                        onClick={() => onNavigate('history')}
-                        className="card hover:shadow-md transition-all duration-200 transform hover:scale-105"
-                    >
-                        <div className="flex flex-col items-center text-center">
-                            <div className="bg-purple-100 p-3 rounded-full mb-3">
-                                <History className="w-6 h-6 text-purple-600" />
-                            </div>
-                            <span className="font-semibold text-gray-900">Historial</span>
-                            <span className="text-sm text-gray-600">Movimientos</span>
+                    <Card onClick={() => onNavigate('history')} className="action-card" padding="lg">
+                        <div className="icon-container secondary">
+                            <HistoryIcon className="icon" />
                         </div>
-                    </button>
-                </div>
+                        <span className="action-title">Historial</span>
+                        <span className="action-subtitle">Movimientos</span>
+                    </Card>
+                </section>
 
-                {/* Últimos Movimientos */}
-                <div className="card">
-                    <h3 className="font-semibold text-gray-900 mb-4 text-lg">Últimos movimientos</h3>
+                {/* Recent Transactions */}
+                <Card className="transactions-card">
+                    <div className="card-header">
+                        <h3>Últimos movimientos</h3>
+                        {transactions.length > 3 && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onNavigate('history')}
+                            >
+                                Ver todos
+                            </Button>
+                        )}
+                    </div>
+
                     {transactions.length > 0 ? (
-                        <div className="space-y-4">
+                        <div className="transactions-list">
                             {transactions.slice(0, 3).map((transaction) => (
-                                <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                                    <div className="flex items-center">
-                                        <div className={`p-2 rounded-full mr-4 ${
-                                            transaction.type === 'income' ? 'bg-green-100' :
-                                                transaction.type === 'expense' ? 'bg-red-100' :
-                                                    transaction.type === 'transfer_out' ? 'bg-blue-100' : 'bg-purple-100'
+                                <div key={transaction.id} className="transaction-item">
+                                    <div className="transaction-info">
+                                        <div className={`icon-container ${
+                                            transaction.type === 'income' ? 'success' :
+                                            transaction.type === 'expense' ? 'error' :
+                                            'primary'
                                         }`}>
                                             {transaction.type === 'income' ?
-                                                <ArrowDownLeft className="w-4 h-4 text-green-600" /> :
+                                                <ArrowDownLeft className="icon" /> :
                                                 transaction.type === 'expense' ?
-                                                    <ArrowUpRight className="w-4 h-4 text-red-600" /> :
-                                                    <Send className="w-4 h-4 text-blue-600" />
+                                                    <ArrowUpRight className="icon" /> :
+                                                    <Send className="icon" />
                                             }
                                         </div>
-                                        <div>
-                                            <p className="font-medium text-gray-900 text-sm">
+                                        <div className="details">
+                                            <p className="description">
                                                 {transaction.description}
                                             </p>
-                                            <p className="text-xs text-gray-600">
+                                            <p className="date">
                                                 {formatDate(transaction.date)}
                                             </p>
                                         </div>
                                     </div>
-                                    <span className={`font-semibold ${
+                                    <span className={`amount ${
                                         transaction.type === 'income' || transaction.type === 'transfer_in'
-                                            ? 'text-green-600' : 'text-red-600'
+                                            ? 'success'
+                                            : 'error'
                                     }`}>
-                    {transaction.type === 'income' || transaction.type === 'transfer_in' ? '+' : '-'}
+                                        {transaction.type === 'income' || transaction.type === 'transfer_in' ? '+' : '-'}
                                         {formatCurrency(transaction.amount)}
-                  </span>
+                                    </span>
                                 </div>
                             ))}
-
-                            {transactions.length > 3 && (
-                                <button
-                                    onClick={() => onNavigate('history')}
-                                    className="w-full text-center text-primary-600 font-medium hover:text-primary-700 transition-colors duration-200 mt-3"
-                                >
-                                    Ver todos los movimientos
-                                </button>
-                            )}
                         </div>
                     ) : (
-                        <div className="text-center py-8">
-                            <History className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <p className="text-gray-500">No hay movimientos aún</p>
-                            <p className="text-sm text-gray-400 mt-1">Comenzá cargando dinero a tu billetera</p>
+                        <div className="empty-state">
+                            <HistoryIcon className="icon" />
+                            <p className="message">No hay movimientos aún</p>
+                            <p className="submessage">Comenzá cargando dinero a tu billetera</p>
                         </div>
                     )}
-                </div>
-            </div>
-        </div>
+                </Card>
+            </main>
+        </StyledWrapper>
     );
 };
+
+const StyledWrapper = styled.div`
+    min-height: 100vh;
+    background: ${theme.colors.background};
+    color: ${theme.colors.text.primary};
+    
+    main {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: ${theme.spacing.xl};
+        display: flex;
+        flex-direction: column;
+        gap: ${theme.spacing.xl};
+
+        @media (max-width: ${theme.breakpoints.tablet}) {
+            padding: ${theme.spacing.lg};
+            gap: ${theme.spacing.lg};
+        }
+
+        @media (max-width: ${theme.breakpoints.mobile}) {
+            padding: ${theme.spacing.md};
+            gap: ${theme.spacing.md};
+        }
+    }
+
+    .balance-card {
+        .balance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: ${theme.spacing.lg};
+
+            @media (max-width: ${theme.breakpoints.mobile}) {
+                margin-bottom: ${theme.spacing.md};
+            }
+        }
+
+        .label {
+            color: ${theme.colors.text.inverse};
+            opacity: 0.8;
+            font-size: 14px;
+            margin-bottom: ${theme.spacing.xs};
+        }
+
+        .amount-container {
+            display: flex;
+            align-items: center;
+            gap: ${theme.spacing.sm};
+        }
+
+        .amount {
+            font-size: 36px;
+            font-weight: bold;
+
+            @media (max-width: ${theme.breakpoints.mobile}) {
+                font-size: 28px;
+            }
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            color: ${theme.colors.text.inverse};
+            opacity: 0.8;
+        }
+
+        .email {
+            color: ${theme.colors.text.inverse};
+            opacity: 0.8;
+            font-size: 14px;
+        }
+    }
+
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: ${theme.spacing.md};
+
+        @media (max-width: ${theme.breakpoints.tablet}) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (max-width: ${theme.breakpoints.mobile}) {
+            gap: ${theme.spacing.sm};
+        }
+    }
+
+    .action-card {
+        text-align: center;
+
+        .icon-container {
+            width: 48px;
+            height: 48px;
+            border-radius: ${theme.borderRadius.md};
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto ${theme.spacing.sm};
+
+            &.success { 
+                background: ${theme.colors.success.background};
+                .icon { color: ${theme.colors.success.main}; }
+            }
+            &.primary { 
+                background: ${theme.colors.primary.light}20;
+                .icon { color: ${theme.colors.primary.main}; }
+            }
+            &.error { 
+                background: ${theme.colors.error.background};
+                .icon { color: ${theme.colors.error.main}; }
+            }
+            &.secondary { 
+                background: ${theme.colors.secondary.light}20;
+                .icon { color: ${theme.colors.secondary.main}; }
+            }
+
+            @media (max-width: ${theme.breakpoints.mobile}) {
+                width: 40px;
+                height: 40px;
+
+                .icon {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+        }
+
+        .action-title {
+            color: ${theme.colors.text.primary};
+            font-weight: 600;
+            margin-bottom: ${theme.spacing.xs};
+            display: block;
+        }
+
+        .action-subtitle {
+            color: ${theme.colors.text.secondary};
+            font-size: 14px;
+            display: block;
+        }
+    }
+
+    .transactions-card {
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: ${theme.spacing.md};
+
+            h3 {
+                font-size: 18px;
+                font-weight: 600;
+                color: ${theme.colors.text.primary};
+            }
+        }
+
+        .transactions-list {
+            display: flex;
+            flex-direction: column;
+            gap: ${theme.spacing.sm};
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: ${theme.spacing.sm};
+            border-radius: ${theme.borderRadius.md};
+            transition: background-color 0.2s;
+
+            &:hover {
+                background: ${theme.colors.surfaceHover};
+            }
+        }
+
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: ${theme.spacing.sm};
+        }
+
+        .icon-container {
+            width: 40px;
+            height: 40px;
+            border-radius: ${theme.borderRadius.md};
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &.success { 
+                background: ${theme.colors.success.background};
+                .icon { color: ${theme.colors.success.main}; }
+            }
+            &.error { 
+                background: ${theme.colors.error.background};
+                .icon { color: ${theme.colors.error.main}; }
+            }
+            &.primary { 
+                background: ${theme.colors.primary.light}20;
+                .icon { color: ${theme.colors.primary.main}; }
+            }
+
+            @media (max-width: ${theme.breakpoints.mobile}) {
+                width: 32px;
+                height: 32px;
+
+                .icon {
+                    width: 16px;
+                    height: 16px;
+                }
+            }
+        }
+
+        .details {
+            .description {
+                color: ${theme.colors.text.primary};
+                font-weight: 500;
+                margin-bottom: 4px;
+            }
+
+            .date {
+                color: ${theme.colors.text.secondary};
+                font-size: 12px;
+            }
+        }
+
+        .amount {
+            font-weight: 600;
+            &.success { color: ${theme.colors.success.main}; }
+            &.error { color: ${theme.colors.error.main}; }
+        }
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: ${theme.spacing.xxl} 0;
+
+        .icon {
+            width: 48px;
+            height: 48px;
+            color: ${theme.colors.text.secondary};
+            margin: 0 auto ${theme.spacing.md};
+        }
+
+        .message {
+            color: ${theme.colors.text.primary};
+            font-weight: 500;
+            margin-bottom: ${theme.spacing.xs};
+        }
+
+        .submessage {
+            color: ${theme.colors.text.secondary};
+            font-size: 14px;
+        }
+
+        @media (max-width: ${theme.breakpoints.mobile}) {
+            padding: ${theme.spacing.xl} 0;
+
+            .icon {
+                width: 40px;
+                height: 40px;
+                margin-bottom: ${theme.spacing.sm};
+            }
+        }
+    }
+`;
+
+const Header = styled.header`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: ${theme.spacing.md} ${theme.spacing.xl};
+    background: ${theme.colors.surface};
+    border-bottom: 1px solid ${theme.colors.border};
+    position: sticky;
+    top: 0;
+    z-index: 10;
+
+    .logo {
+        font-size: 20px;
+        font-weight: 600;
+        background: ${theme.colors.primary.gradient};
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    @media (max-width: ${theme.breakpoints.tablet}) {
+        padding: ${theme.spacing.md};
+    }
+
+    @media (max-width: ${theme.breakpoints.mobile}) {
+        padding: ${theme.spacing.sm} ${theme.spacing.md};
+
+        .logo {
+            font-size: 18px;
+        }
+    }
+`;

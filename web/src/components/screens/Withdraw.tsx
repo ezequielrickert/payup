@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import { DollarSign, ChevronLeft } from 'lucide-react';
 import { WithdrawForm, User } from '../../types/types';
-import { formatCurrency, isValidAmount } from '../../utils/formatters';
-import { Header } from '../ui/Header';
+import { formatCurrency, isValidAmount } from '../../utils/formatters.ts';
+import { Header } from '../ui/Header.tsx';
 
 interface WithdrawScreenProps {
     user: User;
@@ -11,12 +12,13 @@ interface WithdrawScreenProps {
 }
 
 export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
-                                                                  user,
-                                                                  onWithdraw,
-                                                                  onBack
-                                                              }) => {
+    user,
+    onWithdraw,
+    onBack
+}) => {
     const [form, setForm] = useState<WithdrawForm>({ amount: '', bankAccount: '' });
     const [errors, setErrors] = useState<{ amount?: string; bankAccount?: string }>({});
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -43,83 +45,273 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
         setErrors(newErrors);
 
         if (Object.keys(newErrors).length === 0) {
-            onWithdraw(parseFloat(form.amount), form.bankAccount);
+            setIsLoading(true);
+            try {
+                onWithdraw(parseFloat(form.amount), form.bankAccount);
+            } catch (error) {
+                setErrors({ amount: 'Error al procesar la extracción. Intentá nuevamente.' });
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 
     return (
-        <div className="screen-container">
+        <StyledWrapper>
             <Header
                 title="Extraer Dinero"
                 showBack
                 onBack={onBack}
             />
 
-            <div className="screen-content space-y-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Formulario */}
-                    <div className="card space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Cuenta bancaria destino
-                            </label>
-                            <input
+            <div className="screen-content">
+                <form onSubmit={handleSubmit}>
+                    <FormCard>
+                        {/* Bank Account */}
+                        <FormSection>
+                            <Label>Cuenta bancaria destino</Label>
+                            <Input
                                 type="text"
                                 value={form.bankAccount}
                                 onChange={(e) => setForm(prev => ({ ...prev, bankAccount: e.target.value }))}
-                                className={`input-field ${errors.bankAccount ? 'border-red-500' : ''}`}
                                 placeholder="CBU o Alias de cuenta"
+                                hasError={!!errors.bankAccount}
+                                disabled={isLoading}
                             />
                             {errors.bankAccount && (
-                                <p className="mt-1 text-sm text-red-600">{errors.bankAccount}</p>
+                                <ErrorText>{errors.bankAccount}</ErrorText>
                             )}
-                        </div>
+                        </FormSection>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Monto a extraer
-                            </label>
-                            <div className="relative">
-                                <DollarSign className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                                <input
+                        {/* Amount */}
+                        <FormSection>
+                            <Label>Monto a extraer</Label>
+                            <InputWrapper>
+                                <DollarSign className="input-icon" />
+                                <Input
                                     type="number"
                                     step="0.01"
                                     value={form.amount}
                                     onChange={(e) => setForm(prev => ({ ...prev, amount: e.target.value }))}
-                                    className={`input-field pl-10 ${errors.amount ? 'border-red-500' : ''}`}
                                     placeholder="0.00"
+                                    hasError={!!errors.amount}
+                                    disabled={isLoading}
                                 />
-                            </div>
+                            </InputWrapper>
                             {errors.amount && (
-                                <p className="mt-1 text-sm text-red-600">{errors.amount}</p>
+                                <ErrorText>{errors.amount}</ErrorText>
                             )}
-                        </div>
-                    </div>
+                        </FormSection>
+                    </FormCard>
 
-                    {/* Información de saldo */}
-                    <div className="bg-red-50 rounded-xl p-4 border border-red-200">
-                        <p className="text-sm text-red-800">
+                    {/* Balance Info */}
+                    <BalanceCard>
+                        <p>
                             <strong>Saldo disponible:</strong> {formatCurrency(user.balance)}
                         </p>
-                    </div>
+                    </BalanceCard>
 
-                    {/* Aviso de simulación */}
-                    <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
-                        <p className="text-sm text-yellow-800">
+                    {/* Simulation Notice */}
+                    <InfoCard>
+                        <p>
                             <strong>Aviso:</strong> Esta es una simulación. En la app real se integraría con sistemas bancarios reales.
                         </p>
-                    </div>
+                    </InfoCard>
 
-                    {/* Botón de envío */}
-                    <button
+                    {/* Submit Button */}
+                    <SubmitButton
                         type="submit"
-                        className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={!form.amount || !form.bankAccount}
+                        disabled={isLoading || !form.amount || !form.bankAccount}
                     >
-                        Extraer Dinero
-                    </button>
+                        {isLoading ? (
+                            <>
+                                <LoadingSpinner />
+                                Procesando...
+                            </>
+                        ) : (
+                            'Extraer Dinero'
+                        )}
+                    </SubmitButton>
                 </form>
             </div>
-        </div>
+        </StyledWrapper>
     );
 };
+
+const StyledWrapper = styled.div`
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #1a1a1a, #2d2d2d);
+    color: #fff;
+    
+    .screen-content {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+`;
+
+const FormCard = styled.div`
+    background: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+`;
+
+const FormSection = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+`;
+
+const Label = styled.label`
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    font-weight: 500;
+`;
+
+const InputWrapper = styled.div`
+    position: relative;
+
+    .input-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        color: rgba(255, 255, 255, 0.4);
+    }
+`;
+
+interface InputProps {
+    hasError?: boolean;
+}
+
+const Input = styled.input<InputProps>`
+    width: 100%;
+    padding: 12px;
+    padding-left: ${props => props.type === 'number' ? '40px' : '12px'};
+    background: #222;
+    border: 1px solid ${props => props.hasError ? '#ef4444' : '#333'};
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    transition: all 0.2s;
+
+    &:focus {
+        outline: none;
+        border-color: #00bfff;
+        box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.2);
+    }
+
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Remove number input arrows */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    &[type=number] {
+        -moz-appearance: textfield;
+    }
+`;
+
+const ErrorText = styled.p`
+    color: #ef4444;
+    font-size: 14px;
+    margin-top: 4px;
+`;
+
+const BalanceCard = styled.div`
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 16px;
+    padding: 16px;
+
+    p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 14px;
+
+        strong {
+            color: #ef4444;
+            font-weight: 500;
+            margin-right: 4px;
+        }
+    }
+`;
+
+const InfoCard = styled.div`
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.2);
+    border-radius: 16px;
+    padding: 16px;
+
+    p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 14px;
+
+        strong {
+            color: #eab308;
+            font-weight: 500;
+            margin-right: 4px;
+        }
+    }
+`;
+
+const SubmitButton = styled.button`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 16px;
+    background: #ef4444;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 600;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+        background: #dc2626;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+`;
+
+const LoadingSpinner = styled.div`
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+`;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import {
     History,
     ArrowDownLeft,
@@ -8,8 +9,8 @@ import {
     Calendar
 } from 'lucide-react';
 import { Transaction } from '../../types/types';
-import { formatCurrency, formatDate } from '../../utils/formatters';
-import { Header } from '../ui/Header';
+import { formatCurrency, formatDate } from '../../utils/formatters.ts';
+import { Header } from '../ui/Header.tsx';
 
 interface HistoryScreenProps {
     transactions: Transaction[];
@@ -17,9 +18,9 @@ interface HistoryScreenProps {
 }
 
 export const HistoryScreen: React.FC<HistoryScreenProps> = ({
-                                                                transactions,
-                                                                onBack
-                                                            }) => {
+    transactions,
+    onBack
+}) => {
     const [filter, setFilter] = useState<'all' | 'income' | 'expense' | 'transfers'>('all');
 
     const filteredTransactions = transactions.filter(transaction => {
@@ -38,150 +39,127 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({
     const getTransactionIcon = (type: Transaction['type']) => {
         switch (type) {
             case 'income':
-                return <ArrowDownLeft className="w-5 h-5 text-green-600" />;
+                return <ArrowDownLeft className="icon" />;
             case 'expense':
-                return <ArrowUpRight className="w-5 h-5 text-red-600" />;
+                return <ArrowUpRight className="icon" />;
             case 'transfer_out':
-                return <Send className="w-5 h-5 text-blue-600" />;
+                return <Send className="icon" />;
             case 'transfer_in':
-                return <ArrowDownLeft className="w-5 h-5 text-purple-600" />;
+                return <ArrowDownLeft className="icon" />;
             default:
-                return <History className="w-5 h-5 text-gray-600" />;
+                return <History className="icon" />;
         }
     };
 
-    const getTransactionBgColor = (type: Transaction['type']) => {
+    const getTransactionColor = (type: Transaction['type']) => {
         switch (type) {
             case 'income':
-                return 'bg-green-100';
+                return 'green';
             case 'expense':
-                return 'bg-red-100';
+                return 'red';
             case 'transfer_out':
-                return 'bg-blue-100';
+                return 'blue';
             case 'transfer_in':
-                return 'bg-purple-100';
+                return 'purple';
             default:
-                return 'bg-gray-100';
+                return 'gray';
         }
-    };
-
-    const getAmountColor = (type: Transaction['type']) => {
-        return type === 'income' || type === 'transfer_in' ? 'text-green-600' : 'text-red-600';
-    };
-
-    const getAmountPrefix = (type: Transaction['type']) => {
-        return type === 'income' || type === 'transfer_in' ? '+' : '-';
     };
 
     return (
-        <div className="screen-container">
+        <StyledWrapper>
             <Header
                 title="Historial de Movimientos"
                 showBack
                 onBack={onBack}
             />
 
-            <div className="screen-content space-y-6">
-                {/* Filtros */}
-                <div className="card">
-                    <div className="flex items-center mb-4">
-                        <Filter className="w-5 h-5 text-gray-600 mr-2" />
-                        <h3 className="font-semibold text-gray-900">Filtrar por tipo</h3>
+            <div className="screen-content">
+                {/* Filters */}
+                <FiltersCard>
+                    <div className="header">
+                        <Filter className="icon" />
+                        <h3>Filtrar por tipo</h3>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                        <button
+                    <div className="filters">
+                        <FilterButton
+                            active={filter === 'all'}
                             onClick={() => setFilter('all')}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                                filter === 'all'
-                                    ? 'bg-primary-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
                         >
                             Todos
-                        </button>
-                        <button
+                        </FilterButton>
+                        <FilterButton
+                            active={filter === 'income'}
+                            color="green"
                             onClick={() => setFilter('income')}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                                filter === 'income'
-                                    ? 'bg-green-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
                         >
                             Ingresos
-                        </button>
-                        <button
+                        </FilterButton>
+                        <FilterButton
+                            active={filter === 'expense'}
+                            color="red"
                             onClick={() => setFilter('expense')}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                                filter === 'expense'
-                                    ? 'bg-red-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
                         >
                             Gastos
-                        </button>
-                        <button
+                        </FilterButton>
+                        <FilterButton
+                            active={filter === 'transfers'}
+                            color="blue"
                             onClick={() => setFilter('transfers')}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                                filter === 'transfers'
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
                         >
                             Transferencias
-                        </button>
+                        </FilterButton>
                     </div>
-                </div>
+                </FiltersCard>
 
-                {/* Lista de transacciones */}
-                <div className="card">
+                {/* Transactions List */}
+                <TransactionsCard>
                     {filteredTransactions.length > 0 ? (
-                        <div className="space-y-1">
+                        <div className="transactions-list">
                             {filteredTransactions.map((transaction, index) => (
-                                <div
-                                    key={transaction.id}
-                                    className={`p-4 flex items-center justify-between hover:bg-gray-50 transition-colors duration-200 ${
-                                        index !== filteredTransactions.length - 1 ? 'border-b border-gray-100' : ''
-                                    }`}
-                                >
-                                    <div className="flex items-center flex-1">
-                                        <div className={`p-3 rounded-full mr-4 ${getTransactionBgColor(transaction.type)}`}>
+                                <TransactionItem key={transaction.id}>
+                                    <div className="transaction-info">
+                                        <div className={`icon-container ${getTransactionColor(transaction.type)}`}>
                                             {getTransactionIcon(transaction.type)}
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-medium text-gray-900 truncate">
+                                        <div className="details">
+                                            <p className="description">
                                                 {transaction.description}
                                             </p>
-                                            <div className="flex items-center text-sm text-gray-600 mt-1">
-                                                <Calendar className="w-3 h-3 mr-1" />
+                                            <div className="date">
+                                                <Calendar className="calendar-icon" />
                                                 <span>{formatDate(transaction.date)}</span>
                                             </div>
                                             {transaction.toUser && (
-                                                <p className="text-xs text-blue-600 mt-1">
+                                                <p className="user-info to">
                                                     Para: {transaction.toUser}
                                                 </p>
                                             )}
                                             {transaction.fromUser && (
-                                                <p className="text-xs text-purple-600 mt-1">
+                                                <p className="user-info from">
                                                     De: {transaction.fromUser}
                                                 </p>
                                             )}
                                         </div>
                                     </div>
-                                    <div className="text-right ml-4">
-                    <span className={`font-bold text-lg ${getAmountColor(transaction.type)}`}>
-                      {getAmountPrefix(transaction.type)}{formatCurrency(transaction.amount)}
-                    </span>
-                                    </div>
-                                </div>
+                                    <span className={`amount ${
+                                        transaction.type === 'income' || transaction.type === 'transfer_in'
+                                            ? 'income'
+                                            : 'expense'
+                                    }`}>
+                                        {transaction.type === 'income' || transaction.type === 'transfer_in' ? '+' : '-'}
+                                        {formatCurrency(transaction.amount)}
+                                    </span>
+                                </TransactionItem>
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-12">
-                            <History className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        <EmptyState>
+                            <History className="icon" />
+                            <h3 className="title">
                                 {filter === 'all' ? 'No hay movimientos aún' : 'No hay movimientos de este tipo'}
                             </h3>
-                            <p className="text-gray-500 mb-4">
+                            <p className="message">
                                 {filter === 'all'
                                     ? 'Comenzá cargando dinero a tu billetera'
                                     : 'Probá cambiando el filtro para ver otros movimientos'
@@ -190,44 +168,220 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({
                             {filter !== 'all' && (
                                 <button
                                     onClick={() => setFilter('all')}
-                                    className="text-primary-600 font-medium hover:text-primary-700 transition-colors duration-200"
+                                    className="view-all"
                                 >
                                     Ver todos los movimientos
                                 </button>
                             )}
-                        </div>
+                        </EmptyState>
                     )}
-                </div>
-
-                {/* Resumen estadístico */}
-                {filteredTransactions.length > 0 && (
-                    <div className="card">
-                        <h3 className="font-semibold text-gray-900 mb-4">Resumen</h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="text-center p-4 bg-green-50 rounded-lg">
-                                <p className="text-sm text-green-600 font-medium">Total Ingresos</p>
-                                <p className="text-lg font-bold text-green-700">
-                                    {formatCurrency(
-                                        filteredTransactions
-                                            .filter(t => t.type === 'income' || t.type === 'transfer_in')
-                                            .reduce((sum, t) => sum + t.amount, 0)
-                                    )}
-                                </p>
-                            </div>
-                            <div className="text-center p-4 bg-red-50 rounded-lg">
-                                <p className="text-sm text-red-600 font-medium">Total Gastos</p>
-                                <p className="text-lg font-bold text-red-700">
-                                    {formatCurrency(
-                                        filteredTransactions
-                                            .filter(t => t.type === 'expense' || t.type === 'transfer_out')
-                                            .reduce((sum, t) => sum + t.amount, 0)
-                                    )}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                </TransactionsCard>
             </div>
-        </div>
+        </StyledWrapper>
     );
 };
+
+const StyledWrapper = styled.div`
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #1a1a1a, #2d2d2d);
+    color: #fff;
+    
+    .screen-content {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+`;
+
+const FiltersCard = styled.div`
+    background: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 24px;
+
+    .header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-right: 8px;
+        }
+
+        h3 {
+            color: #fff;
+            font-weight: 600;
+        }
+    }
+
+    .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+`;
+
+interface FilterButtonProps {
+    active: boolean;
+    color?: 'green' | 'red' | 'blue';
+}
+
+const FilterButton = styled.button<FilterButtonProps>`
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    background: ${props => {
+        if (!props.active) return 'rgba(255, 255, 255, 0.1)';
+        if (props.color === 'green') return '#22c55e';
+        if (props.color === 'red') return '#ef4444';
+        if (props.color === 'blue') return '#3b82f6';
+        return '#00bfff';
+    }};
+    color: ${props => props.active ? '#fff' : 'rgba(255, 255, 255, 0.8)'};
+
+    &:hover {
+        background: ${props => {
+            if (!props.active) return 'rgba(255, 255, 255, 0.15)';
+            if (props.color === 'green') return '#16a34a';
+            if (props.color === 'red') return '#dc2626';
+            if (props.color === 'blue') return '#2563eb';
+            return '#0099ff';
+        }};
+    }
+`;
+
+const TransactionsCard = styled.div`
+    background: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 24px;
+
+    .transactions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+`;
+
+const TransactionItem = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-radius: 12px;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .transaction-info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .icon-container {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &.green { background: rgba(34, 197, 94, 0.2); }
+        &.red { background: rgba(239, 68, 68, 0.2); }
+        &.blue { background: rgba(59, 130, 246, 0.2); }
+        &.purple { background: rgba(168, 85, 247, 0.2); }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            &.green { color: #22c55e; }
+            &.red { color: #ef4444; }
+            &.blue { color: #3b82f6; }
+            &.purple { color: #a855f7; }
+        }
+    }
+
+    .details {
+        .description {
+            color: #fff;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .date {
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            margin-bottom: 4px;
+
+            .calendar-icon {
+                width: 12px;
+                height: 12px;
+                margin-right: 4px;
+            }
+        }
+
+        .user-info {
+            font-size: 12px;
+            margin-top: 4px;
+
+            &.to { color: #3b82f6; }
+            &.from { color: #a855f7; }
+        }
+    }
+
+    .amount {
+        font-weight: 600;
+        font-size: 16px;
+        &.income { color: #22c55e; }
+        &.expense { color: #ef4444; }
+    }
+`;
+
+const EmptyState = styled.div`
+    text-align: center;
+    padding: 48px 0;
+
+    .icon {
+        width: 48px;
+        height: 48px;
+        color: rgba(255, 255, 255, 0.4);
+        margin: 0 auto 16px;
+    }
+
+    .title {
+        color: #fff;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .message {
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 16px;
+    }
+
+    .view-all {
+        color: #00bfff;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 8px;
+        transition: all 0.2s;
+
+        &:hover {
+            background: rgba(0, 191, 255, 0.1);
+        }
+    }
+`;

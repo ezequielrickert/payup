@@ -9,12 +9,12 @@ describe('User entity', () => {
         const password = 'securepassword';
         const cvu = 1234567890;
 
-        const user = new User(name, email, password, 1234567890);
+        const user = new User(name, email, password, cvu);
 
         expect(user.name).toBe(name);
         expect(user.email).toBe(email);
         expect(user.password).toBe("securepassword");
-        expect(user.cvu).toBe(1234567890);
+        expect(user.cvu).toBe(cvu);
     });
 
     it('should throw an error when email is invalid', () => {

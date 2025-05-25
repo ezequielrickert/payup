@@ -15,6 +15,7 @@ describe('UserService', () => {
         const found = await service.findById('1');
 
         expect(found?.email).toBe('alice@example.com');
+        expect(found?.cvu).toBe(1234557393);
     });
 
     it('should find user by email', async () => {

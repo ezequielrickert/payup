@@ -37,7 +37,7 @@ export class UserService implements IUserService {
     }
 
     private mapToDto(user: IUser): UserDto {
-        return new UserDto(user.name, user.email, user.password);
+        return new UserDto(user.name, user.email, user.password, user.cvu);
     }
 
     private mapToDomain(user: UserDto): IUser {

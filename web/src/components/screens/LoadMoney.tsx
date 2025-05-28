@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ChevronLeft, DollarSign, CreditCard, Building2, Smartphone, Plus, AlertCircle } from 'lucide-react';
 import { LoadForm, User } from '../../types/types';
-import { formatCurrency, isValidAmount } from '../../utils/formatters.ts';
-import { Header } from '../ui/Header.tsx';
+import { formatCurrency, isValidAmount } from '../../utils/formatters';
+import { Header } from '../ui/Header';
 
 interface LoadMoneyScreenProps {
     user: User;

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import AppProvider from './context/AppContext.tsx';
-import { DashboardScreen } from './components/screens/Dashboard.tsx';
-import { LoadMoneyScreen } from './components/screens/LoadMoney.tsx';
-import { TransferScreen } from './components/screens/Transfer.tsx';
-import { WithdrawScreen } from './components/screens/Withdraw.tsx';
-import { HistoryScreen } from './components/screens/History.tsx';
-import { LoginScreen } from './components/screens/Login.tsx';
-import SignUpScreen from './components/screens/SignUp.tsx';
-import { useApp } from './context/AppContext.tsx';
+import AppProvider from './context/AppContext';
+import { DashboardScreen } from './components/screens/Dashboard';
+import { LoadMoneyScreen } from './components/screens/LoadMoney';
+import { TransferScreen } from './components/screens/Transfer';
+import { WithdrawScreen } from './components/screens/Withdraw';
+import { HistoryScreen } from './components/screens/History';
+import { LoginScreen } from './components/screens/Login';
+import SignUpScreen from './components/screens/SignUp';
+import { useApp } from './context/AppContext';
 
 type Screen = 'login' | 'signup' | 'dashboard' | 'load' | 'transfer' | 'withdraw' | 'history';
 

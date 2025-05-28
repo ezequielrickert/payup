@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { DollarSign, ChevronLeft } from 'lucide-react';
 import { WithdrawForm, User } from '../../types/types';
-import { formatCurrency, isValidAmount } from '../../utils/formatters.ts';
-import { Header } from '../ui/Header.tsx';
+import { formatCurrency, isValidAmount } from '../../utils/formatters';
+import { Header } from '../ui/Header';
 
 interface WithdrawScreenProps {
     user: User;

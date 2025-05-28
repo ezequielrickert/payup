@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ChevronLeft, DollarSign, Send, AlertCircle } from 'lucide-react';
 import { TransferForm, User } from '../../types/types';
-import { formatCurrency, isValidAmount, isValidEmail } from '../../utils/formatters.ts';
-import { Header } from '../ui/Header.tsx';
+import { formatCurrency, isValidAmount, isValidEmail } from '../../utils/formatters';
+import { Header } from '../ui/Header';
 
 interface TransferScreenProps {
     user: User;

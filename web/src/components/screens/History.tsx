@@ -9,8 +9,8 @@ import {
     Calendar
 } from 'lucide-react';
 import { Transaction } from '../../types/types';
-import { formatCurrency, formatDate } from '../../utils/formatters.ts';
-import { Header } from '../ui/Header.tsx';
+import { formatCurrency, formatDate } from '../../utils/formatters';
+import { Header } from '../ui/Header';
 
 interface HistoryScreenProps {
     transactions: Transaction[];

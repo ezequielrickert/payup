@@ -221,9 +221,17 @@ const FiltersCard = styled.div`
     }
 
     .filters {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+
+        @media (max-width: 768px) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (max-width: 480px) {
+            grid-template-columns: 1fr;
+        }
     }
 `;
 
@@ -233,7 +241,7 @@ interface FilterButtonProps {
 }
 
 const FilterButton = styled.button<FilterButtonProps>`
-    padding: 8px 16px;
+    padding: 12px 16px;
     border-radius: 10px;
     font-size: 14px;
     font-weight: 500;

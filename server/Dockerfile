@@ -4,7 +4,7 @@ FROM node:18-alpine
 WORKDIR /app/server
 
 COPY package.json ./
-RUN npm install && npx prisma generate
+RUN npm install
 
 COPY . .
 

@@ -49,7 +49,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     <StyledWrapper>
       <form className="form" onSubmit={handleSubmit}>
         <p className="title">Iniciar Sesión</p>
-        <p className="message">Bienvenido de vuelta a tu billetera digital.</p>
+        <p className="message">Bienvenido de vuelta a tu billetera digital PayUp.</p>
 
         <label>
           <input
@@ -92,7 +92,7 @@ const StyledWrapper = styled.div`
   align-items: center;
   justify-content: center;
   background: linear-gradient(to bottom right, #4F46E5, #7C3AED);
-  padding: 20px;
+  padding: 10px;
 
   .form {
     display: flex;
@@ -111,11 +111,11 @@ const StyledWrapper = styled.div`
   .title {
     font-size: 28px;
     font-weight: 600;
-    letter-spacing: -1px;
     position: relative;
     display: flex;
     align-items: center;
     padding-left: 30px;
+    margin-bottom: 10px;
     color: #00bfff;
   }
 
@@ -169,7 +169,7 @@ const StyledWrapper = styled.div`
   .form label .input {
     background-color: #333;
     color: #fff;
-    width: 100%;
+    width: calc(100% - 20px);
     padding: 20px 05px 05px 10px;
     outline: 0;
     border: 1px solid rgba(105, 105, 105, 0.397);
@@ -210,7 +210,6 @@ const StyledWrapper = styled.div`
     border-radius: 10px;
     color: #fff;
     font-size: 16px;
-    transform: .3s ease;
     background-color: #00bfff;
   }
 

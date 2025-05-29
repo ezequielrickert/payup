@@ -11,6 +11,7 @@ import {
 import { Transaction } from '../../types/types';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { Header } from '../ui/Header';
+import {theme} from "../../styles/theme";
 
 interface HistoryScreenProps {
     transactions: Transaction[];
@@ -18,9 +19,9 @@ interface HistoryScreenProps {
 }
 
 export const HistoryScreen: React.FC<HistoryScreenProps> = ({
-    transactions,
-    onBack
-}) => {
+                                                                transactions,
+                                                                onBack
+                                                            }) => {
     const [filter, setFilter] = useState<'all' | 'income' | 'expense' | 'transfers'>('all');
 
     const filteredTransactions = transactions.filter(transaction => {
@@ -54,15 +55,15 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({
     const getTransactionColor = (type: Transaction['type']) => {
         switch (type) {
             case 'income':
-                return 'green';
+                return 'success';
             case 'expense':
-                return 'red';
+                return 'error';
             case 'transfer_out':
-                return 'blue';
+                return 'primary';
             case 'transfer_in':
-                return 'purple';
+                return 'secondary';
             default:
-                return 'gray';
+                return 'primary';
         }
     };
 
@@ -90,21 +91,21 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({
                         </FilterButton>
                         <FilterButton
                             active={filter === 'income'}
-                            color="green"
+                            color="success"
                             onClick={() => setFilter('income')}
                         >
                             Ingresos
                         </FilterButton>
                         <FilterButton
                             active={filter === 'expense'}
-                            color="red"
+                            color="error"
                             onClick={() => setFilter('expense')}
                         >
                             Gastos
                         </FilterButton>
                         <FilterButton
                             active={filter === 'transfers'}
-                            color="blue"
+                            color="primary"
                             onClick={() => setFilter('transfers')}
                         >
                             Transferencias
@@ -117,7 +118,7 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({
                     {filteredTransactions.length > 0 ? (
                         <div className="transactions-list">
                             {filteredTransactions.map((transaction, index) => (
-                                <TransactionItem key={transaction.id}>
+                                <div key={transaction.id} className="transaction-item">
                                     <div className="transaction-info">
                                         <div className={`icon-container ${getTransactionColor(transaction.type)}`}>
                                             {getTransactionIcon(transaction.type)}
@@ -127,7 +128,6 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({
                                                 {transaction.description}
                                             </p>
                                             <div className="date">
-                                                <Calendar className="calendar-icon" />
                                                 <span>{formatDate(transaction.date)}</span>
                                             </div>
                                             {transaction.toUser && (
@@ -150,7 +150,7 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({
                                         {transaction.type === 'income' || transaction.type === 'transfer_in' ? '+' : '-'}
                                         {formatCurrency(transaction.amount)}
                                     </span>
-                                </TransactionItem>
+                                </div>
                             ))}
                         </div>
                     ) : (
@@ -183,205 +183,253 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({
 
 const StyledWrapper = styled.div`
     min-height: 100vh;
-    background: linear-gradient(to bottom right, #1a1a1a, #2d2d2d);
-    color: #fff;
-    
+    background: ${theme.colors.background};
+    color: ${theme.colors.text.primary};
+
     .screen-content {
-        max-width: 600px;
+        max-width: 800px;
         margin: 0 auto;
-        padding: 20px;
+        padding: ${theme.spacing.xl};
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: ${theme.spacing.xl};
+
+        @media (max-width: ${theme.breakpoints.tablet}) {
+            padding: ${theme.spacing.lg};
+            gap: ${theme.spacing.lg};
+        }
+
+        @media (max-width: ${theme.breakpoints.mobile}) {
+            padding: ${theme.spacing.md};
+            gap: ${theme.spacing.md};
+        }
     }
 `;
 
 const FiltersCard = styled.div`
-    background: #2a2a2a;
-    border: 1px solid #333;
-    border-radius: 16px;
-    padding: 24px;
+    background: ${theme.colors.surface};
+    border: 1px solid ${theme.colors.border};
+    border-radius: ${theme.borderRadius.lg};
+    padding: ${theme.spacing.lg};
 
     .header {
         display: flex;
         align-items: center;
-        margin-bottom: 16px;
+        margin-bottom: ${theme.spacing.md};
 
         .icon {
             width: 20px;
             height: 20px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-right: 8px;
+            color: ${theme.colors.text.secondary};
+            margin-right: ${theme.spacing.sm};
         }
 
         h3 {
-            color: #fff;
+            color: ${theme.colors.text.primary};
             font-weight: 600;
+            font-size: 16px;
         }
     }
 
     .filters {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: ${theme.spacing.sm};
+
+        @media (max-width: ${theme.breakpoints.tablet}) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (max-width: ${theme.breakpoints.mobile}) {
+            grid-template-columns: 1fr;
+        }
     }
 `;
 
 interface FilterButtonProps {
     active: boolean;
-    color?: 'green' | 'red' | 'blue';
+    color?: 'success' | 'error' | 'primary';
 }
 
 const FilterButton = styled.button<FilterButtonProps>`
-    padding: 8px 16px;
-    border-radius: 10px;
+    padding: ${theme.spacing.sm} ${theme.spacing.md};
+    border-radius: ${theme.borderRadius.md};
     font-size: 14px;
     font-weight: 500;
     transition: all 0.2s;
+    border: 1px solid ${theme.colors.border};
+
     background: ${props => {
-        if (!props.active) return 'rgba(255, 255, 255, 0.1)';
-        if (props.color === 'green') return '#22c55e';
-        if (props.color === 'red') return '#ef4444';
-        if (props.color === 'blue') return '#3b82f6';
-        return '#00bfff';
+        if (!props.active) return theme.colors.surface;
+        if (props.color === 'success') return theme.colors.success.main;
+        if (props.color === 'error') return theme.colors.error.main;
+        if (props.color === 'primary') return theme.colors.primary.main;
+        return theme.colors.primary.main;
     }};
-    color: ${props => props.active ? '#fff' : 'rgba(255, 255, 255, 0.8)'};
+
+    color: ${props => props.active ? '#fff' : theme.colors.text.secondary};
 
     &:hover {
         background: ${props => {
-            if (!props.active) return 'rgba(255, 255, 255, 0.15)';
-            if (props.color === 'green') return '#16a34a';
-            if (props.color === 'red') return '#dc2626';
-            if (props.color === 'blue') return '#2563eb';
-            return '#0099ff';
+            if (!props.active) return theme.colors.surfaceHover;
+            if (props.color === 'success') return theme.colors.success.main;
+            if (props.color === 'error') return theme.colors.error.main;
+            if (props.color === 'primary') return theme.colors.primary.dark;
+            return theme.colors.primary.dark;
         }};
+        color: ${props => props.active ? '#fff' : theme.colors.text.primary};
     }
 `;
 
 const TransactionsCard = styled.div`
-    background: #2a2a2a;
-    border: 1px solid #333;
-    border-radius: 16px;
-    padding: 24px;
+    background: ${theme.colors.surface};
+    border: 1px solid ${theme.colors.border};
+    border-radius: ${theme.borderRadius.lg};
+    padding: ${theme.spacing.md};
 
     .transactions-list {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: ${theme.spacing.sm}; 
     }
-`;
 
-const TransactionItem = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    border-radius: 12px;
-    transition: background-color 0.2s;
+    .transaction-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: ${theme.spacing.sm}; 
+        border-radius: ${theme.borderRadius.md};
+        transition: background-color 0.2s;
 
-    &:hover {
-        background: rgba(255, 255, 255, 0.05);
+        &:hover {
+            background: ${theme.colors.surfaceHover};
+        }
     }
 
     .transaction-info {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: ${theme.spacing.sm};
     }
 
     .icon-container {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
+        width: 40px;
+        height: 40px;
+        border-radius: ${theme.borderRadius.md};
         display: flex;
         align-items: center;
         justify-content: center;
 
-        &.green { background: rgba(34, 197, 94, 0.2); }
-        &.red { background: rgba(239, 68, 68, 0.2); }
-        &.blue { background: rgba(59, 130, 246, 0.2); }
-        &.purple { background: rgba(168, 85, 247, 0.2); }
+        &.success {
+            background: ${theme.colors.success.background};
+            .icon { color: ${theme.colors.success.main}; }
+        }
+        &.error {
+            background: ${theme.colors.error.background};
+            .icon { color: ${theme.colors.error.main}; }
+        }
+        &.primary {
+            background: ${theme.colors.primary.light}20;
+            .icon { color: ${theme.colors.primary.main}; }
+        }
+        &.secondary {
+            background: ${theme.colors.secondary.light}20;
+            .icon { color: ${theme.colors.secondary.main}; }
+        }
 
-        .icon {
-            width: 24px;
-            height: 24px;
-            &.green { color: #22c55e; }
-            &.red { color: #ef4444; }
-            &.blue { color: #3b82f6; }
-            &.purple { color: #a855f7; }
+        @media (max-width: ${theme.breakpoints.mobile}) {
+            width: 32px;
+            height: 32px;
+
+            .icon {
+                width: 16px;
+                height: 16px;
+            }
         }
     }
 
     .details {
         .description {
-            color: #fff;
+            color: ${theme.colors.text.primary};
             font-weight: 500;
-            margin-bottom: 4px;
+            margin: 16px 0 4px;
         }
 
         .date {
-            display: flex;
-            align-items: center;
-            color: rgba(255, 255, 255, 0.6);
+            color: ${theme.colors.text.secondary};
             font-size: 12px;
-            margin-bottom: 4px;
-
-            .calendar-icon {
-                width: 12px;
-                height: 12px;
-                margin-right: 4px;
-            }
+            margin: 12px 0px;
         }
 
         .user-info {
             font-size: 12px;
-            margin-top: 4px;
+            margin: 2px 0;
 
-            &.to { color: #3b82f6; }
-            &.from { color: #a855f7; }
+            &.to {
+                color: ${theme.colors.error.main};
+            }
+
+            &.from {
+                color: ${theme.colors.success.main};
+            }
         }
     }
 
     .amount {
         font-weight: 600;
-        font-size: 16px;
-        &.income { color: #22c55e; }
-        &.expense { color: #ef4444; }
+
+        &.income {
+            color: ${theme.colors.success.main};
+        }
+
+        &.expense {
+            color: ${theme.colors.error.main};
+        }
     }
 `;
 
 const EmptyState = styled.div`
     text-align: center;
-    padding: 48px 0;
-
+    padding: ${theme.spacing.xxl} 0; 
+    
     .icon {
         width: 48px;
         height: 48px;
-        color: rgba(255, 255, 255, 0.4);
-        margin: 0 auto 16px;
+        color: ${theme.colors.text.secondary}; 
+        margin: 0 auto ${theme.spacing.md};
     }
 
     .title {
-        color: #fff;
+        color: ${theme.colors.text.primary}; 
         font-size: 18px;
         font-weight: 600;
-        margin-bottom: 8px;
+        margin-bottom: ${theme.spacing.xs};
     }
 
     .message {
-        color: rgba(255, 255, 255, 0.6);
-        margin-bottom: 16px;
+        color: ${theme.colors.text.secondary}; 
+        margin-bottom: ${theme.spacing.md};
     }
 
     .view-all {
-        color: #00bfff;
+        color: ${theme.colors.primary.main}; 
         font-weight: 500;
-        padding: 8px 16px;
-        border-radius: 8px;
+        padding: ${theme.spacing.sm} ${theme.spacing.md};
+        border-radius: ${theme.borderRadius.md};
         transition: all 0.2s;
 
         &:hover {
-            background: rgba(0, 191, 255, 0.1);
+            background: ${theme.colors.primary.light}20; 
+        }
+    }
+
+    @media (max-width: ${theme.breakpoints.mobile}) {
+        padding: ${theme.spacing.xl} 0;
+
+        .icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: ${theme.spacing.sm};
         }
     }
 `;

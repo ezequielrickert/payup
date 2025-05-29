@@ -9,7 +9,7 @@ describe ('Wallet entity', () => {
 
         const wallet = new Wallet(userId, initialBalance);
 
-        expect(wallet.userId).toBe(userId);
+        expect(wallet.userCvu).toBe(userId);
         expect(wallet.balance).toBe(initialBalance);
     });
 
@@ -18,7 +18,7 @@ describe ('Wallet entity', () => {
 
         const wallet = new Wallet(userId);
 
-        expect(wallet.userId).toBe(userId);
+        expect(wallet.userCvu).toBe(userId);
         expect(wallet.balance).toBe(0);
     });
 
@@ -40,7 +40,7 @@ describe ('Wallet entity', () => {
         const updatedWallet = wallet.deposit(depositAmount);
 
         expect(updatedWallet.balance).toBe(initialBalance + depositAmount);
-        expect(updatedWallet.userId).toBe(userId);
+        expect(updatedWallet.userCvu).toBe(userId);
     });
     
     it ('should throw an error when depositing a non-positive amount', () => {
@@ -64,7 +64,7 @@ describe ('Wallet entity', () => {
         const updatedWallet = wallet.withdraw(withdrawAmount);
 
         expect(updatedWallet.balance).toBe(initialBalance - withdrawAmount);
-        expect(updatedWallet.userId).toBe(userId);
+        expect(updatedWallet.userCvu).toBe(userId);
     });
 
     it ('should throw an error when withdrawing a non-positive amount', () => {

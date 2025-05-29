@@ -7,9 +7,9 @@ export class InMemoryWalletRepository implements IWalletRepository {
 
     private id: number = 0;
 
-    findByUserId(userId: number): Promise<IWallet | null> {
+    findByUserCvu(userId: number): Promise<IWallet | null> {
         for (const wallet of this.wallets.values()) {
-            if (wallet.userId === userId) {
+            if (wallet.userCvu === userId) {
                 return Promise.resolve(wallet);
             }
         }
@@ -22,10 +22,10 @@ export class InMemoryWalletRepository implements IWalletRepository {
     }
 
     update(wallet: IWallet): Promise<void> {
-        const dbWallet = this.wallets.get(wallet.userId);
+        const dbWallet = this.wallets.get(wallet.userCvu);
         if (dbWallet) {
-            this.wallets.delete(dbWallet.userId);
-            this.wallets.set(wallet.userId, wallet);
+            this.wallets.delete(dbWallet.userCvu);
+            this.wallets.set(wallet.userCvu, wallet);
         }
         return Promise.resolve(undefined);
     }

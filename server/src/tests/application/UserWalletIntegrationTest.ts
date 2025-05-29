@@ -24,9 +24,9 @@ describe('User and Wallet Integration', () => {
         const savedUser = await userRepo.findByEmail('testuser@example.com');
         expect(savedUser).not.toBeNull();
         // Wallet should be created with the user's cvu as userId
-        const wallet = await walletService.findByUserId(savedUser!.cvu);
+        const wallet = await walletService.findByUserCvu(savedUser!.cvu);
         expect(wallet).not.toBeNull();
-        expect(wallet?.userId).toBe(savedUser!.cvu);
+        expect(wallet?.userCvu).toBe(savedUser!.cvu);
         expect(wallet?.balance).toBe(0);
     });
 
@@ -37,7 +37,7 @@ describe('User and Wallet Integration', () => {
         await expect(userService.save(user)).rejects.toThrow();
         // Only one wallet should exist
         const savedUser = await userRepo.findByEmail('testuser@example.com');
-        const wallet = await walletService.findByUserId(savedUser!.cvu);
+        const wallet = await walletService.findByUserCvu(savedUser!.cvu);
         expect(walletService.wallets.length).toBe(1);
         expect(wallet).not.toBeNull();
     });

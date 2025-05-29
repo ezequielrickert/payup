@@ -9,7 +9,7 @@ describe('WalletService', () => {
         const service = new WalletService(repo);
         const userId = 1;
         await service.createWallet(userId, 100);
-        const found = await service.findByUserId(userId);
+        const found = await service.findByUserCvu(userId);
         expect(found).not.toBeNull();
         expect(found?.balance).toBe(100);
     });
@@ -20,10 +20,10 @@ describe('WalletService', () => {
         const userId = 2;
         await service.createWallet(userId, 50);
         await service.deposit(userId, 25);
-        let wallet = await service.findByUserId(userId);
+        let wallet = await service.findByUserCvu(userId);
         expect(wallet?.balance).toBe(75);
         await service.withdraw(userId, 30);
-        wallet = await service.findByUserId(userId);
+        wallet = await service.findByUserCvu(userId);
         expect(wallet?.balance).toBe(45);
     });
 

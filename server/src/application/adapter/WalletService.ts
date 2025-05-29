@@ -7,29 +7,29 @@ import { WalletDto } from "../../dto/WalletDto";
 export class WalletService implements IWalletService {
     constructor(private readonly walletRepo: IWalletRepository) {}
 
-    async findByUserId(userId: number): Promise<WalletDto | null> {
-        const wallet = await this.walletRepo.findByUserId(userId);
+    async findByUserCvu(userCvu: number): Promise<WalletDto | null> {
+        const wallet = await this.walletRepo.findByUserCvu(userCvu);
         return wallet ? this.mapToDto(wallet) : null;
     }
 
-    async createWallet(userId: number, initialBalance: number = 0): Promise<WalletDto> {
-        const existing = await this.walletRepo.findByUserId(userId);
+    async createWallet(userCvu: number, initialBalance: number = 0): Promise<WalletDto> {
+        const existing = await this.walletRepo.findByUserCvu(userCvu);
         if (existing) throw new Error("Wallet already exists for user");
-        const wallet = new Wallet(userId, initialBalance);
+        const wallet = new Wallet(userCvu, initialBalance);
         await this.walletRepo.save(wallet);
         return this.mapToDto(wallet);
     }
 
-    async deposit(userId: number, amount: number): Promise<WalletDto> {
-        const wallet = await this.walletRepo.findByUserId(userId);
+    async deposit(userCvu: number, amount: number): Promise<WalletDto> {
+        const wallet = await this.walletRepo.findByUserCvu(userCvu);
         if (!wallet) throw new Error("Wallet not found");
         const deposited = wallet.deposit(amount);
         await this.walletRepo.update(deposited);
         return this.mapToDto(deposited);
     }
 
-    async withdraw(userId: number, amount: number): Promise<WalletDto> {
-        const wallet = await this.walletRepo.findByUserId(userId);
+    async withdraw(userCvu: number, amount: number): Promise<WalletDto> {
+        const wallet = await this.walletRepo.findByUserCvu(userCvu);
         if (!wallet) throw new Error("Wallet not found");
         const withdrawn = wallet.withdraw(amount);
         await this.walletRepo.update(withdrawn);
@@ -37,7 +37,7 @@ export class WalletService implements IWalletService {
     }
 
     private mapToDto(wallet: IWallet): WalletDto {
-        return new WalletDto(wallet.userId, wallet.balance);
+        return new WalletDto(wallet.userCvu, wallet.balance);
     }
 }
 

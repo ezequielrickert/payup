@@ -183,9 +183,9 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
                 <InfoCard>
                     <h4>Información importante:</h4>
                     <ul>
-                        <li>• Las transferencias son inmediatas</li>
-                        <li>• Verificá bien el email del destinatario</li>
-                        <li>• Las transferencias no se pueden cancelar</li>
+                        <li>Las transferencias son inmediatas</li>
+                        <li>Verificá bien el email del destinatario</li>
+                        <li>Las transferencias no se pueden cancelar</li>
                     </ul>
                 </InfoCard>
             </div>
@@ -279,9 +279,8 @@ interface InputProps {
 }
 
 const Input = styled.input<InputProps>`
-    width: 100%;
-    padding: 12px;
-    padding-left: ${props => props.type === 'text' && props.value === 'amount' ? '40px' : '12px'};
+    width: calc(100% - 48px);
+    padding: 12px 12px 12px 40px; 
     background: #222;
     border: 1px solid ${props => props.hasError ? '#ef4444' : '#333'};
     border-radius: 12px;
@@ -376,30 +375,20 @@ const LoadingSpinner = styled.div`
 `;
 
 const InfoCard = styled.div`
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
     border-radius: 16px;
     padding: 16px;
 
     h4 {
         color: #fff;
         font-weight: 500;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
     }
 
-    ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
+    p {
         color: rgba(255, 255, 255, 0.8);
         font-size: 14px;
         line-height: 1.5;
-
-        li {
-            margin-bottom: 8px;
-            &:last-child {
-                margin-bottom: 0;
-            }
-        }
     }
 `;

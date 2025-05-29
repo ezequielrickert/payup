@@ -75,7 +75,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
     <StyledWrapper>
       <form className="form" onSubmit={handleSubmit}>
         <p className="title">Registro</p>
-        <p className="message">Registrate ahora y obtené acceso completo a nuestra app.</p>
+        <p className="message">Registrate ahora y obtené acceso completo a PayUp.</p>
         
         <div className="flex">
           <label>
@@ -178,11 +178,11 @@ const StyledWrapper = styled.div`
   .title {
     font-size: 28px;
     font-weight: 600;
-    letter-spacing: -1px;
     position: relative;
     display: flex;
     align-items: center;
     padding-left: 30px;
+    margin-bottom: 10px;
     color: #00bfff;
   }
 
@@ -242,7 +242,7 @@ const StyledWrapper = styled.div`
   .form label .input {
     background-color: #333;
     color: #fff;
-    width: 100%;
+    width: calc(100% - 20px);
     padding: 20px 05px 05px 10px;
     outline: 0;
     border: 1px solid rgba(105, 105, 105, 0.397);
@@ -283,7 +283,6 @@ const StyledWrapper = styled.div`
     border-radius: 10px;
     color: #fff;
     font-size: 16px;
-    transform: .3s ease;
     background-color: #00bfff;
   }
 

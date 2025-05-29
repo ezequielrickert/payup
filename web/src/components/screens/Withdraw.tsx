@@ -200,9 +200,8 @@ interface InputProps {
 }
 
 const Input = styled.input<InputProps>`
-    width: 100%;
-    padding: 12px;
-    padding-left: ${props => props.type === 'number' ? '40px' : '12px'};
+    width: calc(100% - 48px);
+    padding: 12px 12px 12px 40px;
     background: #222;
     border: 1px solid ${props => props.hasError ? '#ef4444' : '#333'};
     border-radius: 12px;
@@ -261,20 +260,21 @@ const BalanceCard = styled.div`
 `;
 
 const InfoCard = styled.div`
-    background: rgba(234, 179, 8, 0.1);
-    border: 1px solid rgba(234, 179, 8, 0.2);
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
     border-radius: 16px;
     padding: 16px;
 
-    p {
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 14px;
+    h4 {
+        color: #fff;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
 
-        strong {
-            color: #eab308;
-            font-weight: 500;
-            margin-right: 4px;
-        }
+    p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        line-height: 1.5;
     }
 `;
 

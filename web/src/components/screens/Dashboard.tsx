@@ -40,7 +40,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
     return (
         <StyledWrapper>
             <Header>
-                <div className="logo">Mi Billetera</div>
+                <div className="logo">PayUp</div>
                 <Button 
                     variant="ghost" 
                     icon={<LogOut />} 
@@ -203,6 +203,7 @@ const StyledWrapper = styled.div`
     }
 
     .balance-card {
+        background: linear-gradient(to bottom right, #4F46E5, #7C3AED);
         .balance-header {
             display: flex;
             justify-content: space-between;

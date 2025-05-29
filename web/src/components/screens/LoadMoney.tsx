@@ -287,6 +287,8 @@ const FormCard = styled.div`
     display: flex;
     flex-direction: column;
     gap: 24px;
+    box-sizing: border-box;
+    width: 100%; 
 `;
 
 const FormSection = styled.div`
@@ -403,7 +405,7 @@ interface InputProps {
 }
 
 const Input = styled.input<InputProps>`
-    width: 100%;
+    width: calc(100% - 48px);
     padding: 12px 12px 12px 40px;
     background: #222;
     border: 1px solid ${props => props.hasError ? '#ef4444' : '#333'};

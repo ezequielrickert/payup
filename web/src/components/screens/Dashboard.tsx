@@ -203,6 +203,7 @@ const StyledWrapper = styled.div`
     }
 
     .balance-card {
+        background: linear-gradient(to bottom right, #4F46E5, #7C3AED);
         .balance-header {
             display: flex;
             justify-content: space-between;

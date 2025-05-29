@@ -16,18 +16,19 @@ import {createWalletRouter} from "./router/WalletRouter";
 const app = express();
 app.use(express.json());
 
-
-// Dependency injection
-const userRepository = new PrismaUserRepository();
-const userService = new UserService(userRepository);
-const userController = new UserController(userService);
-const userRouter = createUserRouter(userController);
-
-// Wallet dependencies
+// Dependency injection for Wallet
 const walletRepository = new PrismaWalletRepository();
 const walletService = new WalletService(walletRepository);
 const walletController = new WalletController(walletService);
 const walletRouter = createWalletRouter(walletController);
+
+// Dependency injection for User
+const userRepository = new PrismaUserRepository();
+const userService = new UserService(userRepository, walletService);
+const userController = new UserController(userService);
+const userRouter = createUserRouter(userController);
+
+
 
 // Connection controller and router
 const connectionController = new ConnectionController();

@@ -36,15 +36,6 @@ describe("WalletController", () => {
         });
     });
 
-    describe("createWallet", () => {
-        it("should create a wallet and return 201", async () => {
-            req.body = { userId: 2, initialBalance: 50 };
-            await walletController.createWallet(req as Request, res as Response);
-            expect(res.status).toHaveBeenCalledWith(201);
-            expect(res.json).toHaveBeenCalledWith({ message: "Wallet created" });
-        });
-    });
-
     describe("deposit", () => {
         it("should deposit to wallet and return updated wallet", async () => {
             const wallet: WalletDto = { userId: 3, balance: 10 };

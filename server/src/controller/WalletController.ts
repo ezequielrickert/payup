@@ -18,16 +18,6 @@ export class WalletController {
         }
     }
 
-    async createWallet(req: Request, res: Response): Promise<void> {
-        try {
-            const { userId, initialBalance } = req.body;
-            await this.walletService.createWallet(userId, initialBalance ?? 0);
-            res.status(201).json({ message: 'Wallet created' });
-        } catch (error: any) {
-            res.status(400).json({ error: error.message });
-        }
-    }
-
     async deposit(req: Request, res: Response): Promise<void> {
         try {
             const userId = Number(req.params.userId);

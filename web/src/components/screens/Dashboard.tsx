@@ -40,7 +40,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
     return (
         <StyledWrapper>
             <Header>
-                <div className="logo">Mi Billetera</div>
+                <div className="logo">PayUp</div>
                 <Button 
                     variant="ghost" 
                     icon={<LogOut />} 

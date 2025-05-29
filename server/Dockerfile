@@ -3,7 +3,7 @@ FROM node:18-alpine
 
 WORKDIR /app/server
 
-COPY package*.json ./
+COPY package.json ./
 RUN npm install && npx prisma generate
 
 COPY . .

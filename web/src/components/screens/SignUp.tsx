@@ -283,7 +283,6 @@ const StyledWrapper = styled.div`
     border-radius: 10px;
     color: #fff;
     font-size: 16px;
-    transform: .3s ease;
     background-color: #00bfff;
   }
 

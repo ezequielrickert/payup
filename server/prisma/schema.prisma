@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -8,7 +9,17 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
+  id     Int     @id @default(autoincrement())
+  name   String
+  email  String  @unique
+  password String
+  cvu    Int
+  wallet Wallet?
+}
+
+model Wallet {
+  id      Int    @id @default(autoincrement())
+  userId  Int    @unique
+  balance Float  @default(0)
+  user    User   @relation(fields: [userId], references: [id])
 }

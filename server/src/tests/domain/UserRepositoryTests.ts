@@ -1,4 +1,3 @@
-// UserRepository.test.ts
 import { beforeEach, describe, it, expect } from '@jest/globals';
 import { User } from '../../domain/adapter/User';
 import { InMemoryUserRepository } from '../adapters/InMemoryUserRepository';
@@ -11,7 +10,7 @@ describe('UserRepository', () => {
 
     beforeEach(() => {
         userRepository = new InMemoryUserRepository();
-        testUser = new User('John Doe', 'john@example.com');
+        testUser = new User('John Doe', 'john@example.com', 'securepassword', 1234567890);
     });
 
     it('should save and find a user by id', async () => {

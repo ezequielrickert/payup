@@ -27,7 +27,7 @@ export class PrismaWalletRepository implements IWalletRepository {
     }
 
     private prismaToDomain(prismaWallet: PrismaWallet): IWallet {
-        return new Wallet(prismaWallet.userCvu, prismaWallet.balance);
+        return new Wallet(prismaWallet.userId, prismaWallet.balance);
     }
 }
 

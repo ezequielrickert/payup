@@ -28,7 +28,7 @@ describe("WalletController", () => {
         });
 
         it("should return wallet if found", async () => {
-            const wallet: WalletDto = { userId: 1, balance: 100 };
+            const wallet: WalletDto = { userCvu: 1, balance: 100 };
             fakeWalletService.wallets.push(wallet);
             req.params = { userId: "1" };
             await walletController.getWallet(req as Request, res as Response);
@@ -38,7 +38,7 @@ describe("WalletController", () => {
 
     describe("deposit", () => {
         it("should deposit to wallet and return updated wallet", async () => {
-            const wallet: WalletDto = { userId: 3, balance: 10 };
+            const wallet: WalletDto = { userCvu: 3, balance: 10 };
             fakeWalletService.wallets.push(wallet);
             req.params = { userId: "3" };
             req.body = { amount: 15 };
@@ -49,7 +49,7 @@ describe("WalletController", () => {
 
     describe("withdraw", () => {
         it("should withdraw from wallet and return updated wallet", async () => {
-            const wallet: WalletDto = { userId: 4, balance: 30 };
+            const wallet: WalletDto = { userCvu: 4, balance: 30 };
             fakeWalletService.wallets.push(wallet);
             req.params = { userId: "4" };
             req.body = { amount: 10 };

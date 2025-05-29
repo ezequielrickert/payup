@@ -1,4 +1,4 @@
-import express from 'express';
+import * as express from 'express';
 import WithdrawRouter from './src/router/WithdrawRouter';
 const app = express();
 app.use(express.json());

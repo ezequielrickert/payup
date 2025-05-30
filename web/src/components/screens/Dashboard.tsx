@@ -60,7 +60,6 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                             <div className="amount-container">
                                 {showBalance ? (
                                     <span className="amount">
-                                        {formatCurrency(user.balance)}
                                     </span>
                                 ) : (
                                     <span className="amount">••••••</span>

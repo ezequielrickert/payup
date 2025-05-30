@@ -3,9 +3,10 @@ import { User, Transaction } from '../types/types';
 
 // Mock data for initial development
 const mockUser: User = {
-    id: '1',
-    email: 'usuario@ejemplo.com',
-    balance: 50000
+    email: '',
+    password: '',
+    name: 'Usuario de Prueba',
+    cvu: undefined
 };
 
 const mockTransactions: Transaction[] = [
@@ -108,7 +109,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         setTransactions(prev => [newTransaction, ...prev]);
         setUser(prev => prev ? {
             ...prev,
-            balance: prev.balance + amount
         } : null);
     };
 
@@ -126,7 +126,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         setTransactions(prev => [newTransaction, ...prev]);
         setUser(prev => prev ? {
             ...prev,
-            balance: prev.balance - amount
         } : null);
     };
 
@@ -143,7 +142,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         setTransactions(prev => [newTransaction, ...prev]);
         setUser(prev => prev ? {
             ...prev,
-            balance: prev.balance - amount
         } : null);
     };
 

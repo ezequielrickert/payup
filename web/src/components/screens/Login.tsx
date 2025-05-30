@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { CreditCard, Mail, Lock } from 'lucide-react';
 import styled from 'styled-components';
 
 interface LoginForm {
+  name: string,
   email: string;
   password: string;
 }
@@ -16,14 +16,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   onLogin,
   onSwitchToRegister
 }) => {
-  const [form, setForm] = useState<LoginForm>({ email: '', password: '' });
+  const [form, setForm] = useState<LoginForm>({ name: '', email: '', password: '' });
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const isValidEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newErrors: { email?: string; password?: string } = {};
@@ -41,7 +41,27 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      onLogin(form.email, form.password);
+      try {
+        const userDto = {
+          name: form.name,
+          email: form.email,
+          password: form.password,
+        };
+        await fetch('http://localhost:3001/api/users', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(userDto)
+        });
+        const response = await fetch('http://localhost:3001/api/users', {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({email: form.email})
+        });
+        if (!response.ok) throw new Error('Error al crear usuario');
+        onLogin(form.email, form.password);
+      } catch (error) {
+        setErrors({password: 'No se pudo crear el usuario'});
+      }
     }
   };
 
@@ -53,12 +73,24 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
         <label>
           <input
-            className="input"
-            type="email"
-            placeholder=""
-            value={form.email}
-            onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
-            required
+              className="input"
+              type="text"
+              placeholder=""
+              value={form.name}
+              onChange={(e) => setForm(prev => ({...prev, name: e.target.value}))}
+              required
+          />
+          <span>Nombre</span>
+        </label>
+
+        <label>
+          <input
+              className="input"
+              type="email"
+              placeholder=""
+              value={form.email}
+              onChange={(e) => setForm(prev => ({...prev, email: e.target.value}))}
+              required
           />
           <span>Email</span>
           {errors.email && <p className="error">{errors.email}</p>}
@@ -66,12 +98,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
         <label>
           <input
-            className="input"
-            type="password"
-            placeholder=""
-            value={form.password}
-            onChange={(e) => setForm(prev => ({ ...prev, password: e.target.value }))}
-            required
+              className="input"
+              type="password"
+              placeholder=""
+              value={form.password}
+              onChange={(e) => setForm(prev => ({...prev, password: e.target.value}))}
+              required
           />
           <span>Contraseña</span>
           {errors.password && <p className="error">{errors.password}</p>}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import {UserDto} from "../../dto/UserDto";
 
 interface SignUpForm {
   email: string;
@@ -37,7 +38,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newErrors: typeof errors = {};
@@ -67,7 +68,34 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      onSignUp(form.email, form.password);
+      try {
+        const userDto = {
+          name: form.firstName + " " + form.lastName,
+          email: form.email,
+          password: form.password,
+        };
+        console.log('Creando usuario...');
+        const createResponse = await fetch('http://localhost:3001/users', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(userDto as UserDto)
+        });
+        const errorText = await createResponse.text();
+        console.log('Respuesta del backend:', errorText);
+        if (!createResponse.ok) throw new Error('Error al crear usuario');
+
+        console.log('Buscando usuario...');
+        const getResponse = await fetch('http://localhost:3001/users?email=' + encodeURIComponent(form.email), {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (!getResponse.ok) throw new Error('No se pudo encontrar el usuario');
+
+        onSignUp(form.email, form.password);
+      } catch (error) {
+        console.error('Error en fetch:', error);
+        setErrors({ confirmPassword: error instanceof Error ? error.message : String(error) });
+      }
     }
   };
 

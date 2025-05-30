@@ -16,8 +16,14 @@ export class WalletService implements IWalletService {
         const existing = await this.walletRepo.findByUserCvu(userCvu);
         if (existing) throw new Error("Wallet already exists for user");
         const wallet = new Wallet(userCvu, initialBalance);
-        await this.walletRepo.save(wallet);
-        return this.mapToDto(wallet);
+        console.log(JSON.stringify(wallet, null, 2));
+        try {
+            await this.walletRepo.save(wallet);
+            return this.mapToDto(wallet);
+        } catch (error) {
+            console.error("Error al guardar o mapear el wallet:", error);
+            throw error; // Opcional: relanza el error si quieres que se propague
+        }
     }
 
     async deposit(userCvu: number, amount: number): Promise<WalletDto> {

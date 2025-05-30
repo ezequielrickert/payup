@@ -13,14 +13,13 @@ model User {
   name     String
   email    String  @unique
   password String
-  cvu      Int
+  cvu      Int     @unique
   wallet   Wallet?
 }
 
 model Wallet {
   id      Int   @id @default(autoincrement())
-  userId  Int   @unique
   userCvu Int   @unique
   balance Float @default(0)
-  user    User  @relation(fields: [userId], references: [id])
+  user    User  @relation(fields: [userCvu], references: [id])
 }

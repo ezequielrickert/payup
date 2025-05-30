@@ -45,10 +45,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           email: form.email,
           password: form.password,
         };
-        const response = await fetch('http://localhost:3001/api/users', {
+        const response = await fetch('http://localhost:3001/users', {
           method: 'GET',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({email: form.email})
+          body: JSON.stringify(userDto)
         });
         if (!response.ok) throw new Error('Error al crear usuario');
         onLogin(form.email, form.password);

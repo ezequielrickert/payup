@@ -14,6 +14,7 @@ export class PrismaWalletRepository implements IWalletRepository {
         await prismaClient.wallet.create({
             data: {
                 userId: wallet.userCvu,
+                userCvu: wallet.userCvu,
                 balance: wallet.balance
             },
         });

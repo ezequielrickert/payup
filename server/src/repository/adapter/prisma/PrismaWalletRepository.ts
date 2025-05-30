@@ -11,8 +11,7 @@ export class PrismaWalletRepository implements IWalletRepository {
     }
 
     async findByUserCvu(userCvu: number): Promise<IWallet | null> {
-       // const wallet = await prismaClient.wallet.findUnique({ where: { userCvu } });
-        // return wallet ? this.prismaToDomain(wallet) : null; todo
+       const wallet = await prismaClient.wallet.findUnique({ where: { userCvu } });
         return null
     }
 
@@ -20,7 +19,7 @@ export class PrismaWalletRepository implements IWalletRepository {
         await prismaClient.wallet.create({
             data: {
                 userId: wallet.userId,
-                // userCvu: wallet.userCvu, todo
+                userCvu: wallet.userCvu,
                 balance: wallet.balance
             },
         });
@@ -34,9 +33,7 @@ export class PrismaWalletRepository implements IWalletRepository {
     }
 
     private prismaToDomain(prismaWallet: PrismaWallet): IWallet {
-        // return new Wallet(prismaWallet.userId, prismaWallet.userCvu, prismaWallet.balance); todo
-        return new Wallet(prismaWallet.userId, 123, prismaWallet.balance);
-
+        return new Wallet(prismaWallet.userId, prismaWallet.userCvu, prismaWallet.balance);
     }
 }
 

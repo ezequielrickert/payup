@@ -1,5 +1,5 @@
 export interface IWallet {
-    // No ID included as ORM is the one responsible for generating it
+    userId: number;
     userCvu: number; // Reference to the user
     balance: number;
     deposit(amount: number): IWallet; // Deposit money into the wallet

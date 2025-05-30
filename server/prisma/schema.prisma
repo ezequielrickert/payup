@@ -20,6 +20,7 @@ model User {
 model Wallet {
   id      Int    @id @default(autoincrement())
   userId  Int    @unique
+  userCvu Int    @unique
   balance Float  @default(0)
   user    User   @relation(fields: [userId], references: [id])
 }

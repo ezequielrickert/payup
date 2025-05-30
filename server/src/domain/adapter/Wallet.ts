@@ -1,13 +1,15 @@
 import { IWallet } from '../port/IWallet';
 
 export class Wallet implements IWallet {
+    userId: number;
     userCvu: number;
     balance: number;
 
-    constructor(userCvu: number, balance: number = 0) {
+    constructor(userId: number, userCvu: number, balance: number = 0) {
         if (balance < 0) {
             throw new Error('Balance cannot be negative');
         }
+        this.userId = userId;
         this.userCvu = userCvu;
         this.balance = balance;
     }
@@ -16,7 +18,7 @@ export class Wallet implements IWallet {
         if (amount <= 0) {
             throw new Error('Deposit amount must be positive');
         }
-        return new Wallet(this.userCvu, this.balance += amount);
+        return new Wallet(this.userId, this.userCvu, this.balance + amount);
     }
 
     withdraw(amount: number): Wallet {
@@ -26,7 +28,7 @@ export class Wallet implements IWallet {
         if (amount > this.balance) {
             throw new Error('Insufficient balance');
         }
-        return new Wallet(this.userCvu, this.balance -= amount);
+        return new Wallet(this.userId, this.userCvu, this.balance - amount);
     }
 }
 

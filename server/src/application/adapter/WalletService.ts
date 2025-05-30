@@ -12,10 +12,15 @@ export class WalletService implements IWalletService {
         return wallet ? this.mapToDto(wallet) : null;
     }
 
-    async createWallet(userCvu: number, initialBalance: number = 0): Promise<WalletDto> {
-        const existing = await this.walletRepo.findByUserCvu(userCvu);
+    async findByUserId(userId: number): Promise<WalletDto | null> {
+        const wallet = await this.walletRepo.findByUserId(userId);
+        return wallet ? this.mapToDto(wallet) : null;
+    }
+
+    async createWallet(userId: number, userCvu: number, initialBalance: number = 0): Promise<WalletDto> {
+        const existing = await this.walletRepo.findByUserId(userId);
         if (existing) throw new Error("Wallet already exists for user");
-        const wallet = new Wallet(userCvu, initialBalance);
+        const wallet = new Wallet(userId, userCvu, initialBalance);
         await this.walletRepo.save(wallet);
         return this.mapToDto(wallet);
     }
@@ -37,7 +42,7 @@ export class WalletService implements IWalletService {
     }
 
     private mapToDto(wallet: IWallet): WalletDto {
-        return new WalletDto(wallet.userCvu, wallet.balance);
+        return new WalletDto(wallet.userId, wallet.userCvu, wallet.balance);
     }
 }
 

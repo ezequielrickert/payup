@@ -6,7 +6,7 @@ export class WalletController {
 
     async getWallet(req: Request, res: Response): Promise<void> {
         try {
-            const userCvu = Number(req.params.userId);
+            const userCvu = Number(req.params.userCvu);
             const wallet = await this.walletService.findByUserCvu(userCvu);
             if (!wallet) {
                 res.status(404).json({ message: 'Wallet not found' });
@@ -20,7 +20,7 @@ export class WalletController {
 
     async deposit(req: Request, res: Response): Promise<void> {
         try {
-            const userCvu = Number(req.params.userId);
+            const userCvu = Number(req.params.userCvu);
             const { amount } = req.body;
             const wallet = await this.walletService.deposit(userCvu, amount);
             res.json(wallet);
@@ -31,7 +31,7 @@ export class WalletController {
 
     async withdraw(req: Request, res: Response): Promise<void> {
         try {
-            const userCvu = Number(req.params.userId);
+            const userCvu = Number(req.params.userCvu);
             const { amount } = req.body;
             const wallet = await this.walletService.withdraw(userCvu, amount);
             res.json(wallet);

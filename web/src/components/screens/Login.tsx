@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 interface LoginForm {
-  name: string,
   email: string;
   password: string;
 }
@@ -16,7 +15,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   onLogin,
   onSwitchToRegister
 }) => {
-  const [form, setForm] = useState<LoginForm>({ name: '', email: '', password: '' });
+  const [form, setForm] = useState<LoginForm>({ email: '', password: '' });
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const isValidEmail = (email: string) => {
@@ -43,15 +42,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     if (Object.keys(newErrors).length === 0) {
       try {
         const userDto = {
-          name: form.name,
           email: form.email,
           password: form.password,
         };
-        await fetch('http://localhost:3001/api/users', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(userDto)
-        });
         const response = await fetch('http://localhost:3001/api/users', {
           method: 'GET',
           headers: {'Content-Type': 'application/json'},
@@ -70,18 +63,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       <form className="form" onSubmit={handleSubmit}>
         <p className="title">Iniciar Sesión</p>
         <p className="message">Bienvenido de vuelta a tu billetera digital PayUp.</p>
-
-        <label>
-          <input
-              className="input"
-              type="text"
-              placeholder=""
-              value={form.name}
-              onChange={(e) => setForm(prev => ({...prev, name: e.target.value}))}
-              required
-          />
-          <span>Nombre</span>
-        </label>
 
         <label>
           <input

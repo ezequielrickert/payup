@@ -6,36 +6,16 @@ import {
     ArrowUpRight,
     Send,
     Filter,
-    Calendar
 } from 'lucide-react';
-import { Transaction } from '../../types/types';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import type{ Transaction } from '../types/types';
+import { formatCurrency, formatDate } from '../utils/formatters';
 import { Header } from '../ui/Header';
-import {theme} from "../../styles/theme";
+import {theme} from "../styles/theme";
+import { useNavigate } from 'react-router-dom';
 
-interface HistoryScreenProps {
-    transactions: Transaction[];
-    onBack: () => void;
-}
-
-export const HistoryScreen: React.FC<HistoryScreenProps> = ({
-                                                                transactions,
-                                                                onBack
-                                                            }) => {
+export const HistoryScreen = () => {
     const [filter, setFilter] = useState<'all' | 'income' | 'expense' | 'transfers'>('all');
-
-    const filteredTransactions = transactions.filter(transaction => {
-        switch (filter) {
-            case 'income':
-                return transaction.type === 'income';
-            case 'expense':
-                return transaction.type === 'expense';
-            case 'transfers':
-                return transaction.type === 'transfer_out' || transaction.type === 'transfer_in';
-            default:
-                return true;
-        }
-    });
+    const navigate = useNavigate();
 
     const getTransactionIcon = (type: Transaction['type']) => {
         switch (type) {
@@ -72,7 +52,7 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({
             <Header
                 title="Historial de Movimientos"
                 showBack
-                onBack={onBack}
+                onBack={() => navigate('/dashboard')}
             />
 
             <div className="screen-content">
@@ -115,66 +95,6 @@ export const HistoryScreen: React.FC<HistoryScreenProps> = ({
 
                 {/* Transactions List */}
                 <TransactionsCard>
-                    {filteredTransactions.length > 0 ? (
-                        <div className="transactions-list">
-                            {filteredTransactions.map((transaction, index) => (
-                                <div key={transaction.id} className="transaction-item">
-                                    <div className="transaction-info">
-                                        <div className={`icon-container ${getTransactionColor(transaction.type)}`}>
-                                            {getTransactionIcon(transaction.type)}
-                                        </div>
-                                        <div className="details">
-                                            <p className="description">
-                                                {transaction.description}
-                                            </p>
-                                            <div className="date">
-                                                <span>{formatDate(transaction.date)}</span>
-                                            </div>
-                                            {transaction.toUser && (
-                                                <p className="user-info to">
-                                                    Para: {transaction.toUser}
-                                                </p>
-                                            )}
-                                            {transaction.fromUser && (
-                                                <p className="user-info from">
-                                                    De: {transaction.fromUser}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <span className={`amount ${
-                                        transaction.type === 'income' || transaction.type === 'transfer_in'
-                                            ? 'income'
-                                            : 'expense'
-                                    }`}>
-                                        {transaction.type === 'income' || transaction.type === 'transfer_in' ? '+' : '-'}
-                                        {formatCurrency(transaction.amount)}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <EmptyState>
-                            <History className="icon" />
-                            <h3 className="title">
-                                {filter === 'all' ? 'No hay movimientos aún' : 'No hay movimientos de este tipo'}
-                            </h3>
-                            <p className="message">
-                                {filter === 'all'
-                                    ? 'Comenzá cargando dinero a tu billetera'
-                                    : 'Probá cambiando el filtro para ver otros movimientos'
-                                }
-                            </p>
-                            {filter !== 'all' && (
-                                <button
-                                    onClick={() => setFilter('all')}
-                                    className="view-all"
-                                >
-                                    Ver todos los movimientos
-                                </button>
-                            )}
-                        </EmptyState>
-                    )}
                 </TransactionsCard>
             </div>
         </StyledWrapper>

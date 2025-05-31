@@ -1,21 +1,12 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { ChevronLeft, DollarSign, CreditCard, Building2, Smartphone, Plus, AlertCircle } from 'lucide-react';
-import { LoadForm, User } from '../../types/types';
-import { formatCurrency, isValidAmount } from '../../utils/formatters';
+import { DollarSign, CreditCard, Building2, Smartphone, Plus, AlertCircle } from 'lucide-react';
+import type { LoadForm } from '../types/types';
+import { formatCurrency, isValidAmount } from '../utils/formatters';
 import { Header } from '../ui/Header';
+import { useNavigate } from 'react-router-dom';
 
-interface LoadMoneyScreenProps {
-    user: User;
-    onLoadMoney: (amount: number, method: 'card' | 'bank' | 'debin') => void;
-    onNavigateBack: () => void;
-}
-
-export const LoadMoneyScreen: React.FC<LoadMoneyScreenProps> = ({
-    user,
-    onLoadMoney,
-    onNavigateBack
-}) => {
+export const LoadMoneyScreen = () => {
     const [form, setForm] = useState<LoadForm>({
         amount: '',
         method: 'card'
@@ -25,6 +16,7 @@ export const LoadMoneyScreen: React.FC<LoadMoneyScreenProps> = ({
         general?: string
     }>({});
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const paymentMethods = [
         {
@@ -73,15 +65,6 @@ export const LoadMoneyScreen: React.FC<LoadMoneyScreenProps> = ({
 
         if (Object.keys(newErrors).length === 0) {
             setIsLoading(true);
-            try {
-                const amount = parseFloat(form.amount);
-                await onLoadMoney(amount, form.method);
-                // El formulario se limpia en el componente padre
-            } catch (error) {
-                setErrors({ general: 'Error al cargar el dinero. Intentá nuevamente.' });
-            } finally {
-                setIsLoading(false);
-            }
         }
     };
 
@@ -101,7 +84,7 @@ export const LoadMoneyScreen: React.FC<LoadMoneyScreenProps> = ({
             <Header
                 title="Cargar Dinero"
                 showBack
-                onBack={onNavigateBack}
+                onBack={() => navigate('/dashboard')}
             />
 
             <div className="screen-content">
@@ -110,7 +93,7 @@ export const LoadMoneyScreen: React.FC<LoadMoneyScreenProps> = ({
                     <div className="balance-info">
                         <span className="label">Saldo actual:</span>
                         <span className="amount">
-                            {formatCurrency(user.balance)}
+                            {formatCurrency(1000)}
                         </span>
                     </div>
                 </BalanceCard>

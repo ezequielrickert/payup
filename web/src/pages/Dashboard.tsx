@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import {
     CreditCard,
@@ -8,35 +8,35 @@ import {
     History as HistoryIcon,
     Eye,
     EyeOff,
-    ArrowDownLeft,
-    ArrowUpRight,
     LogOut
 } from 'lucide-react';
-import { User, Transaction } from '../../types/types';
-import { formatCurrency, formatDate } from '../../utils/formatters';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { theme } from '../../styles/theme';
+import { theme } from '../styles/theme';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../utils/AuthContext';
 
-type Screen = 'login' | 'signup' | 'dashboard' | 'load' | 'transfer' | 'withdraw' | 'history';
+export const DashboardScreen = () => {
+    const navigate = useNavigate();
+    const { logout, user } = useAuth();
+    const [realBalance, setRealBalance] = useState<number | null>(null);
+    const [showBalance, setShowBalance] = useState(true);
 
-interface DashboardScreenProps {
-    user: User;
-    transactions: Transaction[];
-    showBalance: boolean;
-    onToggleBalance: () => void;
-    onNavigate: (screen: Screen) => void;
-    onLogout: () => void;
-}
+    useEffect(() => {
+        const fetchBalance = async () => {
+            if (!user?.cvu) return;
+            const res = await fetch(`http://localhost:3001/wallet/${user?.cvu}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await res.json();
+            setRealBalance(data.balance);
+        };
+        fetchBalance();
+    }, [user]);
 
-export const DashboardScreen: React.FC<DashboardScreenProps> = ({
-    user,
-    transactions,
-    showBalance,
-    onToggleBalance,
-    onNavigate,
-    onLogout
-}) => {
     return (
         <StyledWrapper>
             <Header>
@@ -44,7 +44,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                 <Button 
                     variant="ghost" 
                     icon={<LogOut />} 
-                    onClick={onLogout}
+                    onClick={() => { logout(); navigate('/login'); }}
                     size="sm"
                 >
                     Cerrar sesión
@@ -60,6 +60,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                             <div className="amount-container">
                                 {showBalance ? (
                                     <span className="amount">
+                                        {realBalance !== null ? `$${realBalance}` : ''}
                                     </span>
                                 ) : (
                                     <span className="amount">••••••</span>
@@ -67,19 +68,19 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                                 <Button
                                     variant="ghost"
                                     icon={showBalance ? <EyeOff /> : <Eye />}
-                                    onClick={onToggleBalance}
+                                    onClick={() => setShowBalance((prev) => !prev)}
                                     size="sm"
                                 />
                             </div>
                         </div>
                         <CreditCard className="card-icon" />
                     </div>
-                    <p className="email">{user.email}</p>
+                    <p className="email">{user?.email}</p>
                 </Card>
 
                 {/* Quick Actions */}
                 <section className="actions-grid">
-                    <Card onClick={() => onNavigate('load')} className="action-card" padding="lg">
+                    <Card onClick={() => navigate('/load')} className="action-card" padding="lg">
                         <div className="icon-container success">
                             <Plus className="icon" />
                         </div>
@@ -87,7 +88,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                         <span className="action-subtitle">Dinero</span>
                     </Card>
 
-                    <Card onClick={() => onNavigate('transfer')} className="action-card" padding="lg">
+                    <Card onClick={() => navigate('/transfer')} className="action-card" padding="lg">
                         <div className="icon-container primary">
                             <Send className="icon" />
                         </div>
@@ -95,7 +96,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                         <span className="action-subtitle">Dinero</span>
                     </Card>
 
-                    <Card onClick={() => onNavigate('withdraw')} className="action-card" padding="lg">
+                    <Card onClick={() => navigate('/withdraw')} className="action-card" padding="lg">
                         <div className="icon-container error">
                             <Minus className="icon" />
                         </div>
@@ -103,7 +104,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                         <span className="action-subtitle">Dinero</span>
                     </Card>
 
-                    <Card onClick={() => onNavigate('history')} className="action-card" padding="lg">
+                    <Card onClick={() => navigate('/history')} className="action-card" padding="lg">
                         <div className="icon-container secondary">
                             <HistoryIcon className="icon" />
                         </div>
@@ -116,61 +117,16 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                 <Card className="transactions-card">
                     <div className="card-header">
                         <h3>Últimos movimientos</h3>
-                        {transactions.length > 3 && (
+                        {true && (
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => onNavigate('history')}
+                                onClick={() => navigate('/history')}
                             >
                                 Ver todos
                             </Button>
                         )}
                     </div>
-
-                    {transactions.length > 0 ? (
-                        <div className="transactions-list">
-                            {transactions.slice(0, 3).map((transaction) => (
-                                <div key={transaction.id} className="transaction-item">
-                                    <div className="transaction-info">
-                                        <div className={`icon-container ${
-                                            transaction.type === 'income' ? 'success' :
-                                            transaction.type === 'expense' ? 'error' :
-                                            'primary'
-                                        }`}>
-                                            {transaction.type === 'income' ?
-                                                <ArrowDownLeft className="icon" /> :
-                                                transaction.type === 'expense' ?
-                                                    <ArrowUpRight className="icon" /> :
-                                                    <Send className="icon" />
-                                            }
-                                        </div>
-                                        <div className="details">
-                                            <p className="description">
-                                                {transaction.description}
-                                            </p>
-                                            <p className="date">
-                                                {formatDate(transaction.date)}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <span className={`amount ${
-                                        transaction.type === 'income' || transaction.type === 'transfer_in'
-                                            ? 'success'
-                                            : 'error'
-                                    }`}>
-                                        {transaction.type === 'income' || transaction.type === 'transfer_in' ? '+' : '-'}
-                                        {formatCurrency(transaction.amount)}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="empty-state">
-                            <HistoryIcon className="icon" />
-                            <p className="message">No hay movimientos aún</p>
-                            <p className="submessage">Comenzá cargando dinero a tu billetera</p>
-                        </div>
-                    )}
                 </Card>
             </main>
         </StyledWrapper>

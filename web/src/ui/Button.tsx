@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Loader } from 'lucide-react';
-import { theme } from '../../styles/theme';
+import { theme } from '../styles/theme';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'outline' | 'ghost';

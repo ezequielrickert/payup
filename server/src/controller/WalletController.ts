@@ -6,7 +6,12 @@ export class WalletController {
 
     async getWallet(req: Request, res: Response): Promise<void> {
         try {
-            const userCvu = Number(req.params.userId);
+            const userCvu = Number(req.params.userCvu);
+            console.log('userCvu recibido:', userCvu, typeof userCvu);
+            if (isNaN(userCvu)) {
+                res.status(400).json({ message: 'Invalid CVU' });
+                return;
+            }
             const wallet = await this.walletService.findByUserCvu(userCvu);
             if (!wallet) {
                 res.status(404).json({ message: 'Wallet not found' });

@@ -1,24 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { DollarSign, ChevronLeft } from 'lucide-react';
-import { WithdrawForm, User } from '../../types/types';
-import { formatCurrency, isValidAmount } from '../../utils/formatters';
+import { DollarSign } from 'lucide-react';
+import type { WithdrawForm } from '../types/types';
+import { formatCurrency, isValidAmount } from '../utils/formatters';
 import { Header } from '../ui/Header';
+import { useNavigate } from 'react-router-dom';
 
-interface WithdrawScreenProps {
-    user: User;
-    onWithdraw: (amount: number, bankAccount: string) => void;
-    onBack: () => void;
-}
-
-export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
-    user,
-    onWithdraw,
-    onBack
-}) => {
+export const WithdrawScreen = () => {
     const [form, setForm] = useState<WithdrawForm>({ amount: '', bankAccount: '' });
     const [errors, setErrors] = useState<{ amount?: string; bankAccount?: string }>({});
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,7 +23,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
             newErrors.amount = 'El monto debe ser un número válido mayor a 0';
         } else {
             const amount = parseFloat(form.amount);
-            if (amount > user.balance) {
+            if (amount > 1000) {
                 newErrors.amount = 'No tenés suficiente saldo';
             }
         }
@@ -46,13 +38,6 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
 
         if (Object.keys(newErrors).length === 0) {
             setIsLoading(true);
-            try {
-                onWithdraw(parseFloat(form.amount), form.bankAccount);
-            } catch (error) {
-                setErrors({ amount: 'Error al procesar la extracción. Intentá nuevamente.' });
-            } finally {
-                setIsLoading(false);
-            }
         }
     };
 
@@ -61,7 +46,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
             <Header
                 title="Extraer Dinero"
                 showBack
-                onBack={onBack}
+                onBack={() => navigate('/dashboard')}
             />
 
             <div className="screen-content">
@@ -107,7 +92,7 @@ export const WithdrawScreen: React.FC<WithdrawScreenProps> = ({
                     {/* Balance Info */}
                     <BalanceCard>
                         <p>
-                            <strong>Saldo disponible:</strong> {formatCurrency(user.balance)}
+                            <strong>Saldo disponible:</strong> {formatCurrency(1000)}
                         </p>
                     </BalanceCard>
 

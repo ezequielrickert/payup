@@ -1,22 +1,18 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../utils/AuthContext';
 
 interface LoginForm {
   email: string;
   password: string;
 }
 
-interface LoginScreenProps {
-  onLogin: (email: string, password: string) => void;
-  onSwitchToRegister: () => void;
-}
-
-export const LoginScreen: React.FC<LoginScreenProps> = ({
-  onLogin,
-  onSwitchToRegister
-}) => {
+export const LoginScreen = () => {
   const [form, setForm] = useState<LoginForm>({ email: '', password: '' });
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const isValidEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -24,32 +20,29 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const newErrors: { email?: string; password?: string } = {};
-
     if (!form.email) {
       newErrors.email = 'El email es requerido';
     } else if (!isValidEmail(form.email)) {
       newErrors.email = 'El email no es válido';
     }
-
     if (!form.password) {
       newErrors.password = 'La contraseña es requerida';
     }
-
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
-      try {
-        const response = await fetch('http://localhost:3001/users?email=' + encodeURIComponent(form.email), {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        if (!response.ok) throw new Error('Error al iniciar sesión');
-        onLogin(form.email, form.password);
-      } catch (error) {
-        setErrors({password: 'Error al iniciar sesión. Por favor, verifica tus credenciales.'});
-      }
+    try {
+      const res = await fetch('http://localhost:3001/users?email=' + form.email, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (!res.ok) throw new Error('Error al iniciar sesión. Por favor, verifica tus credenciales.');
+      const user = await res.json();
+      if (!user || !user.email) throw new Error('Usuario no encontrado');
+      login(user);
+      navigate('/dashboard', { replace: true });
+    } catch (err: any) {
+      setErrors({ password: err.message || 'Error al iniciar sesión. Por favor, verifica tus credenciales.' });
     }
   };
 
@@ -58,7 +51,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       <form className="form" onSubmit={handleSubmit}>
         <p className="title">Iniciar Sesión</p>
         <p className="message">Bienvenido de vuelta a tu billetera digital PayUp.</p>
-
         <label>
           <input
               className="input"
@@ -71,7 +63,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           <span>Email</span>
           {errors.email && <p className="error">{errors.email}</p>}
         </label>
-
         <label>
           <input
               className="input"
@@ -84,10 +75,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           <span>Contraseña</span>
           {errors.password && <p className="error">{errors.password}</p>}
         </label>
-
         <button className="submit" type="submit">Iniciar Sesión</button>
         <p className="signin">
-          ¿No tenés cuenta? <a href="#" onClick={onSwitchToRegister}>Registrate</a>
+          ¿No tenés cuenta? <a href="#" onClick={() => navigate('/signup')}>Registrate</a>
         </p>
       </form>
     </StyledWrapper>

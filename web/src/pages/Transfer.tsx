@@ -1,21 +1,12 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { ChevronLeft, DollarSign, Send, AlertCircle } from 'lucide-react';
-import { TransferForm, User } from '../../types/types';
-import { formatCurrency, isValidAmount, isValidEmail } from '../../utils/formatters';
+import { DollarSign, Send, AlertCircle } from 'lucide-react';
+import type{ TransferForm } from '../types/types';
+import { formatCurrency, isValidAmount, isValidEmail } from '../utils/formatters';
 import { Header } from '../ui/Header';
+import { useNavigate } from 'react-router-dom';
 
-interface TransferScreenProps {
-    user: User;
-    onTransfer: (recipient: string, amount: number, description: string) => void;
-    onNavigateBack: () => void;
-}
-
-export const TransferScreen: React.FC<TransferScreenProps> = ({
-    user,
-    onTransfer,
-    onNavigateBack
-}) => {
+export const TransferScreen = () => {
     const [form, setForm] = useState<TransferForm>({
         recipient: '',
         amount: '',
@@ -27,6 +18,7 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
         general?: string
     }>({});
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -47,7 +39,7 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
             newErrors.amount = 'Ingresá un monto válido';
         } else {
             const amount = parseFloat(form.amount);
-            if (amount > user.balance) {
+            if (amount > 1000) {
                 newErrors.amount = 'No tenés saldo suficiente';
             }
             if (amount < 1) {
@@ -59,15 +51,6 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
 
         if (Object.keys(newErrors).length === 0) {
             setIsLoading(true);
-            try {
-                const amount = parseFloat(form.amount);
-                await onTransfer(form.recipient, amount, form.description);
-                // Form is cleared in parent component
-            } catch (error) {
-                setErrors({ general: 'Error al realizar la transferencia. Intentá nuevamente.' });
-            } finally {
-                setIsLoading(false);
-            }
         }
     };
 
@@ -83,7 +66,7 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
             <Header
                 title="Enviar Dinero"
                 showBack
-                onBack={onNavigateBack}
+                onBack={() => navigate('/dashboard')}
             />
 
             <div className="screen-content">
@@ -92,7 +75,7 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
                     <div className="balance-info">
                         <span className="label">Saldo disponible:</span>
                         <span className="amount">
-                            {formatCurrency(user.balance)}
+                            {formatCurrency(1000)}
                         </span>
                     </div>
                 </BalanceCard>

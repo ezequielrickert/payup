@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import {UserDto} from "../../dto/UserDto";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../utils/AuthContext';
+import { UserDto } from '../dto/UserDto';
 
 interface SignUpForm {
   email: string;
@@ -10,15 +12,7 @@ interface SignUpForm {
   lastName: string;
 }
 
-interface SignUpScreenProps {
-  onSignUp: (email: string, password: string) => void;
-  onSwitchToRegister: () => void;
-}
-
-export const SignUpScreen: React.FC<SignUpScreenProps> = ({
-  onSignUp,
-  onSwitchToRegister
-}) => {
+export const SignUpScreen = () => {
   const [form, setForm] = useState<SignUpForm>({
     email: '',
     password: '',
@@ -33,6 +27,8 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
     firstName?: string;
     lastName?: string;
   }>({});
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const isValidEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -40,61 +36,52 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const newErrors: typeof errors = {};
-
     if (!form.firstName) {
       newErrors.firstName = 'El nombre es requerido';
     }
-
     if (!form.lastName) {
       newErrors.lastName = 'El apellido es requerido';
     }
-
     if (!form.email) {
       newErrors.email = 'El email es requerido';
     } else if (!isValidEmail(form.email)) {
       newErrors.email = 'El email no es válido';
     }
-
     if (!form.password) {
       newErrors.password = 'La contraseña es requerida';
     }
-
     if (!form.confirmPassword || form.password !== form.confirmPassword) {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
-
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
+      const userDto = new UserDto(
+        form.firstName + " " + form.lastName,
+        form.email,
+        form.password
+      );
       try {
-        const userDto = {
-          name: form.firstName + " " + form.lastName,
-          email: form.email,
-          password: form.password,
-        };
-        console.log('Creando usuario...');
-        const createResponse = await fetch('http://localhost:3001/users', {
+        // 1. Crear usuario
+        const res = await fetch('http://localhost:3001/users/', {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(userDto as UserDto)
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userDto)
         });
-        const errorText = await createResponse.text();
-        console.log('Respuesta del backend:', errorText);
-        if (!createResponse.ok) throw new Error('Error al crear usuario');
+        if (!res.ok) throw new Error('Error al crear usuario');
 
-        console.log('Buscando usuario...');
-        const getResponse = await fetch('http://localhost:3001/users?email=' + encodeURIComponent(form.email), {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        if (!getResponse.ok) throw new Error('No se pudo encontrar el usuario');
+        // 2. Buscar usuario por email
+        const userRes = await fetch(`http://localhost:3001/users?email=${encodeURIComponent(form.email)}`);
+        if (!userRes.ok) throw new Error('No se pudo obtener el usuario');
+        const user = await userRes.json();
+        if (!user || !user.email) throw new Error('Usuario no encontrado');
 
-        onSignUp(form.email, form.password);
-      } catch (error) {
-        console.error('Error en fetch:', error);
-        setErrors({ confirmPassword: error instanceof Error ? error.message : String(error) });
+        // 3. Login automático
+        login(user);
+        navigate('/dashboard', { replace: true });
+      } catch (err: any) {
+        setErrors({ confirmPassword: err.message || 'Error al crear usuario.' });
       }
     }
   };
@@ -104,7 +91,6 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
       <form className="form" onSubmit={handleSubmit}>
         <p className="title">Registro</p>
         <p className="message">Registrate ahora y obtené acceso completo a PayUp.</p>
-        
         <div className="flex">
           <label>
             <input
@@ -118,7 +104,6 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
             <span>Nombre</span>
             {errors.firstName && <p className="error">{errors.firstName}</p>}
           </label>
-
           <label>
             <input
               className="input"
@@ -132,7 +117,6 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
             {errors.lastName && <p className="error">{errors.lastName}</p>}
           </label>
         </div>
-
         <label>
           <input
             className="input"
@@ -145,7 +129,6 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
           <span>Email</span>
           {errors.email && <p className="error">{errors.email}</p>}
         </label>
-
         <label>
           <input
             className="input"
@@ -158,7 +141,6 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
           <span>Contraseña</span>
           {errors.password && <p className="error">{errors.password}</p>}
         </label>
-
         <label>
           <input
             className="input"
@@ -171,10 +153,9 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
           <span>Confirmar contraseña</span>
           {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
         </label>
-
         <button className="submit" type="submit">Crear cuenta</button>
         <p className="signin">
-          ¿Ya tenés una cuenta? <a href="#" onClick={onSwitchToRegister}>Iniciá sesión</a>
+          ¿Ya tenés una cuenta? <a href="#" onClick={() => navigate('/login')}>Iniciá sesión</a>
         </p>
       </form>
     </StyledWrapper>

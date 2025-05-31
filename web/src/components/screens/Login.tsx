@@ -41,19 +41,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
     if (Object.keys(newErrors).length === 0) {
       try {
-        const userDto = {
-          email: form.email,
-          password: form.password,
-        };
-        const response = await fetch('http://localhost:3001/users', {
+        const response = await fetch('http://localhost:3001/users?email=' + encodeURIComponent(form.email), {
           method: 'GET',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(userDto)
+          headers: { 'Content-Type': 'application/json' }
         });
-        if (!response.ok) throw new Error('Error al crear usuario');
+        if (!response.ok) throw new Error('Error al iniciar sesión');
         onLogin(form.email, form.password);
       } catch (error) {
-        setErrors({password: 'No se pudo crear el usuario'});
+        setErrors({password: 'Error al iniciar sesión. Por favor, verifica tus credenciales.'});
       }
     }
   };

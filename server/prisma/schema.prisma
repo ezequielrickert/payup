@@ -21,5 +21,5 @@ model Wallet {
   id      Int   @id @default(autoincrement())
   userCvu Int   @unique
   balance Float @default(0)
-  user    User  @relation(fields: [userCvu], references: [id])
+  user    User  @relation(fields: [userCvu], references: [cvu])
 }

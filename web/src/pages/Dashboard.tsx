@@ -84,7 +84,7 @@ export const DashboardScreen = () => {
                         <div className="icon-container success">
                             <Plus className="icon" />
                         </div>
-                        <span className="action-title">Cargar</span>
+                        <span className="action-title">Ingresar</span>
                         <span className="action-subtitle">Dinero</span>
                     </Card>
 

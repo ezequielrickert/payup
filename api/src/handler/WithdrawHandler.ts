@@ -37,11 +37,13 @@ export const withdrawHandler = (req: Request, res: Response) => {
         return;
     }
 
-    if (user.balance < amount) {
+    if (user.balance >= amount) {
+        user.balance -= amount;
+        res.json({ status: 'OK' });
+        return;
+
+    } else {
         res.status(400).json({ error: 'Insufficient balance' });
         return;
     }
-
-    user.balance -= amount;
-    res.json({ status: 'OK' });
 };

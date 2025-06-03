@@ -28,7 +28,6 @@ export interface TransferForm {
 
 export interface LoadForm {
     amount: string;
-    method: 'card' | 'bank' | 'debin';
 }
 
 export interface WithdrawForm {

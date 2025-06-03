@@ -1,43 +1,24 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { DollarSign, CreditCard, Building2, Smartphone, Plus, AlertCircle } from 'lucide-react';
+import { DollarSign, Plus, AlertCircle } from 'lucide-react';
 import type { LoadForm } from '../types/types';
 import { formatCurrency, isValidAmount } from '../utils/formatters';
 import { Header } from '../ui/Header';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../utils/AuthContext';
 
 export const LoadMoneyScreen = () => {
     const [form, setForm] = useState<LoadForm>({
         amount: '',
-        method: 'card'
     });
     const [errors, setErrors] = useState<{
         amount?: string;
         general?: string
     }>({});
+    const user = useAuth();
     const [isLoading, setIsLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
-
-    const paymentMethods = [
-        {
-            id: 'card',
-            name: 'Tarjeta de crédito/débito',
-            icon: CreditCard,
-            description: 'Visa, Mastercard, etc.'
-        },
-        {
-            id: 'bank',
-            name: 'Cuenta bancaria',
-            icon: Building2,
-            description: 'Transferencia desde tu banco'
-        },
-        {
-            id: 'debin',
-            name: 'DEBIN',
-            icon: Smartphone,
-            description: 'Débito inmediato'
-        }
-    ];
 
     const predefinedAmounts = [1000, 5000, 10000, 20000];
 
@@ -65,6 +46,19 @@ export const LoadMoneyScreen = () => {
 
         if (Object.keys(newErrors).length === 0) {
             setIsLoading(true);
+            setSuccess(false);
+            try {
+                const response = await fetch(`/api/load?cvu=${user.user?.cvu}`, { method: 'GET' });
+                const data = await response.json();
+                if (data.status === 'OK') {
+                    setSuccess(true);
+                } else {
+                    setErrors({ general: 'Error al cargar dinero' });
+                }
+            } catch (err) {
+                setErrors({ general: 'Error de red' });
+            }
+            setIsLoading(false);
         }
     };
 
@@ -88,6 +82,17 @@ export const LoadMoneyScreen = () => {
             />
 
             <div className="screen-content">
+                <InfoCard>
+                    <h4>
+                        💸 {'Método de pago'}
+                    </h4>
+                    <p>
+                        {'La carga de dinero se realiza exclusivamente mediante '}
+                        <b>DEBIN</b>
+                        {'.'}
+                    </p>
+                </InfoCard>
+
                 {/* Current Balance */}
                 <BalanceCard>
                     <div className="balance-info">
@@ -108,41 +113,6 @@ export const LoadMoneyScreen = () => {
                                 <span>{errors.general}</span>
                             </ErrorMessage>
                         )}
-
-                        {/* Payment Method */}
-                        <FormSection>
-                            <Label>Método de carga</Label>
-                            <div className="methods">
-                                {paymentMethods.map((method) => {
-                                    const IconComponent = method.icon;
-                                    return (
-                                        <MethodOption
-                                            key={method.id}
-                                            selected={form.method === method.id}
-                                            onClick={() => !isLoading && setForm(prev => ({ ...prev, method: method.id as 'card' | 'bank' | 'debin' }))}
-                                        >
-                                            <input
-                                                type="radio"
-                                                name="method"
-                                                value={method.id}
-                                                checked={form.method === method.id}
-                                                onChange={() => {}}
-                                                className="sr-only"
-                                                disabled={isLoading}
-                                            />
-                                            <IconComponent className="method-icon" />
-                                            <div className="method-info">
-                                                <div className="method-name">{method.name}</div>
-                                                <div className="method-description">{method.description}</div>
-                                            </div>
-                                            {form.method === method.id && (
-                                                <div className="selected-indicator"></div>
-                                            )}
-                                        </MethodOption>
-                                    );
-                                })}
-                            </div>
-                        </FormSection>
 
                         {/* Quick Amounts */}
                         <FormSection>
@@ -195,6 +165,11 @@ export const LoadMoneyScreen = () => {
                                 <LoadingSpinner />
                                 Procesando...
                             </>
+                        ) : success ? (
+                            <>
+                                <span style={{ color: '#22c55e', fontSize: 20 }}>✔</span>
+                                ¡Carga exitosa!
+                            </>
                         ) : (
                             <>
                                 <Plus className="button-icon" />
@@ -203,15 +178,6 @@ export const LoadMoneyScreen = () => {
                         )}
                     </SubmitButton>
                 </form>
-
-                {/* Security Info */}
-                <InfoCard>
-                    <h4>💳 Información de seguridad</h4>
-                    <p>
-                        Esta es una simulación. En la app real se integraría con proveedores de pago seguros
-                        y certificados para proteger tu información financiera.
-                    </p>
-                </InfoCard>
             </div>
         </StyledWrapper>
     );
@@ -278,66 +244,12 @@ const FormSection = styled.div`
     display: flex;
     flex-direction: column;
     gap: 12px;
-
-    .methods {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
 `;
 
 const Label = styled.label`
     color: rgba(255, 255, 255, 0.8);
     font-size: 14px;
     font-weight: 500;
-`;
-
-interface MethodOptionProps {
-    selected: boolean;
-}
-
-const MethodOption = styled.label<MethodOptionProps>`
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    border-radius: 12px;
-    background: ${props => props.selected ? 'rgba(0, 191, 255, 0.1)' : '#222'};
-    border: 1px solid ${props => props.selected ? '#00bfff' : '#333'};
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-        background: ${props => props.selected ? 'rgba(0, 191, 255, 0.15)' : '#2a2a2a'};
-    }
-
-    .method-icon {
-        width: 24px;
-        height: 24px;
-        color: ${props => props.selected ? '#00bfff' : 'rgba(255, 255, 255, 0.6)'};
-        margin-right: 16px;
-    }
-
-    .method-info {
-        flex: 1;
-    }
-
-    .method-name {
-        color: #fff;
-        font-weight: 500;
-        margin-bottom: 4px;
-    }
-
-    .method-description {
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 14px;
-    }
-
-    .selected-indicator {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: #00bfff;
-    }
 `;
 
 const QuickAmounts = styled.div`

@@ -20,27 +20,6 @@ describe("UserController", () => {
         };
     });
 
-    describe("getUserById", () => {
-        it("should return 404 if user is not found", async () => {
-            req.params = { id: "1" };
-
-            await userController.getUserById(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.json).toHaveBeenCalledWith({ message: "User not found" });
-        });
-
-        it("should return user if found", async () => {
-            const user: UserDto = { email: "test@example.com", name: "Test User", password: "securepassword", cvu: 1234567890 };
-            fakeUserService.usersList.push(user);
-            req.params = { id: "1" };
-
-            await userController.getUserById(req as Request, res as Response);
-
-            expect(res.json).toHaveBeenCalledWith(user);
-        });
-    });
-
     describe("createUser", () => {
         it("should create a user and return 201", async () => {
             const user: UserDto = { email: "test@example.com", name: "Test User", password: "securepassword", cvu: 1234567890 };
@@ -94,4 +73,34 @@ describe("UserController", () => {
             expect(res.json).toHaveBeenCalledWith(user);
         });
     });
+
+    describe("authenticateUser", () => {
+        it("should return 400 if email or password is missing", async () => {
+            req.body = { email: "test@example.com" };
+            await userController.authenticateUser(req as Request, res as Response);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ message: "Email and password must be provided" });
+
+            req.body = { password: "securepassword" };
+            await userController.authenticateUser(req as Request, res as Response);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ message: "Email and password must be provided" });
+        });
+
+        it("should return 401 if credentials are invalid", async () => {
+            req.body = { email: "notfound@example.com", password: "wrongpassword" };
+            await userController.authenticateUser(req as Request, res as Response);
+            expect(res.status).toHaveBeenCalledWith(401);
+            expect(res.json).toHaveBeenCalledWith({ message: "Invalid email or password" });
+        });
+
+        it("should return user if credentials are valid", async () => {
+            const user: UserDto = { email: "test@example.com", name: "Test User", password: "securepassword", cvu: 1234567890 };
+            fakeUserService.usersList.push(user);
+            req.body = { email: "test@example.com", password: "securepassword" };
+            await userController.authenticateUser(req as Request, res as Response);
+            expect(res.json).toHaveBeenCalledWith(user);
+        });
+    });
 });
+

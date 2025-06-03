@@ -3,6 +3,6 @@ import { withdrawHandler } from '../handler/WithdrawHandler';
 
 const router = Router();
 
-router.post('/withdraw', withdrawHandler);
+router.post('/load', withdrawHandler);
 
 export default router;

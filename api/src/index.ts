@@ -1,5 +1,5 @@
-import * as express from 'express';
-import WithdrawRouter from './src/router/WithdrawRouter';
+import express from 'express';
+import WithdrawRouter from './router/WithdrawRouter';
 const app = express();
 app.use(express.json());
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
+import {UserDto} from "../dto/UserDto.ts";
 
 interface LoginForm {
   email: string;
@@ -32,9 +33,15 @@ export const LoginScreen = () => {
     setErrors(newErrors);
 
     try {
-      const res = await fetch('http://localhost:3001/users?email=' + form.email, {
+      const userDto = new UserDto(
+          "",
+          form.email,
+          form.password
+      )
+      const res = await fetch('http://localhost:3001/users/autenticate', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userDto)
       });
       if (!res.ok) throw new Error('Error al iniciar sesión. Por favor, verifica tus credenciales.');
       const user = await res.json();
@@ -47,40 +54,40 @@ export const LoginScreen = () => {
   };
 
   return (
-    <StyledWrapper>
-      <form className="form" onSubmit={handleSubmit}>
-        <p className="title">Iniciar Sesión</p>
-        <p className="message">Bienvenido de vuelta a tu billetera digital PayUp.</p>
-        <label>
-          <input
-              className="input"
-              type="email"
-              placeholder=""
-              value={form.email}
-              onChange={(e) => setForm(prev => ({...prev, email: e.target.value}))}
-              required
-          />
-          <span>Email</span>
-          {errors.email && <p className="error">{errors.email}</p>}
-        </label>
-        <label>
-          <input
-              className="input"
-              type="password"
-              placeholder=""
-              value={form.password}
-              onChange={(e) => setForm(prev => ({...prev, password: e.target.value}))}
-              required
-          />
-          <span>Contraseña</span>
-          {errors.password && <p className="error">{errors.password}</p>}
-        </label>
-        <button className="submit" type="submit">Iniciar Sesión</button>
-        <p className="signin">
-          ¿No tenés cuenta? <a href="#" onClick={() => navigate('/signup')}>Registrate</a>
-        </p>
-      </form>
-    </StyledWrapper>
+      <StyledWrapper>
+        <form className="form" onSubmit={handleSubmit}>
+          <p className="title">Iniciar Sesión</p>
+          <p className="message">Bienvenido de vuelta a tu billetera digital PayUp.</p>
+          <label>
+            <input
+                className="input"
+                type="email"
+                placeholder=""
+                value={form.email}
+                onChange={(e) => setForm(prev => ({...prev, email: e.target.value}))}
+                required
+            />
+            <span>Email</span>
+            {errors.email && <p className="error">{errors.email}</p>}
+          </label>
+          <label>
+            <input
+                className="input"
+                type="password"
+                placeholder=""
+                value={form.password}
+                onChange={(e) => setForm(prev => ({...prev, password: e.target.value}))}
+                required
+            />
+            <span>Contraseña</span>
+            {errors.password && <p className="error">{errors.password}</p>}
+          </label>
+          <button className="submit" type="submit">Iniciar Sesión</button>
+          <p className="signin">
+            ¿No tenés cuenta? <a href="#" onClick={() => navigate('/signup')}>Registrate</a>
+          </p>
+        </form>
+      </StyledWrapper>
   );
 };
 
@@ -139,7 +146,7 @@ const StyledWrapper = styled.div`
     background-color: #00bfff;
   }
 
-  .message, 
+  .message,
   .signin {
     font-size: 14.5px;
     color: rgba(255, 255, 255, 0.7);

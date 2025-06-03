@@ -13,6 +13,7 @@ import {createWalletRouter} from "./router/WalletRouter";
 
 // In this file the actual application is created and the dependencies are injected for it to be able to start
 
+const cors = require('cors');
 const app = express();
 app.use(express.json());
 
@@ -34,6 +35,10 @@ const userRouter = createUserRouter(userController);
 const connectionController = new ConnectionController();
 const connectionRouter = createConnectionRouter(connectionController);
 
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 
 // Mounts the userRouter created on the `/users` path, so all routes defined in `userRouter` will be accessible under `/users`
 app.use('/users', userRouter);
@@ -41,7 +46,7 @@ app.use('/connection', connectionRouter);
 app.use('/wallet', walletRouter)
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

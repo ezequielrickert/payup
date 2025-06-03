@@ -33,6 +33,7 @@ export class UserService implements IUserService {
         await this.userRepo.save(domainUser);
         // Fetch the user to get the assigned ID (assuming email is unique)
         const savedUser = await this.userRepo.findByEmail(user.email);
+        console.log("User saved with ID:", JSON.stringify(savedUser, null, 2));
         if (savedUser) {
             await this.walletService.createWallet(savedUser.cvu);
         }

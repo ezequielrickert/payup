@@ -6,14 +6,14 @@ import { IWallet } from '../../../domain/port/IWallet';
 
 export class PrismaWalletRepository implements IWalletRepository {
     async findByUserCvu(userCvu: number): Promise<IWallet | null> {
-        const wallet = await prismaClient.wallet.findUnique({ where: { userId: userCvu } });
+        const wallet = await prismaClient.wallet.findUnique({ where: { userCvu: userCvu } });
         return wallet ? this.prismaToDomain(wallet) : null;
     }
 
     async save(wallet: IWallet): Promise<void> {
         await prismaClient.wallet.create({
             data: {
-                userId: wallet.userCvu,
+                userCvu: wallet.userCvu,
                 balance: wallet.balance
             },
         });
@@ -21,13 +21,13 @@ export class PrismaWalletRepository implements IWalletRepository {
 
     async update(wallet: IWallet): Promise<void> {
         await prismaClient.wallet.update({
-            where: { userId: wallet.userCvu },
+            where: { userCvu: wallet.userCvu },
             data: { balance: wallet.balance },
         });
     }
 
     private prismaToDomain(prismaWallet: PrismaWallet): IWallet {
-        return new Wallet(prismaWallet.userId, prismaWallet.balance);
+        return new Wallet(prismaWallet.userCvu, prismaWallet.balance);
     }
 }
 

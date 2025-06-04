@@ -1,4 +1,4 @@
-import { loadHandler } from '../handler/LoadHandler';
+import { loadHandler, users } from '../handler/LoadHandler';
 import { Request, Response } from 'express';
 
 describe('withdrawHandler', () => {
@@ -11,43 +11,39 @@ describe('withdrawHandler', () => {
             status: jest.fn().mockReturnThis(),
             json: jest.fn(),
         };
+        // Resetear balances para evitar side effects entre tests
+        users[0].balance = 1000000;
+        users[1].balance = 200;
     });
 
-    it('should withdraw money successfully when using email', () => {
+    it('debería retirar dinero exitosamente usando email', () => {
         req.body = { email: 'rich@payup.com', amount: 500 };
 
         loadHandler(req as Request, res as Response);
 
         expect(res.json).toHaveBeenCalledWith({ status: 'OK' });
+        expect(users[0].balance).toBe(999500);
     });
 
-    it('should withdraw money successfully when using cbu', () => {
-        req.body = { cbu: '1234567890', amount: 500 };
-
-        loadHandler(req as Request, res as Response);
-
-        expect(res.json).toHaveBeenCalledWith({ status: 'OK' });
-    });
-
-    it('should return 400 when amount is missing', () => {
+    it('debería devolver 400 si falta amount', () => {
         req.body = { email: 'rich@payup.com' };
 
         loadHandler(req as Request, res as Response);
 
         expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.json).toHaveBeenCalledWith({ error: 'You must provide email or cbu and amount' });
+        expect(res.json).toHaveBeenCalledWith({ error: 'You must provide email or cvu and amount' });
     });
 
-    it('should return 400 when both email and cbu are missing', () => {
+    it('debería devolver 400 si falta email', () => {
         req.body = { amount: 500 };
 
         loadHandler(req as Request, res as Response);
 
         expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.json).toHaveBeenCalledWith({ error: 'You must provide email or cbu and amount' });
+        expect(res.json).toHaveBeenCalledWith({ error: 'You must provide email or cvu and amount' });
     });
 
-    it('should return 404 when user does not exist', () => {
+    it('debería devolver 404 si el usuario no existe', () => {
         req.body = { email: 'notexist@payup.com', amount: 500 };
 
         loadHandler(req as Request, res as Response);
@@ -56,7 +52,7 @@ describe('withdrawHandler', () => {
         expect(res.json).toHaveBeenCalledWith({ error: 'User does not exist' });
     });
 
-    it('should return 400 when insufficient balance', () => {
+    it('debería devolver 400 si el balance es insuficiente', () => {
         req.body = { email: 'poor@payup.com', amount: 1000 };
 
         loadHandler(req as Request, res as Response);

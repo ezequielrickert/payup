@@ -44,7 +44,7 @@ export class ApiController {
                 return;
             }
 
-            res.status(200).json({ message: 'Load successful', data: depositResponse });
+            res.status(200).json({ message: 'OK', data: depositResponse });
         }
         catch (error) {
             console.error('Error calling API:', error);

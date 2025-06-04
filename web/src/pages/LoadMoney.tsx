@@ -98,7 +98,7 @@ export const LoadMoneyScreen = () => {
                 });
                 const data = await response.json();
                 console.log(data);
-                if (data.message === 'Load successful') {
+                if (data.message === 'OK') {
                     setSuccess(true);
                 } else {
                     setErrors({ general: 'Error al ingresar dinero' });

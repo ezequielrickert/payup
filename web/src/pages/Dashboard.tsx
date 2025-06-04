@@ -15,6 +15,7 @@ import { Button } from '../ui/Button';
 import { theme } from '../styles/theme';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
+import type {WalletDto} from "../dto/WalletDto.ts";
 
 export const DashboardScreen = () => {
     const navigate = useNavigate();
@@ -24,15 +25,15 @@ export const DashboardScreen = () => {
 
     useEffect(() => {
         const fetchBalance = async () => {
-            if (!user?.cvu) return;
-            const res = await fetch(`http://localhost:3001/wallet/${user?.cvu}`, {
+            if (!user?.email) return;
+            const res = await fetch(`http://localhost:3001/wallet/${user.cvu}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-            const data = await res.json();
-            setRealBalance(data.balance);
+            const wallet = await res.json() as WalletDto;
+            setRealBalance(wallet.balance);
         };
         fetchBalance();
     }, [user]);

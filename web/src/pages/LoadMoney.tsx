@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { DollarSign, Plus, AlertCircle } from 'lucide-react';
 import type { LoadForm } from '../types/types';
@@ -6,6 +6,7 @@ import { formatCurrency, isValidAmount } from '../utils/formatters';
 import { Header } from '../ui/Header';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
+import type { LoadDto } from '../dto/LoadDto';
 
 export const LoadMoneyScreen = () => {
     const [form, setForm] = useState<LoadForm>({
@@ -18,9 +19,36 @@ export const LoadMoneyScreen = () => {
     const user = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [balance, setBalance] = useState<number>();
     const navigate = useNavigate();
 
     const predefinedAmounts = [1000, 5000, 10000, 20000];
+
+    useEffect(() => {
+        // Fetch user wallet and ask for balance
+        const fetchWallet = async () => {
+            try {
+                const response = await fetch(`http://localhost:3001/wallet/${user.user?.cvu}`);
+                if (!response.ok) {
+                    throw new Error('Error fetching wallet');
+                }
+                const data = await response.json();
+                setBalance(data.balance);
+            } catch (error) {
+                console.error('Error fetching wallet:', error);
+            }
+        }
+        fetchWallet();
+    });
+
+    useEffect(() => {
+        if (success) {
+            const timeout = setTimeout(() => {
+                navigate('/dashboard');
+            }, 1200); // 1.2 segundos para mostrar el mensaje de éxito
+            return () => clearTimeout(timeout);
+        }
+    }, [success, navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -47,19 +75,33 @@ export const LoadMoneyScreen = () => {
         if (Object.keys(newErrors).length === 0) {
             setIsLoading(true);
             setSuccess(false);
+
+            if (!user.user) {
+                setErrors({ general: 'Usuario no encontrado' });
+                setIsLoading(false);
+                return;
+            }
+
+            const loadDto: LoadDto = {
+                email: user.user.email,
+                cvu: user.user.cvu,
+                amount: parseFloat(form.amount)
+            }
+
             try {
-                const response = await fetch(`http://localhost:3001/api/load?cvu=${user.user?.cvu}`, {
-                    method: 'GET',
+                const response = await fetch(`http://localhost:3001/api`, {
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ amount: parseFloat(form.amount) }),
+                    body: JSON.stringify(loadDto),
                 });
                 const data = await response.json();
-                if (data.status === 'OK') {
+                console.log(data);
+                if (data.message === 'Load successful') {
                     setSuccess(true);
                 } else {
-                    setErrors({ general: 'Error al cargar dinero' });
+                    setErrors({ general: 'Error al ingresar dinero' });
                 }
             } catch (err) {
                 setErrors({ general: 'Error de red' });
@@ -104,7 +146,7 @@ export const LoadMoneyScreen = () => {
                     <div className="balance-info">
                         <span className="label">Saldo actual:</span>
                         <span className="amount">
-                            {formatCurrency(1000)}
+                            {formatCurrency(balance ?? 0)}
                         </span>
                     </div>
                 </BalanceCard>

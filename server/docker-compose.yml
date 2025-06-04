@@ -21,8 +21,18 @@ services:
       - "3001:3001"
     environment:
       DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?schema=public
+      API_URL: http://api:3002/api
     depends_on:
       - db
+      - api
+    command: npm run dev
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
     command: npm run dev
 
 volumes:

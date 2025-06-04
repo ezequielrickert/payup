@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 export const users = [
     {
         email: 'rich@payup.com',
-        cvu: '1234567890',
+        cvu: '689097',
         balance: 1000000,
     },
     {
@@ -13,22 +13,23 @@ export const users = [
     },
 ];
 
-interface LoadRequest {
-    cvu: string;
+interface LoadDto {
+    email: string;
+    cvu: number;
     amount: number;
 }
 
 // 👇 NOTA: tipamos los argumentos manualmente
 export const loadHandler = (req: Request, res: Response) => {
-    const { cvu, amount } = req.body as LoadRequest;
+    const { email, cvu, amount } = req.body as LoadDto;
 
-    if (!amount || !cvu) {
+    if (!amount || !email) {
         res.status(400).json({ error: 'You must provide email or cvu and amount'});
         return;
     }
 
     const user = users.find(
-        (u) => (cvu && u.cvu === cvu)
+        (u) => (email && u.email === email)
     );
 
     if (!user) {

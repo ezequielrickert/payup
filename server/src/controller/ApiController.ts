@@ -1,36 +1,50 @@
 import { Request, Response } from 'express';
 import {LoadDto} from "../dto/LoadDto";
+import { IWalletService } from '../application/port/IWalletService';
 
 export class ApiController {
+    constructor(private walletService: IWalletService) {}
 
     async callApi(req: Request, res: Response): Promise<void> {
         try {
-            const userCvu = Number(req.params.userCvu);
-            const amount = req.body.amount;
-            if (!userCvu) {
-                res.status(400).json({ message: 'User CVU must be provided' });
+            const { email, cvu, amount } = req.body as LoadDto;
+            if (!email || !cvu || !amount) {
+                res.status(400).json({ message: 'All fields are required' });
                 return;
             }
-            // Simulate an API call
-            const loadDto: LoadDto = {
-                cvu: userCvu,
-                amount: amount
+
+            const parsedAmount = parseFloat(String(amount));
+            if (isNaN(parsedAmount)) {
+                res.status(400).json({ message: 'Amount must be a valid number' });
+                return;
             }
 
-            const response = await fetch('http://localhost:3002/load', {
+            // Simulate an API call
+            const loadDto: LoadDto = {
+                email,
+                cvu,
+                amount: parsedAmount
+            };
+
+            const response = await fetch('http://api:3002/api/load', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(loadDto)
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                res.status(response.status).json({ message: errorData.message });
+                res.status(500).json({ message: 'Error calling API' });
                 return;
             }
 
-            const data = await response.json();
-            res.status(200).json({ message: 'Load successful', data });
+            const depositResponse = await this.walletService.deposit(cvu, parsedAmount);
+            console.log(depositResponse);
+            if (!depositResponse) {
+                res.status(500).json({ message: 'Error depositing money' });
+                return;
+            }
+
+            res.status(200).json({ message: 'Load successful', data: depositResponse });
         }
         catch (error) {
             console.error('Error calling API:', error);

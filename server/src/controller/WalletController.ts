@@ -13,6 +13,7 @@ export class WalletController {
                 return;
             }
             const wallet = await this.walletService.findByUserCvu(userCvu);
+            console.log('Wallet encontrada:', wallet);
             if (!wallet) {
                 res.status(404).json({ message: 'Wallet not found' });
                 return;

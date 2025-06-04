@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
-import {UserDto} from "../dto/UserDto.ts";
 
 interface LoginForm {
   email: string;
@@ -33,15 +32,13 @@ export const LoginScreen = () => {
     setErrors(newErrors);
 
     try {
-      const userDto = new UserDto(
-          "",
-          form.email,
-          form.password
-      )
-      const res = await fetch('http://localhost:3001/users/autenticate', {
-        method: 'GET',
+      const res = await fetch('http://localhost:3001/users/authenticate', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userDto)
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password
+        }),
       });
       if (!res.ok) throw new Error('Error al iniciar sesión. Por favor, verifica tus credenciales.');
       const user = await res.json();

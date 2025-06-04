@@ -22,14 +22,13 @@ const walletRepository = new PrismaWalletRepository();
 const walletService = new WalletService(walletRepository);
 const walletController = new WalletController(walletService);
 const walletRouter = createWalletRouter(walletController);
+const apiRouter = createWalletRouter(walletController);
 
 // Dependency injection for User
 const userRepository = new PrismaUserRepository();
 const userService = new UserService(userRepository, walletService);
 const userController = new UserController(userService);
 const userRouter = createUserRouter(userController);
-
-
 
 // Connection controller and router
 const connectionController = new ConnectionController();
@@ -43,7 +42,8 @@ app.use(cors({
 // Mounts the userRouter created on the `/users` path, so all routes defined in `userRouter` will be accessible under `/users`
 app.use('/users', userRouter);
 app.use('/connection', connectionRouter);
-app.use('/wallet', walletRouter)
+app.use('/wallet', walletRouter);
+app.use('/api', apiRouter);
 
 
 const PORT = process.env.PORT || 3001;

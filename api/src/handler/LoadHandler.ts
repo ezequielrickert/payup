@@ -3,33 +3,32 @@ import { Request, Response } from 'express';
 export const users = [
     {
         email: 'rich@payup.com',
-        cbu: '1234567890',
+        cvu: '1234567890',
         balance: 1000000,
     },
     {
         email: 'poor@payup.com',
-        cbu: '0000000001',
+        cvu: '0000000001',
         balance: 5,
     },
 ];
 
-interface WithdrawRequest {
-    email?: string;
-    cbu?: string;
+interface LoadRequest {
+    cvu: string;
     amount: number;
 }
 
 // 👇 NOTA: tipamos los argumentos manualmente
-export const withdrawHandler = (req: Request, res: Response) => {
-    const { email, cbu, amount } = req.body as WithdrawRequest;
+export const loadHandler = (req: Request, res: Response) => {
+    const { cvu, amount } = req.body as LoadRequest;
 
-    if (!amount || (!email && !cbu)) {
-        res.status(400).json({ error: 'You must provide email or cbu and amount'});
+    if (!amount || !cvu) {
+        res.status(400).json({ error: 'You must provide email or cvu and amount'});
         return;
     }
 
     const user = users.find(
-        (u) => (email && u.email === email) || (cbu && u.cbu === cbu)
+        (u) => (cvu && u.cvu === cvu)
     );
 
     if (!user) {

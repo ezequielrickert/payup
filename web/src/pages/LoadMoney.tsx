@@ -48,7 +48,12 @@ export const LoadMoneyScreen = () => {
             setIsLoading(true);
             setSuccess(false);
             try {
-                const response = await fetch(`/api/load?cvu=${user.user?.cvu}`, { method: 'GET' });
+                const response = await fetch(`http://localhost:3001/api/load?cvu=${user.user?.cvu}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
                 const data = await response.json();
                 if (data.status === 'OK') {
                     setSuccess(true);

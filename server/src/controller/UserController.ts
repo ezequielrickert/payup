@@ -8,13 +8,20 @@ export class UserController {
         this.userService = userService;
     }
 
-    async getUserById(req: Request, res: Response): Promise<void> {
+    async authenticateUser(req: Request, res: Response): Promise<void> {
         try {
-            const user = await this.userService.findById(req.params.id);
-            if (!user) {
-                res.status(404).json({ message: 'User not found' });
+            const { email, password } = req.body;
+            if (!email || !password) {
+                res.status(400).json({ message: 'Email and password must be provided' });
                 return;
             }
+
+            const user = await this.userService.authenticate(email, password);
+            if (!user) {
+                res.status(401).json({ message: 'Invalid email or password' });
+                return;
+            }
+
             res.json(user);
         } catch (error: any) {
             res.status(500).json({ error: error.message });

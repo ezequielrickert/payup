@@ -5,6 +5,14 @@ export class FakeUserService implements IUserService {
 
     usersList: UserDto[] = [];
 
+    authenticate(email: string, password: string): Promise<UserDto | null> {
+        const user = this.usersList.find(user => user.email === email) || null;
+        if (user && user.password === password) {
+            return Promise.resolve(user);
+        }
+        return Promise.resolve(null);
+    }
+
     async findByEmail(email: string): Promise<UserDto | null> {
         const user = this.usersList.find(user => user.email === email) || null;
         return Promise.resolve(user);

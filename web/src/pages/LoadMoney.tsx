@@ -101,7 +101,7 @@ export const LoadMoneyScreen = () => {
                 if (data.message === 'OK') {
                     setSuccess(true);
                 } else {
-                    setErrors({ general: 'Error al ingresar dinero' });
+                    setErrors({ general: data.message || data.error });
                 }
             } catch (err) {
                 setErrors({ general: 'Error de red' });

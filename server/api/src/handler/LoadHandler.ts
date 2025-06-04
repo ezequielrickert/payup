@@ -24,7 +24,7 @@ export const loadHandler = (req: Request, res: Response) => {
     const { email, cvu, amount } = req.body as LoadDto;
 
     if (!amount || !email) {
-        res.status(400).json({ error: 'You must provide email or cvu and amount'});
+        res.status(400).json({ error: 'You must provide email and amount'});
         return;
     }
 

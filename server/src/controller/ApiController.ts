@@ -33,12 +33,14 @@ export class ApiController {
             });
 
             if (!response.ok) {
-                res.status(500).json({ message: 'Error calling API' });
+                const errorData = await response.json();
+                res.status(400).json({ message: errorData.message });
                 return;
             }
 
             const depositResponse = await this.walletService.deposit(cvu, parsedAmount);
             console.log(depositResponse);
+            //catch error from the call
             if (!depositResponse) {
                 res.status(500).json({ message: 'Error depositing money' });
                 return;

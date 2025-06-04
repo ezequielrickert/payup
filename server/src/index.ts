@@ -9,6 +9,8 @@ import {PrismaWalletRepository} from "./repository/adapter/prisma/PrismaWalletRe
 import {WalletService} from "./application/adapter/WalletService";
 import {WalletController} from "./controller/WalletController";
 import {createWalletRouter} from "./router/WalletRouter";
+import {ApiController} from "./controller/ApiController";
+import {createApiRouter} from "./router/ApiRouter";
 
 
 // In this file the actual application is created and the dependencies are injected for it to be able to start
@@ -22,7 +24,6 @@ const walletRepository = new PrismaWalletRepository();
 const walletService = new WalletService(walletRepository);
 const walletController = new WalletController(walletService);
 const walletRouter = createWalletRouter(walletController);
-const apiRouter = createWalletRouter(walletController);
 
 // Dependency injection for User
 const userRepository = new PrismaUserRepository();
@@ -33,6 +34,10 @@ const userRouter = createUserRouter(userController);
 // Connection controller and router
 const connectionController = new ConnectionController();
 const connectionRouter = createConnectionRouter(connectionController);
+
+// Api controller and router
+const apiController = new ApiController();
+const apiRouter = createApiRouter(apiController);
 
 app.use(cors({
     origin: 'http://localhost:5173',

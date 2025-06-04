@@ -9,7 +9,7 @@ export const users = [
     {
         email: 'poor@payup.com',
         cvu: '0000000001',
-        balance: 5,
+        balance: 200,
     },
 ];
 

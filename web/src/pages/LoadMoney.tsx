@@ -53,6 +53,7 @@ export const LoadMoneyScreen = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
+                    body: JSON.stringify({ amount: parseFloat(form.amount) }),
                 });
                 const data = await response.json();
                 if (data.status === 'OK') {

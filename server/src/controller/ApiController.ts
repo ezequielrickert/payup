@@ -9,13 +9,13 @@ export class ApiController {
         try {
             const { email, cvu, amount } = req.body as LoadDto;
             if (!email || !cvu || !amount) {
-                res.status(400).json({ message: 'All fields are required' });
+                res.status(400).json({ message: 'Todos los campos son requeridos' });
                 return;
             }
 
             const parsedAmount = parseFloat(String(amount));
             if (isNaN(parsedAmount)) {
-                res.status(400).json({ message: 'Amount must be a valid number' });
+                res.status(400).json({ message: 'El monto debe ser un número válido' });
                 return;
             }
 
@@ -33,16 +33,30 @@ export class ApiController {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                res.status(400).json({ message: errorData.message });
+                let errorMsg = 'Ocurrió un error inesperado.';
+                try {
+                    const text = await response.text();
+                    if (text) {
+                        try {
+                            const errorData = JSON.parse(text);
+                            errorMsg = errorData.message || errorData.error || text;
+                        } catch {
+                            // No es JSON, usa el texto tal cual
+                            errorMsg = text;
+                        }
+                    }
+                } catch {
+                    // No se pudo leer el body, deja el mensaje genérico
+                }
+                res.status(response.status).json({ message: errorMsg });
+                console.log(errorMsg);
                 return;
             }
 
             const depositResponse = await this.walletService.deposit(cvu, parsedAmount);
-            console.log(depositResponse);
-            //catch error from the call
+
             if (!depositResponse) {
-                res.status(500).json({ message: 'Error depositing money' });
+                res.status(409).json({ message: 'Saldo insuficiente' });
                 return;
             }
 
@@ -50,7 +64,7 @@ export class ApiController {
         }
         catch (error) {
             console.error('Error calling API:', error);
-            res.status(500).json({ message: 'Internal server error' });
+            res.status(500).json({ message: 'Error interno del servidor' });
         }
     }
 }

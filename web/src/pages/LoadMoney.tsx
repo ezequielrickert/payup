@@ -97,16 +97,16 @@ export const LoadMoneyScreen = () => {
                     body: JSON.stringify(loadDto),
                 });
                 const data = await response.json();
-                console.log(data);
-                if (data.message === 'OK') {
-                    setSuccess(true);
-                } else {
-                    setErrors({ general: data.message || data.error });
+                if (!response.ok) {
+                    setErrors({ general: data.message });
+                    setIsLoading(false);
+                    return;
                 }
+                setSuccess(true);
+                setIsLoading(false);
             } catch (err) {
-                setErrors({ general: 'Error de red' });
+                setErrors({ general: 'No se pudo conectar con el servidor.' });
             }
-            setIsLoading(false);
         }
     };
 

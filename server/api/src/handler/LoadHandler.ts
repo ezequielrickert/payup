@@ -19,12 +19,11 @@ interface LoadDto {
     amount: number;
 }
 
-// 👇 NOTA: tipamos los argumentos manualmente
 export const loadHandler = (req: Request, res: Response) => {
     const { email, cvu, amount } = req.body as LoadDto;
 
     if (!amount || !email) {
-        res.status(400).json({ error: 'You must provide email and amount'});
+        res.status(400).json({ error: 'Todos los campos son requeridos' });
         return;
     }
 
@@ -33,7 +32,7 @@ export const loadHandler = (req: Request, res: Response) => {
     );
 
     if (!user) {
-        res.status(404).json({ error: 'User does not exist' });
+        res.status(404).json({ error: 'Usuario no encontrado' });
         return;
     }
 
@@ -43,7 +42,7 @@ export const loadHandler = (req: Request, res: Response) => {
         return;
 
     } else {
-        res.status(400).json({ error: 'Insufficient balance' });
+        res.status(400).json({ error: 'Saldo insuficiente' });
         return;
     }
 };

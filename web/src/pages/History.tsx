@@ -1,14 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import {
-    History,
-    ArrowDownLeft,
-    ArrowUpRight,
-    Send,
     Filter,
 } from 'lucide-react';
-import type{ Transaction } from '../types/types';
-import { formatCurrency, formatDate } from '../utils/formatters';
 import { Header } from '../ui/Header';
 import {theme} from "../styles/theme";
 import { useNavigate } from 'react-router-dom';
@@ -16,37 +10,6 @@ import { useNavigate } from 'react-router-dom';
 export const HistoryScreen = () => {
     const [filter, setFilter] = useState<'all' | 'income' | 'expense' | 'transfers'>('all');
     const navigate = useNavigate();
-
-    const getTransactionIcon = (type: Transaction['type']) => {
-        switch (type) {
-            case 'income':
-                return <ArrowDownLeft className="icon" />;
-            case 'expense':
-                return <ArrowUpRight className="icon" />;
-            case 'transfer_out':
-                return <Send className="icon" />;
-            case 'transfer_in':
-                return <ArrowDownLeft className="icon" />;
-            default:
-                return <History className="icon" />;
-        }
-    };
-
-    const getTransactionColor = (type: Transaction['type']) => {
-        switch (type) {
-            case 'income':
-                return 'success';
-            case 'expense':
-                return 'error';
-            case 'transfer_out':
-                return 'primary';
-            case 'transfer_in':
-                return 'secondary';
-            default:
-                return 'primary';
-        }
-    };
-
     return (
         <StyledWrapper>
             <Header
@@ -304,52 +267,6 @@ const TransactionsCard = styled.div`
 
         &.expense {
             color: ${theme.colors.error.main};
-        }
-    }
-`;
-
-const EmptyState = styled.div`
-    text-align: center;
-    padding: ${theme.spacing.xxl} 0; 
-    
-    .icon {
-        width: 48px;
-        height: 48px;
-        color: ${theme.colors.text.secondary}; 
-        margin: 0 auto ${theme.spacing.md};
-    }
-
-    .title {
-        color: ${theme.colors.text.primary}; 
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: ${theme.spacing.xs};
-    }
-
-    .message {
-        color: ${theme.colors.text.secondary}; 
-        margin-bottom: ${theme.spacing.md};
-    }
-
-    .view-all {
-        color: ${theme.colors.primary.main}; 
-        font-weight: 500;
-        padding: ${theme.spacing.sm} ${theme.spacing.md};
-        border-radius: ${theme.borderRadius.md};
-        transition: all 0.2s;
-
-        &:hover {
-            background: ${theme.colors.primary.light}20; 
-        }
-    }
-
-    @media (max-width: ${theme.breakpoints.mobile}) {
-        padding: ${theme.spacing.xl} 0;
-
-        .icon {
-            width: 40px;
-            height: 40px;
-            margin-bottom: ${theme.spacing.sm};
         }
     }
 `;

@@ -1,14 +1,14 @@
 // This class follows the 'Service Orchestration Pattern'.
 // It orchestrates the interaction between WalletService and TransactionService leaving the individual services to handle their own logic.
 
-import { WalletService } from "./WalletService";
-import { TransactionService } from "./TransactionService";
 import { TransactionDto } from "../../dto/TransactionDto";
+import {IWalletService} from "../port/IWalletService";
+import {ITransactionService} from "../port/ITransactionService";
 
 export class PaymentService {
     constructor(
-        private readonly walletService: WalletService,
-        private readonly transactionService: TransactionService
+        private readonly walletService: IWalletService,
+        private readonly transactionService: ITransactionService
     ) {}
 
     // For now no rollback mechanism is implemented. Consider it for future improvements.

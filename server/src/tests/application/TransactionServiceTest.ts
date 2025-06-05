@@ -38,4 +38,3 @@ describe('TransactionService', () => {
         expect(txs).toEqual([]);
     });
 });
-

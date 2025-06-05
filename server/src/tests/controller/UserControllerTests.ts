@@ -102,7 +102,7 @@ describe("UserController", () => {
             expect(res.json).toHaveBeenCalledWith(user);
         });
     });
-// TODO CAMBIAR ESTOS TESTS PARA QUE NO MOCKEEN EL SERVICIO
+
     describe('getUserTransactions', () => {
         it('should return an empty array if no transactions exist', async () => {
             req.query = { email: 'test@example.com' };

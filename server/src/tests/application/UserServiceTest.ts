@@ -125,8 +125,10 @@ describe('UserService', () => {
         const user = new UserDto('Alice', 'alice@example.com', 'securepassword', 123456);
         await service.save(user);
         // Add some transactions
-        await transactionService.createTransaction({ amount: 100, senderCvu: 123456, receiverCvu: 222222, description: 'Test1' });
-        await transactionService.createTransaction({ amount: 200, senderCvu: 333333, receiverCvu: 123456, description: 'Test2' });
+        const createdUser  = await service.findByEmail('alice@example.com')
+        if (!createdUser || createdUser.cvu === undefined) throw new Error('User CVU not found');
+        await transactionService.createTransaction({ amount: 100, senderCvu: createdUser?.cvu, receiverCvu: 222222, description: 'Test1' });
+        await transactionService.createTransaction({ amount: 200, senderCvu: 333333, receiverCvu: createdUser?.cvu, description: 'Test2' });
         const txs = await service.getUserTransactions('alice@example.com');
         expect(txs).toHaveLength(2);
         expect(txs.map(t => t.description).sort()).toEqual(['Test1', 'Test2']);

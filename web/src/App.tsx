@@ -1,144 +1,40 @@
-import React, { useState } from 'react';
-import AppProvider from './context/AppContext';
-import { DashboardScreen } from './components/screens/Dashboard';
-import { LoadMoneyScreen } from './components/screens/LoadMoney';
-import { TransferScreen } from './components/screens/Transfer';
-import { WithdrawScreen } from './components/screens/Withdraw';
-import { HistoryScreen } from './components/screens/History';
-import { LoginScreen } from './components/screens/Login';
-import SignUpScreen from './components/screens/SignUp';
-import { useApp } from './context/AppContext';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { LoginScreen } from './pages/Login';
+import { SignUpScreen } from './pages/SignUp';
+import { DashboardScreen } from './pages/Dashboard';
+import { WithdrawScreen } from './pages/Withdraw';
+import { HistoryScreen } from './pages/History';
+import { TransferScreen } from './pages/Transfer';
+import { LoadMoneyScreen } from './pages/LoadMoney';
+import { AuthProvider } from './utils/AuthContext';
+import { ProtectedRoute } from './utils/ProtectedRoute';
 
-type Screen = 'login' | 'signup' | 'dashboard' | 'load' | 'transfer' | 'withdraw' | 'history';
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginScreen />} />
+      <Route path="/signup" element={<SignUpScreen />} />
 
-const AppContent: React.FC = () => {
-    const {
-        isAuthenticated,
-        user,
-        transactions,
-        showBalance,
-        toggleBalance,
-        login,
-        logout,
-        register,
-        loadMoney,
-        transfer,
-        withdraw
-    } = useApp();
+    <Route element={<ProtectedRoute />}>
+      <Route path="/dashboard" element={<DashboardScreen />} />
+      <Route path="/withdraw" element={<WithdrawScreen />} />
+      <Route path="/history" element={<HistoryScreen />} />
+      <Route path="/transfer" element={<TransferScreen />} />
+      <Route path="/load" element={<LoadMoneyScreen />} />
+    </Route>
 
-    const [currentScreen, setCurrentScreen] = useState<Screen>(isAuthenticated ? 'dashboard' : 'login');
+      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="*" element={<div>Página no encontrada</div>} />
+    </Routes>
+  );
+}
 
-    // Auth handlers
-    const handleLogin = async (email: string, password: string) => {
-        await login(email, password);
-        setCurrentScreen('dashboard');
-    };
-
-    const handleRegister = async (email: string, password: string) => {
-        await register(email, password);
-        setCurrentScreen('dashboard');
-    };
-
-    const handleLogout = () => {
-        logout();
-        setCurrentScreen('login');
-    };
-
-    // Money action handlers
-    const handleLoadMoney = async (amount: number, method: 'card' | 'bank' | 'debin') => {
-        await loadMoney(amount, method);
-        setCurrentScreen('dashboard');
-    };
-
-    const handleTransfer = async (recipient: string, amount: number, description: string) => {
-        await transfer(recipient, amount, description);
-        setCurrentScreen('dashboard');
-    };
-
-    const handleWithdraw = async (amount: number, bankAccount: string) => {
-        await withdraw(amount, bankAccount);
-        setCurrentScreen('dashboard');
-    };
-
-    if (!isAuthenticated) {
-        if (currentScreen === 'signup') {
-            return (
-                <SignUpScreen
-                    onSignUp={handleRegister}
-                    onSwitchToRegister={() => setCurrentScreen('login')}
-                />
-            );
-        }
-
-        return (
-            <LoginScreen
-                onLogin={handleLogin}
-                onSwitchToRegister={() => setCurrentScreen('signup')}
-            />
-        );
-    }
-
-    if (!user) return null;
-
-    switch (currentScreen) {
-        case 'dashboard':
-            return (
-                <DashboardScreen
-                    user={user}
-                    transactions={transactions}
-                    showBalance={showBalance}
-                    onToggleBalance={toggleBalance}
-                    onNavigate={setCurrentScreen}
-                    onLogout={handleLogout}
-                />
-            );
-
-        case 'load':
-            return (
-                <LoadMoneyScreen
-                    user={user}
-                    onLoadMoney={handleLoadMoney}
-                    onNavigateBack={() => setCurrentScreen('dashboard')}
-                />
-            );
-
-        case 'transfer':
-            return (
-                <TransferScreen
-                    user={user}
-                    onTransfer={handleTransfer}
-                    onNavigateBack={() => setCurrentScreen('dashboard')}
-                />
-            );
-
-        case 'withdraw':
-            return (
-                <WithdrawScreen
-                    user={user}
-                    onWithdraw={handleWithdraw}
-                    onBack={() => setCurrentScreen('dashboard')}
-                />
-            );
-
-        case 'history':
-            return (
-                <HistoryScreen
-                    transactions={transactions}
-                    onBack={() => setCurrentScreen('dashboard')}
-                />
-            );
-
-        default:
-            return null;
-    }
-};
-
-const App: React.FC = () => {
-    return (
-        <AppProvider>
-            <AppContent />
-        </AppProvider>
-    );
-};
-
-export default App; 
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}

@@ -9,10 +9,13 @@ import {PrismaWalletRepository} from "./repository/adapter/prisma/PrismaWalletRe
 import {WalletService} from "./application/adapter/WalletService";
 import {WalletController} from "./controller/WalletController";
 import {createWalletRouter} from "./router/WalletRouter";
+import {ApiController} from "./controller/ApiController";
+import {createApiRouter} from "./router/ApiRouter";
 
 
 // In this file the actual application is created and the dependencies are injected for it to be able to start
 
+const cors = require('cors');
 const app = express();
 app.use(express.json());
 
@@ -28,17 +31,24 @@ const userService = new UserService(userRepository, walletService);
 const userController = new UserController(userService);
 const userRouter = createUserRouter(userController);
 
-
-
 // Connection controller and router
 const connectionController = new ConnectionController();
 const connectionRouter = createConnectionRouter(connectionController);
 
+// Api controller and router
+const apiController = new ApiController(walletService);
+const apiRouter = createApiRouter(apiController);
+
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 
 // Mounts the userRouter created on the `/users` path, so all routes defined in `userRouter` will be accessible under `/users`
 app.use('/users', userRouter);
 app.use('/connection', connectionRouter);
-app.use('/wallet', walletRouter)
+app.use('/wallet', walletRouter);
+app.use('/api', apiRouter);
 
 
 const PORT = process.env.PORT || 3001;

@@ -16,10 +16,12 @@ export class UserService implements IUserService {
         private readonly walletService: IWalletService
     ) {}
 
-    async findById(id: string): Promise<UserDto | null> {
-        // Searches for user and, if found, converts it to a DTO and sends it back
-        let foundUser = await this.userRepo.findById(id);
-        return foundUser ? this.mapToDto(foundUser) : null;
+    async authenticate(email: string, password: string): Promise<UserDto | null> {
+        const user = await this.userRepo.findByEmail(email);
+        if (user && user.password === password) {
+            return this.mapToDto(user);
+        }
+        return null;
     }
 
     async save(user: UserDto): Promise<void> {

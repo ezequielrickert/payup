@@ -9,9 +9,10 @@ export interface Transaction {
 }
 
 export interface User {
-    id: string;
+    name: string,
     email: string;
-    balance: number;
+    password: string;
+    cvu: number | undefined;
 }
 
 export interface LoginForm {
@@ -27,7 +28,6 @@ export interface TransferForm {
 
 export interface LoadForm {
     amount: string;
-    method: 'card' | 'bank' | 'debin';
 }
 
 export interface WithdrawForm {
@@ -35,19 +35,10 @@ export interface WithdrawForm {
     bankAccount: string;
 }
 
-export type ViewType = 'login' | 'register' | 'dashboard' | 'transfer' | 'load' | 'withdraw' | 'history';
-
-export interface AppState {
-    currentView: ViewType;
-    user: User | null;
-    transactions: Transaction[];
-    showBalance: boolean;
-}
-
 export interface SignUpForm {
+    firstName: string;
+    lastName: string;
     email: string;
     password: string;
     confirmPassword: string;
-    firstName: string;
-    lastName: string;
 }

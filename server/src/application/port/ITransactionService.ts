@@ -1,4 +1,7 @@
-export interface ITransaction {
-    createTransaction(amount: number, senderCvu: number, receiverCvu: number, description: string): Promise<ITransaction>
-    getUserTransactions(cvu: number): Promise<ITransaction[]>
+import {ITransaction} from "../../domain/port/ITransaction";
+import {TransactionDto} from "../../dto/TransactionDto";
+
+export interface ITransactionService {
+    createTransaction(transaction: TransactionDto): Promise<ITransaction>
+    getUserTransactions(cvu: number): Promise<TransactionDto[]>
 }

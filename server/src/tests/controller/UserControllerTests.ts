@@ -102,5 +102,31 @@ describe("UserController", () => {
             expect(res.json).toHaveBeenCalledWith(user);
         });
     });
+// TODO CAMBIAR ESTOS TESTS PARA QUE NO MOCKEEN EL SERVICIO
+    describe('getUserTransactions', () => {
+        it('should return an empty array if no transactions exist', async () => {
+            req.query = { email: 'test@example.com' };
+            fakeUserService.usersList.push({ email: 'test@example.com', name: 'Test User', password: 'securepassword', cvu: 1234567890 });
+            jest.spyOn(fakeUserService, 'getUserTransactions').mockResolvedValueOnce([]);
+            await userController.getUserTransactions(req as Request, res as Response);
+            expect(res.json).toHaveBeenCalledWith([]);
+        });
+        it('should return transactions if they exist', async () => {
+            req.query = { email: 'test@example.com' };
+            fakeUserService.usersList.push({ email: 'test@example.com', name: 'Test User', password: 'securepassword', cvu: 1234567890 });
+            const txs = [
+                { amount: 100, senderCvu: 1234567890, receiverCvu: 2222222222, description: 'Test1' },
+                { amount: 200, senderCvu: 3333333333, receiverCvu: 1234567890, description: 'Test2' }
+            ];
+            jest.spyOn(fakeUserService, 'getUserTransactions').mockResolvedValueOnce(txs as any);
+            await userController.getUserTransactions(req as Request, res as Response);
+            expect(res.json).toHaveBeenCalledWith(txs);
+        });
+        it('should return 400 if email is not provided', async () => {
+            req.query = {};
+            await userController.getUserTransactions(req as Request, res as Response);
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Email must be provided' });
+        });
+    });
 });
-

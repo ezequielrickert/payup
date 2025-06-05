@@ -3,6 +3,7 @@ import { UserService } from '../../application/adapter/UserService';
 import { InMemoryUserRepository } from '../adapters/InMemoryUserRepository';
 import { FakeWalletService } from '../adapters/FakeWalletService';
 import { UserDto } from '../../dto/UserDto';
+import {FakeTransactionService} from "../adapters/FakeTransactionService";
 
 // This test verifies that when a user is created, a wallet is also created for that user
 
@@ -10,11 +11,13 @@ describe('User and Wallet Integration', () => {
     let userRepo: InMemoryUserRepository;
     let walletService: FakeWalletService;
     let userService: UserService;
+    let transactionService: FakeTransactionService;
 
     beforeEach(() => {
         userRepo = new InMemoryUserRepository();
         walletService = new FakeWalletService();
-        userService = new UserService(userRepo, walletService);
+        transactionService = new FakeTransactionService();
+        userService = new UserService(userRepo, walletService, transactionService);
     });
 
     it('should create a wallet when a new user is created', async () => {

@@ -4,6 +4,8 @@ import {IUserRepository} from "../../repository/port/IUserRepository";
 import {User} from "../../domain/adapter/User";
 import {UserDto} from "../../dto/UserDto";
 import { IWalletService } from "../port/IWalletService";
+import { ITransactionService } from "../port/ITransactionService";
+import { TransactionDto } from "../../dto/TransactionDto";
 
 // Note 3: The idea here is that the application layer should recieve and send DTOs with the controller layer.
 // Because of this, real instances are created in this layer.
@@ -13,7 +15,8 @@ export class UserService implements IUserService {
     // because we CAN NOT couple application layer to INFRASTRUCTURE models like Prisma
     constructor(
         private readonly userRepo: IUserRepository,
-        private readonly walletService: IWalletService
+        private readonly walletService: IWalletService,
+        private readonly transactionService: ITransactionService
     ) {}
 
     async authenticate(email: string, password: string): Promise<UserDto | null> {
@@ -44,6 +47,12 @@ export class UserService implements IUserService {
         // Same logic as findById
         let foundUser = await this.userRepo.findByEmail(email);
         return  foundUser ? this.mapToDto(foundUser) : null;
+    }
+
+    async getUserTransactions(email: string): Promise<TransactionDto[]> {
+        const user = await this.userRepo.findByEmail(email);
+        if (!user) throw new Error("User not found");
+        return this.transactionService.getUserTransactions(user.cvu);
     }
 
     private mapToDto(user: IUser): UserDto {

@@ -1,8 +1,9 @@
 import { ITransactionRepository } from '../../repository/port/ITransactionRepository';
 import { ITransaction } from '../../domain/port/ITransaction';
 import {TransactionDto} from "../../dto/TransactionDto";
+import {ITransactionService} from "../port/ITransactionService";
 
-export class TransactionService {
+export class TransactionService implements ITransactionService {
     private transactionRepository: ITransactionRepository;
 
     constructor(transactionRepository: ITransactionRepository) {

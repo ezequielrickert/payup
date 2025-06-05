@@ -3,6 +3,7 @@ import { InMemoryUserRepository } from '../adapters/InMemoryUserRepository';
 import { UserService } from '../../application/adapter/UserService';
 import {UserDto} from "../../dto/UserDto";
 import {FakeWalletService} from "../adapters/FakeWalletService";
+import {FakeTransactionService} from "../adapters/FakeTransactionService";
 
 describe('UserService', () => {
 
@@ -10,7 +11,8 @@ describe('UserService', () => {
     it('should find user by email', async () => {
         const repo = new InMemoryUserRepository();
         const walletService = new FakeWalletService();
-        const service = new UserService(repo, walletService);
+        const transactionService = new FakeTransactionService();
+        const service = new UserService(repo, walletService, transactionService);
 
         const user = new UserDto('Alice', 'alice@example.com', "securepassword");
 
@@ -23,7 +25,8 @@ describe('UserService', () => {
     it('should return null for non-existing email', async () => {
         const repo = new InMemoryUserRepository();
         const walletService = new FakeWalletService();
-        const service = new UserService(repo, walletService);
+        const transactionService = new FakeTransactionService();
+        const service = new UserService(repo, walletService, transactionService);
 
         const found = await service.findByEmail('jhon@email.com');
 
@@ -33,7 +36,8 @@ describe('UserService', () => {
     it('should not save user with existing email', async () => {
         const repo = new InMemoryUserRepository();
         const walletService = new FakeWalletService();
-        const service = new UserService(repo, walletService);
+        const transactionService = new FakeTransactionService();
+        const service = new UserService(repo, walletService, transactionService);
 
         const user1 = new UserDto('Alice', 'alice@example.com', "securepassword");
         const user2 = new UserDto('Bob', 'alice@example.com', "securepassword");
@@ -46,7 +50,8 @@ describe('UserService', () => {
     it('should authenticate a user with correct credentials', async () => {
         const repo = new InMemoryUserRepository();
         const walletService = new FakeWalletService();
-        const service = new UserService(repo, walletService);
+        const transactionService = new FakeTransactionService();
+        const service = new UserService(repo, walletService, transactionService);
 
         const user = new UserDto('Alice', 'alice@mail.com', 'securepassword');
         await service.save(user);
@@ -62,7 +67,8 @@ describe('UserService', () => {
     it('should not authenticate a user with incorrect credentials', async () => {
         const repo = new InMemoryUserRepository();
         const walletService = new FakeWalletService();
-        const service = new UserService(repo, walletService);
+        const transactionService = new FakeTransactionService();
+        const service = new UserService(repo, walletService, transactionService);
         const user = new UserDto('Alice', 'alice@mail.com', 'securepassword');
         await service.save(user);
 
@@ -73,7 +79,8 @@ describe('UserService', () => {
     it('should not authenticate a user with correct email but wrong password', async () => {
         const repo = new InMemoryUserRepository();
         const walletService = new FakeWalletService();
-        const service = new UserService(repo, walletService);
+        const transactionService = new FakeTransactionService();
+        const service = new UserService(repo, walletService, transactionService);
 
         const user = new UserDto('Alice', 'alice@mail.com', 'securepassword');
         await service.save(user);
@@ -85,7 +92,8 @@ describe('UserService', () => {
     it('should not authenticate a user with non-existing email and correct password', async () => {
         const repo = new InMemoryUserRepository();
         const walletService = new FakeWalletService();
-        const service = new UserService(repo, walletService);
+        const transactionService = new FakeTransactionService();
+        const service = new UserService(repo, walletService, transactionService);
 
         const user = new UserDto('Alice', 'alice@mail.com', 'securepassword');
         await service.save(user);
@@ -97,13 +105,39 @@ describe('UserService', () => {
     it('should not authenticate a user with wrong email and correct password', async () => {
         const repo = new InMemoryUserRepository();
         const walletService = new FakeWalletService();
-        const service = new UserService(repo, walletService);
+        const transactionService = new FakeTransactionService();
+        const service = new UserService(repo, walletService, transactionService);
 
         const user = new UserDto('Alice', 'alice@mail.com', 'securepassword');
         await service.save(user);
 
         const authenticatedUser = await service.authenticate('wrongemail@mail.com', 'securepassword');
         expect(authenticatedUser).toBeNull();
+    });
+
+    // TODO ARREGLAR ESTOS TESTS PARA QUE SE CRREEN LAS TRANSACCIONES (creo que es cuestion de pasarle el faketransactions al fakeuser)
+
+    it('should get user transactions by email', async () => {
+        const repo = new InMemoryUserRepository();
+        const walletService = new FakeWalletService();
+        const transactionService = new FakeTransactionService();
+        const service = new UserService(repo, walletService, transactionService);
+        const user = new UserDto('Alice', 'alice@example.com', 'securepassword', 123456);
+        await service.save(user);
+        // Add some transactions
+        await transactionService.createTransaction({ amount: 100, senderCvu: 123456, receiverCvu: 222222, description: 'Test1' });
+        await transactionService.createTransaction({ amount: 200, senderCvu: 333333, receiverCvu: 123456, description: 'Test2' });
+        const txs = await service.getUserTransactions('alice@example.com');
+        expect(txs).toHaveLength(2);
+        expect(txs.map(t => t.description).sort()).toEqual(['Test1', 'Test2']);
+    });
+
+    it('should throw if user does not exist when getting transactions', async () => {
+        const repo = new InMemoryUserRepository();
+        const walletService = new FakeWalletService();
+        const transactionService = new FakeTransactionService();
+        const service = new UserService(repo, walletService, transactionService);
+        await expect(service.getUserTransactions('notfound@example.com')).rejects.toThrow('User not found');
     });
 
 });

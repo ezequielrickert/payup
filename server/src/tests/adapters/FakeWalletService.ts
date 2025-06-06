@@ -8,17 +8,18 @@ export class FakeWalletService implements IWalletService {
         return this.wallets.find(w => w.userCvu === userId) || null;
     }
 
-    async deposit(userId: number, amount: number): Promise<WalletDto> {
-        const wallet = await this.findByUserCvu(userId);
+    async deposit(userCvu: number, amount: number): Promise<WalletDto> {
+        const wallet = await this.findByUserCvu(userCvu);
         if (!wallet) throw new Error("Wallet not found");
         wallet.balance += amount;
         return wallet;
     }
 
-    async withdraw(userId: number, amount: number): Promise<WalletDto> {
-        const wallet = await this.findByUserCvu(userId);
+    async withdraw(userCvu: number, amount: number): Promise<WalletDto> {
+        const wallet = await this.findByUserCvu(userCvu);
         if (!wallet) throw new Error("Wallet not found");
         wallet.balance -= amount;
+        if (wallet.balance < 0) throw new Error("Insufficient balance");
         return wallet;
     }
 

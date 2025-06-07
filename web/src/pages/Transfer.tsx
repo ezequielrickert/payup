@@ -5,6 +5,8 @@ import type{ TransferForm } from '../types/types';
 import { formatCurrency, isValidAmount, isValidEmail } from '../utils/formatters';
 import { Header } from '../ui/Header';
 import { useNavigate } from 'react-router-dom';
+import { fetchBalance } from '../hooks/balanceHook';
+import { useAuth } from '../utils/AuthContext';
 
 export const TransferScreen = () => {
     const [form, setForm] = useState<TransferForm>({
@@ -17,7 +19,10 @@ export const TransferScreen = () => {
         amount?: string;
         general?: string
     }>({});
+    const user = useAuth();
     const [isLoading, setIsLoading] = useState(false);
+    const [recipientType, setRecipientType] = useState<'email' | 'cvu'>('email');
+    const { balance } = fetchBalance(user.user?.cvu);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -25,11 +30,13 @@ export const TransferScreen = () => {
 
         const newErrors: { recipient?: string; amount?: string; general?: string } = {};
 
-        // Validate recipient
+        // Validar destinatario según tipo
         if (!form.recipient) {
-            newErrors.recipient = 'El destinatario es requerido';
-        } else if (!isValidEmail(form.recipient)) {
+            newErrors.recipient = recipientType === 'email' ? 'El email es requerido' : 'El CVU es requerido';
+        } else if (recipientType === 'email' && !isValidEmail(form.recipient)) {
             newErrors.recipient = 'Ingresá un email válido';
+        } else if (recipientType === 'cvu' && !/^\d{6}$/.test(form.recipient)) {
+            newErrors.recipient = 'Ingresá un CVU válido (6 dígitos)';
         }
 
         // Validate amount
@@ -39,7 +46,7 @@ export const TransferScreen = () => {
             newErrors.amount = 'Ingresá un monto válido';
         } else {
             const amount = parseFloat(form.amount);
-            if (amount > 1000) {
+            if (amount > (balance ?? 0)) {
                 newErrors.amount = 'No tenés saldo suficiente';
             }
             if (amount < 1) {
@@ -51,6 +58,30 @@ export const TransferScreen = () => {
 
         if (Object.keys(newErrors).length === 0) {
             setIsLoading(true);
+            try {
+                const response = await fetch('http://localhost:3001/payment/transfer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        senderCvu: Number(user.user?.cvu),
+                        receiverCvu: Number(form.recipient),
+                        amount: Number(form.amount),
+                        description: form.description
+                    })
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to transfer money');
+                }
+                const data = await response.json();
+                console.log(data);
+            } catch (error) {
+                console.error('Error transferring money:', error);
+            } finally {
+                setIsLoading(false);
+                navigate('/dashboard');
+            }
         }
     };
 
@@ -75,7 +106,7 @@ export const TransferScreen = () => {
                     <div className="balance-info">
                         <span className="label">Saldo disponible:</span>
                         <span className="amount">
-                            {formatCurrency(1000)}
+                            {formatCurrency(balance ?? 0)}
                         </span>
                     </div>
                 </BalanceCard>
@@ -91,16 +122,46 @@ export const TransferScreen = () => {
                             </ErrorMessage>
                         )}
 
+                        {/* Selector de tipo de destinatario */}
+                        <FormSection>
+                            <Label>Enviar a:</Label>
+                            <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.5rem' }}>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="recipientType"
+                                        value="email"
+                                        checked={recipientType === 'email'}
+                                        onChange={() => setRecipientType('email')}
+                                        disabled={isLoading}
+                                    />
+                                    Email
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="recipientType"
+                                        value="cvu"
+                                        checked={recipientType === 'cvu'}
+                                        onChange={() => setRecipientType('cvu')}
+                                        disabled={isLoading}
+                                    />
+                                    CVU
+                                </label>
+                            </div>
+                        </FormSection>
+
                         {/* Recipient */}
                         <FormSection>
-                            <Label>Destinatario (Email)</Label>
+                            <Label>Destinatario ({recipientType === 'email' ? 'Email' : 'CVU'})</Label>
                             <Input
-                                type="email"
+                                type={recipientType === 'email' ? 'email' : 'text'}
                                 value={form.recipient}
                                 onChange={(e) => setForm(prev => ({ ...prev, recipient: e.target.value }))}
-                                placeholder="juan@email.com"
+                                placeholder={recipientType === 'email' ? 'juan@email.com' : '123456'}
                                 hasError={!!errors.recipient}
                                 disabled={isLoading}
+                                maxLength={recipientType === 'cvu' ? 6 : undefined}
                             />
                             {errors.recipient && (
                                 <ErrorText>{errors.recipient}</ErrorText>

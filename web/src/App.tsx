@@ -18,8 +18,8 @@ function AppRoutes() {
     <Route element={<ProtectedRoute />}>
       <Route path="/dashboard" element={<DashboardScreen />} />
       <Route path="/withdraw" element={<WithdrawScreen />} />
-      <Route path="/history" element={<HistoryScreen />} />
       <Route path="/transfer" element={<TransferScreen />} />
+      <Route path="/history" element={<HistoryScreen />} />
       <Route path="/load" element={<LoadMoneyScreen />} />
     </Route>
 

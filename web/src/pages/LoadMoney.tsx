@@ -7,6 +7,7 @@ import { Header } from '../ui/Header';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import type { LoadDto } from '../dto/LoadDto';
+import { fetchBalance } from '../hooks/balanceHook';
 
 export const LoadMoneyScreen = () => {
     const [form, setForm] = useState<LoadForm>({
@@ -19,27 +20,9 @@ export const LoadMoneyScreen = () => {
     const user = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const [balance, setBalance] = useState<number>();
+    const { balance } = fetchBalance(user.user?.cvu);
     const navigate = useNavigate();
-
     const predefinedAmounts = [1000, 5000, 10000, 20000];
-
-    useEffect(() => {
-        // Fetch user wallet and ask for balance
-        const fetchWallet = async () => {
-            try {
-                const response = await fetch(`http://localhost:3001/wallet/${user.user?.cvu}`);
-                if (!response.ok) {
-                    throw new Error('Error fetching wallet');
-                }
-                const data = await response.json();
-                setBalance(data.balance);
-            } catch (error) {
-                console.error('Error fetching wallet:', error);
-            }
-        }
-        fetchWallet();
-    });
 
     useEffect(() => {
         if (success) {

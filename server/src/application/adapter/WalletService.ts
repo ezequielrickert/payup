@@ -26,20 +26,24 @@ export class WalletService implements IWalletService {
         }
     }
 
-    async deposit(userCvu: number, amount: number): Promise<WalletDto> {
-        const wallet = await this.walletRepo.findByUserCvu(userCvu);
-        if (!wallet) throw new Error("Wallet not found");
-        const deposited = wallet.deposit(amount);
-        await this.walletRepo.update(deposited);
-        return this.mapToDto(deposited);
-    }
-
     async withdraw(userCvu: number, amount: number): Promise<WalletDto> {
         const wallet = await this.walletRepo.findByUserCvu(userCvu);
+        console.log(JSON.stringify(wallet, null, 2));
         if (!wallet) throw new Error("Wallet not found");
         const withdrawn = wallet.withdraw(amount);
+        console.log(JSON.stringify(withdrawn, null, 2));
         await this.walletRepo.update(withdrawn);
         return this.mapToDto(withdrawn);
+    }
+
+    async deposit(userCvu: number, amount: number): Promise<WalletDto> {
+        const wallet = await this.walletRepo.findByUserCvu(userCvu);
+        console.log(JSON.stringify(wallet, null, 2));
+        if (!wallet) throw new Error("Wallet not found");
+        const deposited = wallet.deposit(amount);
+        console.log(JSON.stringify(deposited, null, 2));
+        await this.walletRepo.update(deposited);
+        return this.mapToDto(deposited);
     }
 
     private mapToDto(wallet: IWallet): WalletDto {

@@ -11,6 +11,10 @@ import {WalletController} from "./controller/WalletController";
 import {createWalletRouter} from "./router/WalletRouter";
 import {ApiController} from "./controller/ApiController";
 import {createApiRouter} from "./router/ApiRouter";
+import {PaymentController} from "./controller/PaymentController";
+import {TransactionService} from "./application/adapter/TransactionService";
+import {PrismaTransactionRepository} from "./repository/adapter/prisma/PrismaTransactionRepository";
+import {createPaymentRouter} from "./router/PaymentRouter";
 
 
 // In this file the actual application is created and the dependencies are injected for it to be able to start
@@ -25,9 +29,16 @@ const walletService = new WalletService(walletRepository);
 const walletController = new WalletController(walletService);
 const walletRouter = createWalletRouter(walletController);
 
+// Dependency injection for Payment/Transaction
+const transactionRepository = new PrismaTransactionRepository();
+const transactionService = new TransactionService(transactionRepository);
+const paymentController = new PaymentController(walletService, transactionService);
+
+const paymentRouter = createPaymentRouter(paymentController);
+
 // Dependency injection for User
 const userRepository = new PrismaUserRepository();
-const userService = new UserService(userRepository, walletService);
+const userService = new UserService(userRepository, walletService, transactionService);
 const userController = new UserController(userService);
 const userRouter = createUserRouter(userController);
 
@@ -49,6 +60,7 @@ app.use('/users', userRouter);
 app.use('/connection', connectionRouter);
 app.use('/wallet', walletRouter);
 app.use('/api', apiRouter);
+app.use('/payment', paymentRouter)
 
 
 const PORT = process.env.PORT || 3001;

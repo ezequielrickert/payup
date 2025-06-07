@@ -59,7 +59,7 @@ export const TransferScreen = () => {
         if (Object.keys(newErrors).length === 0) {
             setIsLoading(true);
             try {
-                const response = await fetch('http://localhost:3001/payment/transfer', {
+                const response = await fetch('http://localhost:3001/payment/transferByCvu', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -9,11 +9,12 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ title, showBack, onBack }) => {
+    console.log('Header props:', { showBack, onBack }); // Debug log
     return (
         <StyledHeader>
             {showBack && (
-                <BackButton onClick={onBack}>
-                    <ChevronLeft className="icon" />
+                <BackButton onClick={onBack} type="button">
+                    <ChevronLeft size={24} />
                 </BackButton>
             )}
             <Title>{title}</Title>
@@ -24,13 +25,15 @@ export const Header: React.FC<HeaderProps> = ({ title, showBack, onBack }) => {
 const StyledHeader = styled.header`
     position: sticky;
     top: 0;
-    z-index: 10; /* Asegura que el Header esté por encima de otros elementos */
+    z-index: 10;
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 16px;
     background: #1a1a1a;
     border-bottom: 1px solid #333;
+    width: 100%;
+    box-sizing: border-box;
 `;
 
 const BackButton = styled.button`
@@ -39,20 +42,26 @@ const BackButton = styled.button`
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: #222;
-    border: 1px solid #333;
-    border-radius: 50%;
-    color: #fff;
+    background: #222 !important;
+    border: 1px solid #333 !important;
+    border-radius: 50% !important;
+    color: #fff !important;
     cursor: pointer;
     transition: all 0.2s;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
 
     &:hover {
-        background: #2a2a2a;
+        background: #2a2a2a !important;
+        border-color: #444 !important;
     }
 
-    .icon {
-        width: 20px;
-        height: 20px;
+    svg {
+        width: 24px;
+        height: 24px;
+        color: #fff;
     }
 `;
 
@@ -61,6 +70,7 @@ const Title = styled.h1`
     font-size: 18px;
     font-weight: 600;
     margin: 0;
-    flex: 1; /* Permite que el título ocupe el espacio restante */
-    text-align: center; /* Centra el título si no hay otros elementos */
+    flex: 1;
+    text-align: center;
+    line-height: 1.2;
 `;

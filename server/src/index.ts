@@ -32,15 +32,16 @@ const walletRouter = createWalletRouter(walletController);
 // Dependency injection for Payment/Transaction
 const transactionRepository = new PrismaTransactionRepository();
 const transactionService = new TransactionService(transactionRepository);
-const paymentController = new PaymentController(walletService, transactionService);
-
-const paymentRouter = createPaymentRouter(paymentController);
 
 // Dependency injection for User
 const userRepository = new PrismaUserRepository();
 const userService = new UserService(userRepository, walletService, transactionService);
 const userController = new UserController(userService);
 const userRouter = createUserRouter(userController);
+
+// Dependency injection for Payment
+const paymentController = new PaymentController(walletService, transactionService, userService);
+const paymentRouter = createPaymentRouter(paymentController);
 
 // Connection controller and router
 const connectionController = new ConnectionController();

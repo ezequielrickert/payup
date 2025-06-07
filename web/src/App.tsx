@@ -15,13 +15,13 @@ function AppRoutes() {
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/signup" element={<SignUpScreen />} />
 
-    <Route element={<ProtectedRoute />}>
-      <Route path="/dashboard" element={<DashboardScreen />} />
-      <Route path="/withdraw" element={<WithdrawScreen />} />
-      <Route path="/transfer" element={<TransferScreen />} />
-      <Route path="/history" element={<HistoryScreen />} />
-      <Route path="/load" element={<LoadMoneyScreen />} />
-    </Route>
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<DashboardScreen />} />
+        <Route path="/withdraw" element={<WithdrawScreen />} />
+        <Route path="/transfer" element={<TransferScreen />} />
+        <Route path="/history" element={<HistoryScreen />} />
+        <Route path="/load" element={<LoadMoneyScreen />} />
+      </Route>
 
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="*" element={<div>Página no encontrada</div>} />

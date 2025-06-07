@@ -4,8 +4,9 @@
 import { TransactionDto } from "../../dto/TransactionDto";
 import {IWalletService} from "../port/IWalletService";
 import {ITransactionService} from "../port/ITransactionService";
+import {IPaymentService} from "../port/IPaymentService";
 
-export class PaymentService {
+export class PaymentService implements IPaymentService {
     constructor(
         private readonly walletService: IWalletService,
         private readonly transactionService: ITransactionService

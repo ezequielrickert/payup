@@ -3,15 +3,12 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 /**
- * Truncate all tables in the test database.
- * Add more tables as needed.
+    * Resets the database by truncating all tables and resetting their IDs.
  */
 export async function resetDatabase() {
-  await prisma.$transaction([
-    prisma.transaction.deleteMany({}),
-    prisma.wallet.deleteMany({}),
-    prisma.user.deleteMany({}),
-  ]);
+  await prisma.$executeRawUnsafe(`
+    TRUNCATE TABLE "Transaction", "Wallet", "User" RESTART IDENTITY CASCADE;
+  `);
 }
 
 export default prisma;

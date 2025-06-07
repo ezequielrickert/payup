@@ -1,0 +1,19 @@
+# Dockerfile for running integration tests
+FROM node:18-alpine
+
+WORKDIR /app/server
+
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install
+
+COPY . .
+
+RUN npx prisma generate
+
+# Use .env.test for test environment
+ENV NODE_ENV=test
+
+# Entrypoint for running tests
+CMD ["npm", "run", "test"]
+

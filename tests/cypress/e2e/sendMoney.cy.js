@@ -1,4 +1,4 @@
-// cypress/e2e/sendMoney.cy.js
+// tests/e2e/sendMoney.cy.js
 
 describe('SendMoney Screen', () => {
   it('should navigate to Enviar and render the SendMoney screen correctly', () => {

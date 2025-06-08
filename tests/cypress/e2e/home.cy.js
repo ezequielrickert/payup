@@ -1,4 +1,4 @@
-// cypress/e2e/home.cy.js
+// tests/e2e/home.cy.js
 
 describe('Home Page', () => {
   it('should load the home page and display the dashboard for logged-in users', () => {

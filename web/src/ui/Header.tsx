@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { ChevronLeft } from 'lucide-react';
 import React from 'react';
+import { theme } from '../styles/theme';
 
 interface HeaderProps {
     title: string;
@@ -29,11 +30,17 @@ const StyledHeader = styled.header`
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 16px;
+    padding: 20px 24px;
     background: #1a1a1a;
     border-bottom: 1px solid #333;
     width: 100%;
     box-sizing: border-box;
+    height: 72px;
+
+    @media (max-width: ${theme.breakpoints.mobile}) {
+        padding: 16px 20px;
+        height: 64px;
+    }
 `;
 
 const BackButton = styled.button`
@@ -67,10 +74,14 @@ const BackButton = styled.button`
 
 const Title = styled.h1`
     color: #fff;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     margin: 0;
     flex: 1;
     text-align: center;
     line-height: 1.2;
+
+    @media (max-width: ${theme.breakpoints.mobile}) {
+        font-size: 18px;
+    }
 `;

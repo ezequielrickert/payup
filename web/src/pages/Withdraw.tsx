@@ -96,13 +96,6 @@ export const WithdrawScreen = () => {
                         </p>
                     </BalanceCard>
 
-                    {/* Simulation Notice */}
-                    <InfoCard>
-                        <p>
-                            <strong>Aviso:</strong> Esta es una simulación. En la app real se integraría con sistemas bancarios reales.
-                        </p>
-                    </InfoCard>
-
                     {/* Submit Button */}
                     <SubmitButton
                         type="submit"
@@ -164,6 +157,8 @@ const Label = styled.label`
     color: rgba(255, 255, 255, 0.8);
     font-size: 14px;
     font-weight: 500;
+    text-align: left;
+    display: block;
 `;
 
 const InputWrapper = styled.div`
@@ -224,6 +219,7 @@ const ErrorText = styled.p`
     color: #ef4444;
     font-size: 14px;
     margin-top: 4px;
+    text-align: left;
 `;
 
 const BalanceCard = styled.div`
@@ -241,25 +237,6 @@ const BalanceCard = styled.div`
             font-weight: 500;
             margin-right: 4px;
         }
-    }
-`;
-
-const InfoCard = styled.div`
-    background: rgba(59, 130, 246, 0.1);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 16px;
-    padding: 16px;
-
-    h4 {
-        color: #fff;
-        font-weight: 500;
-        margin-bottom: 8px;
-    }
-
-    p {
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 14px;
-        line-height: 1.5;
     }
 `;
 

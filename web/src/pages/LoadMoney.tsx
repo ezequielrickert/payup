@@ -281,6 +281,8 @@ const Label = styled.label`
     color: rgba(255, 255, 255, 0.8);
     font-size: 14px;
     font-weight: 500;
+    text-align: left;
+    display: block;
 `;
 
 const QuickAmounts = styled.div`
@@ -376,11 +378,14 @@ const ErrorText = styled.p`
     color: #ef4444;
     font-size: 14px;
     margin-top: 4px;
+    text-align: left;
 `;
 
 const HelpText = styled.p`
     color: rgba(255, 255, 255, 0.6);
     font-size: 12px;
+    text-align: left;
+    margin-top: 4px;
 `;
 
 const SubmitButton = styled.button`

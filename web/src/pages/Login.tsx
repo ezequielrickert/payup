@@ -94,7 +94,9 @@ const StyledWrapper = styled.div`
   align-items: center;
   justify-content: center;
   background: linear-gradient(to bottom right, #4F46E5, #7C3AED);
-  padding: 10px;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 
   .form {
     display: flex;
@@ -108,6 +110,15 @@ const StyledWrapper = styled.div`
     background-color: #1a1a1a;
     color: #fff;
     border: 1px solid #333;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 480px) {
+    padding: 16px;
+    
+    .form {
+      padding: 16px;
+    }
   }
 
   .title {
@@ -139,7 +150,6 @@ const StyledWrapper = styled.div`
     height: 16px;
     width: 16px;
     border-radius: 50%;
-    left: 0px;
     background-color: #00bfff;
   }
 
@@ -182,7 +192,6 @@ const StyledWrapper = styled.div`
     color: rgba(255, 255, 255, 0.5);
     position: absolute;
     left: 10px;
-    top: 0px;
     font-size: 0.9em;
     cursor: text;
     transition: 0.3s ease;
@@ -196,7 +205,6 @@ const StyledWrapper = styled.div`
   .form label .input:focus + span,
   .form label .input:valid + span {
     color: #00bfff;
-    top: 0px;
     font-size: 0.7em;
     font-weight: 600;
   }

@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { LoginScreen } from './pages/Login';
 import { SignUpScreen } from './pages/SignUp';
 import { DashboardScreen } from './pages/Dashboard';
-import { WithdrawScreen } from './pages/Withdraw';
 import { HistoryScreen } from './pages/History';
 import { TransferScreen } from './pages/Transfer';
 import { LoadMoneyScreen } from './pages/LoadMoney';
@@ -17,7 +16,6 @@ function AppRoutes() {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardScreen />} />
-        <Route path="/withdraw" element={<WithdrawScreen />} />
         <Route path="/transfer" element={<TransferScreen />} />
         <Route path="/history" element={<HistoryScreen />} />
         <Route path="/load" element={<LoadMoneyScreen />} />

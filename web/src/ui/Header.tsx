@@ -59,6 +59,10 @@ const BackButton = styled.button`
     margin: 0 !important;
     min-width: 40px !important;
     min-height: 40px !important;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 
     &:hover {
         background: #2a2a2a !important;

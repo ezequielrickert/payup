@@ -303,6 +303,10 @@ const QuickAmountButton = styled.button<QuickAmountButtonProps>`
     color: ${props => props.selected ? '#00bfff' : '#fff'};
     font-weight: 500;
     transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 
     &:hover:not(:disabled) {
         background: ${props => props.selected ? 'rgba(0, 191, 255, 0.15)' : '#2a2a2a'};

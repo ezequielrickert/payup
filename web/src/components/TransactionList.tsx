@@ -88,7 +88,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
                     <p className="message">No hay movimientos aún</p>
                     <p className="submessage" onClick={() => navigate('/load')}>
                         Comenzá cargando dinero a tu billetera
-                    </p>
+                        </p>
                 </div>
             )}
         </StyledTransactionList>

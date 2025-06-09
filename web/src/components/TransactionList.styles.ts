@@ -61,26 +61,34 @@ export const StyledTransactionList = styled.div`
     }
 
     .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
         text-align: center;
-        padding: 48px 0;
+        gap: 16px;
 
         .icon {
             width: 48px;
             height: 48px;
-            color: ${theme.colors.text.secondary};
-            margin: 0 auto 16px;
+            color: rgba(255, 255, 255, 0.4);
         }
 
         .message {
-            color: ${theme.colors.text.primary};
+            font-size: 18px;
             font-weight: 500;
-            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .submessage {
-            color: ${theme.colors.text.secondary};
             font-size: 14px;
+            color: #00bfff;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
 
             &:hover {
                 text-decoration: underline;

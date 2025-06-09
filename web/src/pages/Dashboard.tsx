@@ -4,7 +4,6 @@ import {
     CreditCard,
     Plus,
     Send,
-    Minus,
     History as HistoryIcon,
     Eye,
     EyeOff,
@@ -136,14 +135,6 @@ export const DashboardScreen = () => {
                         <span className="action-subtitle">Dinero</span>
                     </Card>
 
-                    <Card onClick={() => navigate('/withdraw')} className="action-card" padding="lg">
-                        <div className="icon-container error">
-                            <Minus className="icon" />
-                        </div>
-                        <span className="action-title">Extraer</span>
-                        <span className="action-subtitle">Dinero</span>
-                    </Card>
-
                     <Card onClick={() => navigate('/history')} className="action-card" padding="lg">
                         <div className="icon-container secondary">
                             <HistoryIcon className="icon" />
@@ -181,8 +172,14 @@ const StyledWrapper = styled.div`
     width: 100%;
     box-sizing: border-box;
 
+    /* Remove tap highlight color */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+
     main {
-        max-width: 800px;
+        max-width: 1000px;
         margin: 0 auto;
         padding: ${theme.spacing.xl};
         display: flex;
@@ -197,6 +194,12 @@ const StyledWrapper = styled.div`
         @media (max-width: ${theme.breakpoints.mobile}) {
             padding: ${theme.spacing.md};
             gap: ${theme.spacing.md};
+        }
+
+        @media (min-width: 1200px) {
+            main {
+                max-width: 1200px;
+            }
         }
     }
 
@@ -252,17 +255,19 @@ const StyledWrapper = styled.div`
 
     .actions-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); // esto es más fluido
         gap: ${theme.spacing.md};
 
         @media (max-width: ${theme.breakpoints.tablet}) {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
         }
 
         @media (max-width: ${theme.breakpoints.mobile}) {
+            grid-template-columns: repeat(3, 1fr);
             gap: ${theme.spacing.sm};
         }
     }
+
 
     .action-card {
         text-align: center;

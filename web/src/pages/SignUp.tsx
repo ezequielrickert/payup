@@ -169,19 +169,26 @@ const StyledWrapper = styled.div`
   justify-content: center;
   background: linear-gradient(to bottom right, #4F46E5, #7C3AED);
   padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 
   .form {
     display: flex;
     flex-direction: column;
     gap: 10px;
     width: 100%;
-    max-width: 350px;
+    max-width: 400px;
     padding: 20px;
     border-radius: 20px;
     position: relative;
     background-color: #1a1a1a;
     color: #fff;
     border: 1px solid #333;
+    box-sizing: border-box;
   }
 
   .title {
@@ -190,7 +197,7 @@ const StyledWrapper = styled.div`
     position: relative;
     display: flex;
     align-items: center;
-    padding-left: 30px;
+    padding-left: 40px;
     margin-bottom: 10px;
     color: #00bfff;
   }
@@ -198,12 +205,14 @@ const StyledWrapper = styled.div`
   .title::before {
     width: 18px;
     height: 18px;
+    left: 8px;
   }
 
   .title::after {
     width: 18px;
     height: 18px;
     animation: pulse 1s linear infinite;
+    left: 8px;
   }
 
   .title::before,
@@ -220,6 +229,7 @@ const StyledWrapper = styled.div`
   .signin {
     font-size: 14.5px;
     color: rgba(255, 255, 255, 0.7);
+    text-align: left;
   }
 
   .signin {
@@ -234,6 +244,10 @@ const StyledWrapper = styled.div`
     color: #00bfff;
     text-decoration: none;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .flex {
@@ -290,6 +304,10 @@ const StyledWrapper = styled.div`
     color: #fff;
     font-size: 16px;
     background-color: #00bfff;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .submit:hover {
@@ -311,6 +329,14 @@ const StyledWrapper = styled.div`
     to {
       transform: scale(1.8);
       opacity: 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 16px;
+    
+    .form {
+      padding: 16px;
     }
   }
 `;

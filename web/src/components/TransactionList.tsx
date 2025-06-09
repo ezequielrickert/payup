@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowDownLeft, ArrowUpRight, Send, History as HistoryIcon } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, ArrowDown, Send, History as HistoryIcon, Loader2 } from 'lucide-react';
 import { useAuth } from '../utils/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { StyledTransactionList } from './TransactionList.styles';
@@ -14,9 +14,10 @@ interface Transaction {
 interface TransactionListProps {
     transactions: Transaction[];
     limit?: number;
+    isLoading?: boolean;
 }
 
-export const TransactionList: React.FC<TransactionListProps> = ({ transactions, limit }) => {
+export const TransactionList: React.FC<TransactionListProps> = ({ transactions, limit, isLoading = false }) => {
     const { user } = useAuth();
     const navigate = useNavigate();
 
@@ -29,7 +30,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
 
     const getTransactionType = (transaction: Transaction) => {
         if (!user?.cvu) return 'transfer';
-        
+        if (transaction.senderCvu === transaction.receiverCvu && transaction.senderCvu === user.cvu) {
+            return 'self';
+        }
         if (transaction.senderCvu === user.cvu) {
             return 'sent';
         }
@@ -42,6 +45,17 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
     const displayTransactions = limit 
         ? [...transactions].reverse().slice(0, limit)
         : [...transactions].reverse();
+
+    if (isLoading) {
+        return (
+            <StyledTransactionList>
+                <div className="loading-state">
+                    <Loader2 className="icon" />
+                    <p className="message">Cargando movimientos...</p>
+                </div>
+            </StyledTransactionList>
+        );
+    }
 
     return (
         <StyledTransactionList>
@@ -57,6 +71,8 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
                                             <ArrowUpRight className="icon" />
                                         ) : type === 'received' ? (
                                             <ArrowDownLeft className="icon" />
+                                        ) : type === 'self' ? (
+                                            <ArrowDown className="icon" />
                                         ) : (
                                             <Send className="icon" />
                                         )}
@@ -75,7 +91,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
                                     </div>
                                 </div>
                                 <span className={`amount ${type}`}>
-                                    {type === 'received' ? '+' : '-'}
+                                    {type === 'received' || type === 'self' ? '+' : '-'}
                                     {formatCurrency(transaction.amount)}
                                 </span>
                             </div>
@@ -88,9 +104,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
                     <p className="message">No hay movimientos aún</p>
                     <p className="submessage" onClick={() => navigate('/load')}>
                         Comenzá cargando dinero a tu billetera
-                        </p>
+                    </p>
                 </div>
             )}
         </StyledTransactionList>
     );
-}; 
+};

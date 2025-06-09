@@ -112,6 +112,8 @@ export const TransferScreen = () => {
         }
     };
 
+    const max_characters = 10;
+
     return (
         <StyledWrapper>
             <Header
@@ -215,11 +217,11 @@ export const TransferScreen = () => {
                                 value={form.description}
                                 onChange={(e) => setForm(prev => ({ ...prev, description: e.target.value }))}
                                 placeholder="¿Para qué es esta transferencia?"
-                                maxLength={50}
+                                maxLength={max_characters}
                                 disabled={isLoading}
                             />
                             <HelpText>
-                                {form.description.length}/50 caracteres
+                                {form.description.length}/{max_characters} caracteres
                             </HelpText>
                         </FormSection>
                     </FormCard>

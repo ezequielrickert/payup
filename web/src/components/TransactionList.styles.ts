@@ -29,6 +29,29 @@ export const StyledTransactionList = styled.div`
         flex: 1;
         min-width: 0;
     }
+    
+    // no borrar aunque diga que no se está utilizando porque si lo usa
+    .icon-container {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: ${theme.colors.surfaceHover};
+
+        &.self .icon {
+            color: #00bfff;
+        }
+
+        &.received .icon {
+            color: #00e676;
+        }
+
+        &.sent .icon {
+            color: #ff1744;
+        }
+    }
 
     .details {
         display: flex;
@@ -58,6 +81,63 @@ export const StyledTransactionList = styled.div`
         font-size: 16px;
         margin-left: 16px;
         white-space: nowrap;
+
+        // No borrar aunque diga que no se utilizan porque si los usa
+        &.self {
+            color: #00bfff;
+        }
+        &.received {
+            color: #00e676;
+        }
+        &.sent {
+            color: #ff1744;
+        }
+    }
+
+    .loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        text-align: center;
+        gap: 16px;
+
+        .icon {
+            width: 48px;
+            height: 48px;
+            color: ${theme.colors.primary.main};
+            animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            opacity: 0.8;
+        }
+
+        .message {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0.6;
+            }
+        }
     }
 
     .empty-state {
@@ -95,4 +175,4 @@ export const StyledTransactionList = styled.div`
             }
         }
     }
-`; 
+`;

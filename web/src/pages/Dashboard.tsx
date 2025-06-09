@@ -30,6 +30,7 @@ export const DashboardScreen = () => {
     const [realBalance, setRealBalance] = useState<number | null>(null);
     const [showBalance, setShowBalance] = useState(true);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
 
     useEffect(() => {
         const fetchBalance = async () => {
@@ -49,6 +50,7 @@ export const DashboardScreen = () => {
     useEffect(() => {
         const fetchTransactions = async () => {
             try {
+                setIsLoadingTransactions(true);
                 const response = await fetch(`http://localhost:3001/users/transactions?email=${encodeURIComponent(user?.email || '')}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch transactions');
@@ -58,6 +60,8 @@ export const DashboardScreen = () => {
                 setTransactions(data);
             } catch (error) {
                 console.error('Error fetching transactions:', error);
+            } finally {
+                setIsLoadingTransactions(false);
             }
         };
 
@@ -158,7 +162,7 @@ export const DashboardScreen = () => {
                             </Button>
                         )}
                     </div>
-                    <TransactionList transactions={transactions} limit={3} />
+                    <TransactionList transactions={transactions} limit={3} isLoading={isLoadingTransactions} />
                 </Card>
             </main>
         </StyledWrapper>

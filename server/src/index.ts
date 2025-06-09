@@ -48,7 +48,7 @@ const connectionController = new ConnectionController();
 const connectionRouter = createConnectionRouter(connectionController);
 
 // Api controller and router
-const apiController = new ApiController(walletService);
+const apiController = new ApiController(walletService, transactionService);
 const apiRouter = createApiRouter(apiController);
 
 app.use(cors({

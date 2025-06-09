@@ -18,10 +18,12 @@ export const HistoryScreen = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchTransactions = async () => {
             try {
+                setIsLoading(true);
                 const response = await fetch(`http://localhost:3001/users/transactions?email=${encodeURIComponent(user?.email || '')}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch transactions');
@@ -30,6 +32,8 @@ export const HistoryScreen = () => {
                 setTransactions(data);
             } catch (error) {
                 console.error('Error fetching transactions:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -47,7 +51,7 @@ export const HistoryScreen = () => {
             />
             <main>
                 <Card className="history-card" padding="lg">
-                    <TransactionList transactions={transactions} />
+                    <TransactionList transactions={transactions} isLoading={isLoading} />
                 </Card>
             </main>
         </StyledWrapper>

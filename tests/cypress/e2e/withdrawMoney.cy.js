@@ -1,4 +1,4 @@
-// cypress/e2e/withdrawMoney.cy.js
+// tests/e2e/withdrawMoney.cy.js
 
 describe('WithdrawMoney Screen', () => {
   it('should navigate to Extraer and render the WithdrawMoney screen correctly', () => {

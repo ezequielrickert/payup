@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowDownLeft, ArrowUpRight, ArrowDown, Send, History as HistoryIcon, Loader2 } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, ArrowDown, Send, History as HistoryIcon, Loader2, ArrowUp } from 'lucide-react';
 import { useAuth } from '../utils/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { StyledTransactionList } from './TransactionList.styles';
@@ -31,7 +31,11 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
     const getTransactionType = (transaction: Transaction) => {
         if (!user?.cvu) return 'transfer';
         if (transaction.senderCvu === transaction.receiverCvu && transaction.senderCvu === user.cvu) {
-            return 'self';
+            if (transaction.description == 'Carga de saldo') {
+                return 'self';
+            } else {
+                return 'withdraw';
+            }
         }
         if (transaction.senderCvu === user.cvu) {
             return 'sent';
@@ -73,6 +77,8 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
                                             <ArrowDownLeft className="icon" />
                                         ) : type === 'self' ? (
                                             <ArrowDown className="icon" />
+                                        ) : type === 'withdraw' ? (
+                                            <ArrowUp className="icon" />
                                         ) : (
                                             <Send className="icon" />
                                         )}

@@ -40,16 +40,18 @@ export const StyledTransactionList = styled.div`
         justify-content: center;
         background: ${theme.colors.surfaceHover};
 
+        // No borrar aunque diga que no se utilizan porque si los usa
         &.self .icon {
             color: #00bfff;
         }
-
         &.received .icon {
             color: #00e676;
         }
-
         &.sent .icon {
             color: #ff1744;
+        }
+        &.withdraw .icon {
+            color: #A78BFA;
         }
     }
 
@@ -91,6 +93,9 @@ export const StyledTransactionList = styled.div`
         }
         &.sent {
             color: #ff1744;
+        }
+        &.withdraw {
+            color: #A78BFA;
         }
     }
 

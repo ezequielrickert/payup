@@ -29,6 +29,7 @@ const StyledHeader = styled.header`
     z-index: 10;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
     padding: 20px 24px;
     background: #1a1a1a;
@@ -44,6 +45,8 @@ const StyledHeader = styled.header`
 `;
 
 const BackButton = styled.button`
+    position: absolute;
+    left: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -74,6 +77,10 @@ const BackButton = styled.button`
         height: 24px;
         color: #fff;
     }
+
+    @media (max-width: ${theme.breakpoints.mobile}) {
+        left: 20px;
+    }
 `;
 
 const Title = styled.h1`
@@ -81,7 +88,6 @@ const Title = styled.h1`
     font-size: 20px;
     font-weight: 600;
     margin: 0;
-    flex: 1;
     text-align: center;
     line-height: 1.2;
 

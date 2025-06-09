@@ -65,7 +65,7 @@ export class UserService implements IUserService {
     }
 
     private generateRandomCvu(): number {
-        // Generate a random CVU number (10 digits)
+        // Generate a random CVU number (6 digits)
         return Math.floor(Math.random() * 900000) + 100000; // Ensures a 6-digit CVU
     }
 }

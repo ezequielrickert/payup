@@ -29,8 +29,9 @@ export const StyledTransactionList = styled.div`
         flex: 1;
         min-width: 0;
     }
-    
+
     // no borrar aunque diga que no se está utilizando porque si lo usa
+
     .icon-container {
         width: 40px;
         height: 40px;
@@ -41,17 +42,21 @@ export const StyledTransactionList = styled.div`
         background: ${theme.colors.surfaceHover};
 
         // No borrar aunque diga que no se utilizan porque si los usa
+
         &.self .icon {
             color: #00bfff;
         }
+
         &.received .icon {
             color: #00e676;
         }
+
         &.sent .icon {
             color: #ff1744;
         }
+
         &.withdraw .icon {
-            color: #A78BFA;
+            color: #FFA500;
         }
     }
 
@@ -85,17 +90,21 @@ export const StyledTransactionList = styled.div`
         white-space: nowrap;
 
         // No borrar aunque diga que no se utilizan porque si los usa
+
         &.self {
             color: #00bfff;
         }
+
         &.received {
             color: #00e676;
         }
+
         &.sent {
             color: #ff1744;
         }
+
         &.withdraw {
-            color: #A78BFA;
+            color: #FFA500;
         }
     }
 

@@ -7,6 +7,7 @@ import { Header } from '../ui/Header';
 import { useNavigate } from 'react-router-dom';
 import { fetchBalance } from '../hooks/balanceHook';
 import { useAuth } from '../utils/AuthContext';
+import { getIp } from '../hooks/ipHook';
 
 export const TransferScreen = () => {
     const [form, setForm] = useState<TransferForm>({
@@ -24,6 +25,7 @@ export const TransferScreen = () => {
     const [recipientType, setRecipientType] = useState<'email' | 'cvu'>('email');
     const { balance } = fetchBalance(user.user?.cvu);
     const navigate = useNavigate();
+    const ip = getIp();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -60,8 +62,8 @@ export const TransferScreen = () => {
             setIsLoading(true);
             try {
                 const endpoint = recipientType === 'email' 
-                    ? 'http://localhost:3001/payment/transferByEmail'
-                    : 'http://localhost:3001/payment/transferByCvu';
+                    ? `http://${ip}:3001/payment/transferByEmail`
+                    : `http://${ip}:3001/payment/transferByCvu`;
 
                 const requestBody = recipientType === 'email'
                     ? {

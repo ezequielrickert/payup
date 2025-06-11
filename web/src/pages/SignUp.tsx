@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import { UserDto } from '../dto/UserDto';
+import { getIp } from '../hooks/ipHook';
 
 interface SignUpForm {
   email: string;
@@ -29,6 +30,7 @@ export const SignUpScreen = () => {
   }>({});
   const navigate = useNavigate();
   const { login } = useAuth();
+  const ip = getIp();
 
   const isValidEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -64,7 +66,7 @@ export const SignUpScreen = () => {
       );
       try {
         // 1. Crear usuario
-        const res = await fetch('http://localhost:3001/users/', {
+        const res = await fetch(`http://${ip}:3001/users/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(userDto)
@@ -72,7 +74,7 @@ export const SignUpScreen = () => {
         if (!res.ok) throw new Error('Error al crear usuario');
 
         // 2. Buscar usuario por email
-        const userRes = await fetch(`http://localhost:3001/users?email=${encodeURIComponent(form.email)}`);
+        const userRes = await fetch(`http://${ip}:3001/users?email=${encodeURIComponent(form.email)}`);
         if (!userRes.ok) throw new Error('No se pudo obtener el usuario');
         const user = await userRes.json();
         if (!user || !user.email) throw new Error('Usuario no encontrado');

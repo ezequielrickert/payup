@@ -15,7 +15,10 @@ import {PaymentController} from "./controller/PaymentController";
 import {TransactionService} from "./application/adapter/TransactionService";
 import {PrismaTransactionRepository} from "./repository/adapter/prisma/PrismaTransactionRepository";
 import {createPaymentRouter} from "./router/PaymentRouter";
+import dotenv from 'dotenv';
 
+// Load environment variables
+dotenv.config();
 
 // In this file the actual application is created and the dependencies are injected for it to be able to start
 
@@ -51,8 +54,11 @@ const connectionRouter = createConnectionRouter(connectionController);
 const apiController = new ApiController(walletService, transactionService);
 const apiRouter = createApiRouter(apiController);
 
+const ip = process.env.IP;
+console.log(ip);
+
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: true,
     credentials: true
 }));
 

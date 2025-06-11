@@ -3,11 +3,10 @@ import {beforeEach, expect, it} from "@jest/globals";
 import {IUserRepository} from "../../repository/port/IUserRepository";
 import {IUser} from "../../domain/port/IUser";
 import {User} from "../../domain/adapter/User";
-import {PrismaUserRepository} from "../../repository/adapter/prisma/PrismaUserRepository";
+import {userRepository as sharedUserRepository} from "../testUtils";
 
 describe('User integration tests', () => {
     beforeAll(async () => {
-        // Optionally, run migrations or db push here if needed
     });
 
     afterAll(async () => {
@@ -20,7 +19,7 @@ describe('User integration tests', () => {
 
     beforeEach(async () => {
         await resetDatabase();
-        userRepository = new PrismaUserRepository(prisma);
+        userRepository = sharedUserRepository; // Reinitialize the user repository
         testUser = new User('John Doe', 'john@example.com', 'securepassword', 1234567890);
     });
 

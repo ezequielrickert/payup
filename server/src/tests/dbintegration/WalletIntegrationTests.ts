@@ -1,11 +1,9 @@
-import prisma, {resetDatabase} from "../testUtils";
+import prisma, {resetDatabase, createUserRepository, createWalletRepository} from "../testUtils";
 import {beforeEach} from "@jest/globals";
 import {IWalletRepository} from "../../repository/port/IWalletRepository";
 import {Wallet} from "../../domain/adapter/Wallet";
 import {PrismaUserRepository} from "../../repository/adapter/prisma/PrismaUserRepository";
 import {User} from "../../domain/adapter/User";
-import {userRepository as sharedUserRepository} from "../testUtils";
-import {walletRepository as sharedWalletRepository} from "../testUtils";
 
 
 describe ('Wallet integration tests', () => {
@@ -24,8 +22,8 @@ describe ('Wallet integration tests', () => {
 
     beforeEach(async () => {
         await resetDatabase();
-        walletRepository = sharedWalletRepository; // Reinitialize the wallet repository
-        userRepository = sharedUserRepository; // Reinitialize the user repository
+        walletRepository = createWalletRepository();
+        userRepository = createUserRepository();
         let testUser = new User('John Doe', 'john2@example.com', 'securepassword', 654321);
         await userRepository.save(testUser);
         let createdUser = await userRepository.findByEmail(testUser.email);

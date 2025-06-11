@@ -1,9 +1,8 @@
-import prisma, {resetDatabase} from "../testUtils";
+import prisma, {resetDatabase, createUserRepository} from "../testUtils";
 import {beforeEach, expect, it} from "@jest/globals";
 import {IUserRepository} from "../../repository/port/IUserRepository";
 import {IUser} from "../../domain/port/IUser";
 import {User} from "../../domain/adapter/User";
-import {userRepository as sharedUserRepository} from "../testUtils";
 
 describe('User integration tests', () => {
     beforeAll(async () => {
@@ -19,7 +18,7 @@ describe('User integration tests', () => {
 
     beforeEach(async () => {
         await resetDatabase();
-        userRepository = sharedUserRepository; // Reinitialize the user repository
+        userRepository = createUserRepository();
         testUser = new User('John Doe', 'john@example.com', 'securepassword', 1234567890);
     });
 

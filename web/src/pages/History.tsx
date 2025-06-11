@@ -6,6 +6,7 @@ import { useAuth } from '../utils/AuthContext';
 import { TransactionList } from '../components/TransactionList';
 import { Header } from '../ui/Header';
 import { useNavigate } from 'react-router-dom';
+import { getIp } from '../hooks/ipHook';
 
 interface Transaction {
     amount: number;
@@ -19,12 +20,13 @@ export const HistoryScreen = () => {
     const navigate = useNavigate();
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const ip = getIp();
 
     useEffect(() => {
         const fetchTransactions = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch(`http://localhost:3001/users/transactions?email=${encodeURIComponent(user?.email || '')}`);
+                const response = await fetch(`http://${ip}:3001/users/transactions?email=${encodeURIComponent(user?.email || '')}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch transactions');
                 }

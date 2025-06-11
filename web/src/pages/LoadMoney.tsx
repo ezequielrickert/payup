@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import type { LoadDto } from '../dto/LoadDto';
 import { fetchBalance } from '../hooks/balanceHook';
+import { getIp } from '../hooks/ipHook';
 
 export const LoadMoneyScreen = () => {
     const [form, setForm] = useState<LoadForm>({
@@ -23,6 +24,7 @@ export const LoadMoneyScreen = () => {
     const { balance } = fetchBalance(user.user?.cvu);
     const navigate = useNavigate();
     const predefinedAmounts = [1000, 5000, 10000, 20000];
+    const ip = getIp();
 
     useEffect(() => {
         if (success) {
@@ -72,7 +74,7 @@ export const LoadMoneyScreen = () => {
             }
 
             try {
-                const response = await fetch(`http://localhost:3001/api`, {
+                const response = await fetch(`http://${ip}:3001/api`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

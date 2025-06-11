@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import type {WalletDto} from "../dto/WalletDto.ts";
 import { TransactionList } from '../components/TransactionList';
+import { getIp } from '../hooks/ipHook.ts';
 
 interface Transaction {
     amount: number;
@@ -31,11 +32,12 @@ export const DashboardScreen = () => {
     const [showBalance, setShowBalance] = useState(true);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
+    const ip = getIp();
 
     useEffect(() => {
         const fetchBalance = async () => {
             if (!user?.email) return;
-            const res = await fetch(`http://localhost:3001/wallet/${user.cvu}`, {
+            const res = await fetch(`http://${ip}:3001/wallet/${user.cvu}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -51,7 +53,7 @@ export const DashboardScreen = () => {
         const fetchTransactions = async () => {
             try {
                 setIsLoadingTransactions(true);
-                const response = await fetch(`http://localhost:3001/users/transactions?email=${encodeURIComponent(user?.email || '')}`);
+                const response = await fetch(`http://${ip}:3001/users/transactions?email=${encodeURIComponent(user?.email || '')}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch transactions');
                 }
@@ -118,7 +120,8 @@ export const DashboardScreen = () => {
                         </div>
                         <CreditCard className="card-icon" />
                     </div>
-                    <p className="email" style={{ textAlign: 'left' }}>{user?.email}</p>
+                    <p className="email" style={{ textAlign: 'left', fontSize: '14px' }}>Email: {user?.email}</p>
+                    <p className="cvu" style={{ textAlign: 'left', marginTop: '4px', opacity: 0.8, fontSize: '14px' }}>CVU: {user?.cvu}</p>
                 </Card>
 
                 {/* Quick Actions */}

@@ -7,7 +7,12 @@
     "run": "cypress run"
   },
   "devDependencies": {
+    "@types/node": "^24.0.0",
     "cypress": "^14.4.1",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@types/dotenv": "^6.1.1",
+    "dotenv": "^16.5.0"
   }
 }

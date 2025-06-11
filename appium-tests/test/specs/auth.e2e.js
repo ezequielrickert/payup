@@ -45,69 +45,111 @@ describe('Authentication Integration (Appium)', () => {
         await submitBtn.click();
         const emailErrorSelector = 'new UiSelector().textContains("email")';
         const emailError = await $(`android=${emailErrorSelector}`);
+        await browser.hideKeyboard();
         await browser.pause(1000);
         expect(await emailError.isDisplayed()).to.be.true;
     });
-    //
-    // it('navigates to SignUp and registers a new user', async () => {
-    //     const signUpBtn = await (`new UiSelector().textContains("Registrate")`);
-    //     await signUpBtn.click();
-    //     const firstNameInput = await (`new UiSelector().className("android.widget.EditText").instance(0)`);
-    //     const lastNameInput = await (`new UiSelector().className("android.widget.EditText").instance(1)`);
-    //     const emailInput = await (`new UiSelector().className("android.widget.EditText").instance(2)`);
-    //     const passwordInput = await (`new UiSelector().className("android.widget.EditText").instance(3)`);
-    //     const confirmPasswordInput = await (`new UiSelector().className("android.widget.EditText").instance(4)`);
-    //     await firstNameInput.setValue(testUser.firstName);
-    //     await lastNameInput.setValue(testUser.lastName);
-    //     await emailInput.setValue(testUser.email);
-    //     await passwordInput.setValue(testUser.password);
-    //     await confirmPasswordInput.setValue(testUser.password);
-    //     const submitBtn = await (`new UiSelector().className("android.widget.Button")`);
-    //     await submitBtn.click();
-    //     const dashboard = await (`new UiSelector().textContains("PayUp")`);
-    //     await dashboard.waitForDisplayed({ timeout: 10000 });
-    //     expect(await dashboard.isDisplayed()).to.be.true;
-    // });
-    //
-    // it('shows validation errors on SignUp with mismatched passwords', async () => {
-    //     const signUpBtn = await (`new UiSelector().textContains("Registrate")`);
-    //     await signUpBtn.click();
-    //     const firstNameInput = await (`new UiSelector().className("android.widget.EditText").instance(0)`);
-    //     const lastNameInput = await (`new UiSelector().className("android.widget.EditText").instance(1)`);
-    //     const emailInput = await (`new UiSelector().className("android.widget.EditText").instance(2)`);
-    //     const passwordInput = await (`new UiSelector().className("android.widget.EditText").instance(3)`);
-    //     const confirmPasswordInput = await (`new UiSelector().className("android.widget.EditText").instance(4)`);
-    //     await firstNameInput.setValue('Name');
-    //     await lastNameInput.setValue('Last');
-    //     await emailInput.setValue('mismatch@example.com');
-    //     await passwordInput.setValue('password1');
-    //     await confirmPasswordInput.setValue('password2');
-    //     const submitBtn = await (`new UiSelector().className("android.widget.Button")`);
-    //     await submitBtn.click();
-    //     const errorMsg = await (`new UiSelector().textContains("Las contraseñas no coinciden")`);
-    //     expect(await errorMsg.isDisplayed()).to.be.true;
-    // });
-    //
-    // it('logs in with the newly registered user', async () => {
-    //     const emailInput = await (`new UiSelector().className("android.widget.EditText").instance(0)`);
-    //     const passwordInput = await (`new UiSelector().className("android.widget.EditText").instance(1)`);
-    //     await emailInput.setValue(testUser.email);
-    //     await passwordInput.setValue(testUser.password);
-    //     const submitBtn = await (`new UiSelector().className("android.widget.Button")`);
-    //     await submitBtn.click();
-    //     const dashboard = await (`new UiSelector().textContains("PayUp")`);
-    //     await dashboard.waitForDisplayed({ timeout: 10000 });
-    //     expect(await dashboard.isDisplayed()).to.be.true;
-    // });
-    //
-    // it('shows error on login with wrong password', async () => {
-    //     const emailInput = await (`new UiSelector().className("android.widget.EditText").instance(0)`);
-    //     const passwordInput = await (`new UiSelector().className("android.widget.EditText").instance(1)`);
-    //     await emailInput.setValue(testUser.email);
-    //     await passwordInput.setValue('WrongPassword!');
-    //     const submitBtn = await (`new UiSelector().className("android.widget.Button")`);
-    //     await submitBtn.click();
-    //     const errorMsg = await (`new UiSelector().textContains("Error al iniciar sesión")`);
-    //     expect(await errorMsg.isDisplayed()).to.be.true;
-    // });
+
+    it('navigates to SignUp and registers a new user', async () => {
+        const signUpBtnSelector = 'new UiSelector().textContains("Registrate")';
+        const signUpBtn = await $(`android=${signUpBtnSelector}`);
+        await signUpBtn.click();
+        const firstNameInputSelector = 'new UiSelector().className("android.widget.EditText").instance(0)';
+        const lastNameInputSelector = 'new UiSelector().className("android.widget.EditText").instance(1)';
+        const emailInputSelector = 'new UiSelector().className("android.widget.EditText").instance(2)';
+        const passwordInputSelector = 'new UiSelector().className("android.widget.EditText").instance(3)';
+        const confirmPasswordInputSelector = 'new UiSelector().className("android.widget.EditText").instance(4)';
+        const firstNameInput = await $(`android=${firstNameInputSelector}`);
+        const lastNameInput = await $(`android=${lastNameInputSelector}`);
+        const emailInput = await $(`android=${emailInputSelector}`);
+        const passwordInput = await $(`android=${passwordInputSelector}`);
+        const confirmPasswordInput = await $(`android=${confirmPasswordInputSelector}`);
+        await firstNameInput.setValue(testUser.firstName);
+        await lastNameInput.setValue(testUser.lastName);
+        await emailInput.setValue(testUser.email);
+        await passwordInput.setValue(testUser.password);
+        await confirmPasswordInput.setValue(testUser.password);
+        const submitBtnSelector = 'new UiSelector().className("android.widget.Button")';
+        const submitBtn = await $(`android=${submitBtnSelector}`);
+        await submitBtn.click();
+        const dashboardSelector = 'new UiSelector().textContains("Ingresar")';
+        const dashboard = await $(`android=${dashboardSelector}`);
+        await browser.pause(4000);
+        await dashboard.waitForDisplayed({ timeout: 10000 });
+        expect(await dashboard.isDisplayed()).to.be.true;
+        const logoutBtnSelector = 'new UiSelector().textContains("Cerrar sesión")';
+        const logoutBtn = await $(`android=${logoutBtnSelector}`);
+        await logoutBtn.click();
+    });
+
+    it('shows validation errors on SignUp with mismatched passwords', async () => {
+        const signUpBtnSelector = 'new UiSelector().textContains("Registrate")';
+        const signUpBtn = await $(`android=${signUpBtnSelector}`);
+        await signUpBtn.click();
+        await browser.pause(1000);
+        const firstNameInputSelector = 'new UiSelector().className("android.widget.EditText").instance(0)';
+        const lastNameInputSelector = 'new UiSelector().className("android.widget.EditText").instance(1)';
+        const emailInputSelector = 'new UiSelector().className("android.widget.EditText").instance(2)';
+        const passwordInputSelector = 'new UiSelector().className("android.widget.EditText").instance(3)';
+        const confirmPasswordInputSelector = 'new UiSelector().className("android.widget.EditText").instance(4)';
+        const firstNameInput = await $(`android=${firstNameInputSelector}`);
+        const lastNameInput = await $(`android=${lastNameInputSelector}`);
+        const emailInput = await $(`android=${emailInputSelector}`);
+        const passwordInput = await $(`android=${passwordInputSelector}`);
+        const confirmPasswordInput = await $(`android=${confirmPasswordInputSelector}`);
+        await firstNameInput.setValue('Name');
+        await lastNameInput.setValue('Last');
+        await emailInput.setValue('mismatch@example.com');
+        await passwordInput.setValue('password1');
+        await confirmPasswordInput.setValue('password2');
+        await browser.pause(1000);
+        await browser.hideKeyboard();
+        const submitBtnSelector = 'new UiSelector().className("android.widget.Button")';
+        const submitBtn = await $(`android=${submitBtnSelector}`);
+        await submitBtn.click();
+        const errorMsgSelector = 'new UiSelector().textContains("Las contraseñas no coinciden")';
+        const errorMsg = await $(`android=${errorMsgSelector}`);
+        await browser.pause(1000);
+        expect(await errorMsg.isDisplayed()).to.be.true;
+        expect(await errorMsg.isDisplayed()).to.be.true;
+        // Click the "Cerrar sesión" button at the end
+        const logoutBtnSelector = 'new UiSelector().textContains("Iniciá sesión")';
+        const logoutBtn = await $(`android=${logoutBtnSelector}`);
+        await logoutBtn.click();
+    });
+
+    it('logs in with the newly registered user', async () => {
+        const emailInputSelector = 'new UiSelector().className("android.widget.EditText").instance(0)';
+        const emailInput = await $(`android=${emailInputSelector}`);
+        const passwordInputSelector = 'new UiSelector().className("android.widget.EditText").instance(1)';
+        const passwordInput = await $(`android=${passwordInputSelector}`);
+        await emailInput.setValue(testUser.email);
+        await passwordInput.setValue(testUser.password);
+        const submitBtnSelector = 'new UiSelector().className("android.widget.Button")';
+        const submitBtn = await $(`android=${submitBtnSelector}`);
+        await submitBtn.click();
+        await browser.pause(2000);
+        const dashboardSelector = 'new UiSelector().textContains("PayUp")';
+        const dashboard = await $(`android=${dashboardSelector}`);
+        await dashboard.waitForDisplayed({ timeout: 10000 });
+        expect(await dashboard.isDisplayed()).to.be.true;
+        const logoutBtnSelector = 'new UiSelector().textContains("Cerrar sesión")';
+        const logoutBtn = await $(`android=${logoutBtnSelector}`);
+        await logoutBtn.click();
+    });
+
+    it('shows error on login with wrong password', async () => {
+        const emailInputSelector = 'new UiSelector().className("android.widget.EditText").instance(0)';
+        const emailInput = await $(`android=${emailInputSelector}`);
+        await emailInput.setValue(testUser.email);
+        const passwordInputSelector = 'new UiSelector().className("android.widget.EditText").instance(1)';
+        const passwordInput = await $(`android=${passwordInputSelector}`);
+        await passwordInput.setValue('WrongPassword!');
+        const submitBtnSelector = 'new UiSelector().className("android.widget.Button")';
+        const submitBtn = await $(`android=${submitBtnSelector}`);
+        await submitBtn.click();
+        const errorMsgSelector = 'new UiSelector().textContains("Error al iniciar sesión")';
+        const errorMsg = await $(`android=${errorMsgSelector}`);
+        expect(await errorMsg.isDisplayed()).to.be.true;
+    });
 });

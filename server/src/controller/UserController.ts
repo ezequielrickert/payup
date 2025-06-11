@@ -56,4 +56,19 @@ export class UserController {
             res.status(500).json({ error: error.message });
         }
     }
+
+    async getUserTransactions(req: Request, res: Response): Promise<void> {
+        try {
+            const email = req.query.email as string;
+            if (!email) {
+                res.status(400).json({ message: 'Email must be provided' });
+                return;
+            }
+            const transactions = await this.userService.getUserTransactions(email);
+            res.json(transactions);
+        } catch (error: any) {
+            res.status(500).json({ error: error.message });
+        }
+    }
 }
+

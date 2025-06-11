@@ -7,6 +7,7 @@ import { Header } from '../ui/Header';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import type { LoadDto } from '../dto/LoadDto';
+import { fetchBalance } from '../hooks/balanceHook';
 
 export const LoadMoneyScreen = () => {
     const [form, setForm] = useState<LoadForm>({
@@ -19,27 +20,9 @@ export const LoadMoneyScreen = () => {
     const user = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const [balance, setBalance] = useState<number>();
+    const { balance } = fetchBalance(user.user?.cvu);
     const navigate = useNavigate();
-
     const predefinedAmounts = [1000, 5000, 10000, 20000];
-
-    useEffect(() => {
-        // Fetch user wallet and ask for balance
-        const fetchWallet = async () => {
-            try {
-                const response = await fetch(`http://localhost:3001/wallet/${user.user?.cvu}`);
-                if (!response.ok) {
-                    throw new Error('Error fetching wallet');
-                }
-                const data = await response.json();
-                setBalance(data.balance);
-            } catch (error) {
-                console.error('Error fetching wallet:', error);
-            }
-        }
-        fetchWallet();
-    });
 
     useEffect(() => {
         if (success) {
@@ -298,6 +281,8 @@ const Label = styled.label`
     color: rgba(255, 255, 255, 0.8);
     font-size: 14px;
     font-weight: 500;
+    text-align: left;
+    display: block;
 `;
 
 const QuickAmounts = styled.div`
@@ -318,6 +303,10 @@ const QuickAmountButton = styled.button<QuickAmountButtonProps>`
     color: ${props => props.selected ? '#00bfff' : '#fff'};
     font-weight: 500;
     transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 
     &:hover:not(:disabled) {
         background: ${props => props.selected ? 'rgba(0, 191, 255, 0.15)' : '#2a2a2a'};
@@ -393,11 +382,14 @@ const ErrorText = styled.p`
     color: #ef4444;
     font-size: 14px;
     margin-top: 4px;
+    text-align: left;
 `;
 
 const HelpText = styled.p`
     color: rgba(255, 255, 255, 0.6);
     font-size: 12px;
+    text-align: left;
+    margin-top: 4px;
 `;
 
 const SubmitButton = styled.button`

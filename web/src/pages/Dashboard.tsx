@@ -4,7 +4,6 @@ import {
     CreditCard,
     Plus,
     Send,
-    Minus,
     History as HistoryIcon,
     Eye,
     EyeOff,
@@ -16,12 +15,22 @@ import { theme } from '../styles/theme';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import type {WalletDto} from "../dto/WalletDto.ts";
+import { TransactionList } from '../components/TransactionList';
+
+interface Transaction {
+    amount: number;
+    senderCvu: number;
+    receiverCvu: number;
+    description: string;
+}
 
 export const DashboardScreen = () => {
     const navigate = useNavigate();
     const { logout, user } = useAuth();
     const [realBalance, setRealBalance] = useState<number | null>(null);
     const [showBalance, setShowBalance] = useState(true);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
 
     useEffect(() => {
         const fetchBalance = async () => {
@@ -37,6 +46,39 @@ export const DashboardScreen = () => {
         };
         fetchBalance();
     }, [user]);
+
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            try {
+                setIsLoadingTransactions(true);
+                const response = await fetch(`http://localhost:3001/users/transactions?email=${encodeURIComponent(user?.email || '')}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch transactions');
+                }
+                const data = await response.json();
+                console.log('Transactions loaded:', data); // Debug log
+                setTransactions(data);
+            } catch (error) {
+                console.error('Error fetching transactions:', error);
+            } finally {
+                setIsLoadingTransactions(false);
+            }
+        };
+
+        if (user?.email) {
+            fetchTransactions();
+        }
+    }, [user?.email]);
+
+    const formatBalance = (balance: number | null) => {
+        if (balance === null) return '';
+        return new Intl.NumberFormat('es-AR', {
+            style: 'currency',
+            currency: 'ARS',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(balance);
+    };
 
     return (
         <StyledWrapper>
@@ -61,7 +103,7 @@ export const DashboardScreen = () => {
                             <div className="amount-container">
                                 {showBalance ? (
                                     <span className="amount">
-                                        {realBalance !== null ? `$${realBalance}` : ''}
+                                        {realBalance !== null ? formatBalance(realBalance) : ''}
                                     </span>
                                 ) : (
                                     <span className="amount">••••••</span>
@@ -76,7 +118,7 @@ export const DashboardScreen = () => {
                         </div>
                         <CreditCard className="card-icon" />
                     </div>
-                    <p className="email">{user?.email}</p>
+                    <p className="email" style={{ textAlign: 'left' }}>{user?.email}</p>
                 </Card>
 
                 {/* Quick Actions */}
@@ -97,14 +139,6 @@ export const DashboardScreen = () => {
                         <span className="action-subtitle">Dinero</span>
                     </Card>
 
-                    <Card onClick={() => navigate('/withdraw')} className="action-card" padding="lg">
-                        <div className="icon-container error">
-                            <Minus className="icon" />
-                        </div>
-                        <span className="action-title">Extraer</span>
-                        <span className="action-subtitle">Dinero</span>
-                    </Card>
-
                     <Card onClick={() => navigate('/history')} className="action-card" padding="lg">
                         <div className="icon-container secondary">
                             <HistoryIcon className="icon" />
@@ -114,11 +148,11 @@ export const DashboardScreen = () => {
                     </Card>
                 </section>
 
-                {/* Recent Transactions */}
-                <Card className="transactions-card">
+                {/* Transactions Section */}
+                <Card className="transactions-card" padding="lg">
                     <div className="card-header">
                         <h3>Últimos movimientos</h3>
-                        {true && (
+                        {transactions.length > 3 && (
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -128,6 +162,7 @@ export const DashboardScreen = () => {
                             </Button>
                         )}
                     </div>
+                    <TransactionList transactions={transactions} limit={3} isLoading={isLoadingTransactions} />
                 </Card>
             </main>
         </StyledWrapper>
@@ -136,11 +171,19 @@ export const DashboardScreen = () => {
 
 const StyledWrapper = styled.div`
     min-height: 100vh;
-    background: ${theme.colors.background};
-    color: ${theme.colors.text.primary};
-    
+    background: linear-gradient(to bottom right, #1a1a1a, #2d2d2d);
+    color: #fff;
+    width: 100%;
+    box-sizing: border-box;
+
+    /* Remove tap highlight color */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+
     main {
-        max-width: 800px;
+        max-width: 1000px;
         margin: 0 auto;
         padding: ${theme.spacing.xl};
         display: flex;
@@ -155,6 +198,12 @@ const StyledWrapper = styled.div`
         @media (max-width: ${theme.breakpoints.mobile}) {
             padding: ${theme.spacing.md};
             gap: ${theme.spacing.md};
+        }
+
+        @media (min-width: 1200px) {
+            main {
+                max-width: 1200px;
+            }
         }
     }
 
@@ -176,6 +225,7 @@ const StyledWrapper = styled.div`
             opacity: 0.8;
             font-size: 14px;
             margin-bottom: ${theme.spacing.xs};
+            text-align: left;
         }
 
         .amount-container {
@@ -209,17 +259,19 @@ const StyledWrapper = styled.div`
 
     .actions-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); // esto es más fluido
         gap: ${theme.spacing.md};
 
         @media (max-width: ${theme.breakpoints.tablet}) {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
         }
 
         @media (max-width: ${theme.breakpoints.mobile}) {
+            grid-template-columns: repeat(3, 1fr);
             gap: ${theme.spacing.sm};
         }
     }
+
 
     .action-card {
         text-align: center;
@@ -288,115 +340,6 @@ const StyledWrapper = styled.div`
                 color: ${theme.colors.text.primary};
             }
         }
-
-        .transactions-list {
-            display: flex;
-            flex-direction: column;
-            gap: ${theme.spacing.sm};
-        }
-
-        .transaction-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: ${theme.spacing.sm};
-            border-radius: ${theme.borderRadius.md};
-            transition: background-color 0.2s;
-
-            &:hover {
-                background: ${theme.colors.surfaceHover};
-            }
-        }
-
-        .transaction-info {
-            display: flex;
-            align-items: center;
-            gap: ${theme.spacing.sm};
-        }
-
-        .icon-container {
-            width: 40px;
-            height: 40px;
-            border-radius: ${theme.borderRadius.md};
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            &.success { 
-                background: ${theme.colors.success.background};
-                .icon { color: ${theme.colors.success.main}; }
-            }
-            &.error { 
-                background: ${theme.colors.error.background};
-                .icon { color: ${theme.colors.error.main}; }
-            }
-            &.primary { 
-                background: ${theme.colors.primary.light}20;
-                .icon { color: ${theme.colors.primary.main}; }
-            }
-
-            @media (max-width: ${theme.breakpoints.mobile}) {
-                width: 32px;
-                height: 32px;
-
-                .icon {
-                    width: 16px;
-                    height: 16px;
-                }
-            }
-        }
-
-        .details {
-            .description {
-                color: ${theme.colors.text.primary};
-                font-weight: 500;
-                margin-bottom: 4px;
-            }
-
-            .date {
-                color: ${theme.colors.text.secondary};
-                font-size: 12px;
-            }
-        }
-
-        .amount {
-            font-weight: 600;
-            &.success { color: ${theme.colors.success.main}; }
-            &.error { color: ${theme.colors.error.main}; }
-        }
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: ${theme.spacing.xxl} 0;
-
-        .icon {
-            width: 48px;
-            height: 48px;
-            color: ${theme.colors.text.secondary};
-            margin: 0 auto ${theme.spacing.md};
-        }
-
-        .message {
-            color: ${theme.colors.text.primary};
-            font-weight: 500;
-            margin-bottom: ${theme.spacing.xs};
-        }
-
-        .submessage {
-            color: ${theme.colors.text.secondary};
-            font-size: 14px;
-        }
-
-        @media (max-width: ${theme.breakpoints.mobile}) {
-            padding: ${theme.spacing.xl} 0;
-
-            .icon {
-                width: 40px;
-                height: 40px;
-                margin-bottom: ${theme.spacing.sm};
-            }
-        }
     }
 `;
 
@@ -404,12 +347,15 @@ const Header = styled.header`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: ${theme.spacing.md} ${theme.spacing.xl};
+    padding: 20px 24px;
     background: ${theme.colors.surface};
     border-bottom: 1px solid ${theme.colors.border};
     position: sticky;
     top: 0;
     z-index: 10;
+    width: 100%;
+    box-sizing: border-box;
+    height: 72px;
 
     .logo {
         font-size: 20px;
@@ -419,13 +365,10 @@ const Header = styled.header`
         -webkit-text-fill-color: transparent;
     }
 
-    @media (max-width: ${theme.breakpoints.tablet}) {
-        padding: ${theme.spacing.md};
-    }
-
     @media (max-width: ${theme.breakpoints.mobile}) {
-        padding: ${theme.spacing.sm} ${theme.spacing.md};
-
+        padding: 16px 20px;
+        height: 64px;
+        
         .logo {
             font-size: 18px;
         }

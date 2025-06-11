@@ -1,4 +1,4 @@
-/// <reference types="cypress" />
+/// <reference types="tests" />
 
 // Integration tests for Login and SignUp views
 

@@ -9,7 +9,7 @@ export const users = [
     {
         email: 'poor@payup.com',
         cvu: '0000000001',
-        balance: 200,
+
     },
 ];
 
@@ -20,7 +20,7 @@ interface LoadDto {
 }
 
 export const loadHandler = (req: Request, res: Response) => {
-    const { email, cvu, amount } = req.body as LoadDto;
+    const { email, amount } = req.body as LoadDto;
 
     if (!amount || !email) {
         res.status(400).json({ error: 'Todos los campos son requeridos' });
@@ -36,8 +36,8 @@ export const loadHandler = (req: Request, res: Response) => {
         return;
     }
 
-    if (user.balance >= amount) {
-        user.balance -= amount;
+    if (user.balance! >= amount) {
+        user.balance! -= amount;
         res.json({ status: 'OK' });
         return;
 

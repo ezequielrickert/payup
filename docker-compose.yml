@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    ports:
+      - '${DB_PORT}:5432'
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./server/api
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    command: npm run dev
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?schema=public
+      API_URL: http://api:3002/api
+    depends_on:
+      - db
+      - api
+    command: npm run dev
+
+  web:
+    build: ./web
+    ports:
+      - "5173:80"
+    restart: unless-stopped
+    depends_on:
+      - server
+
+volumes:
+  db_data:

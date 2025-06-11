@@ -21,7 +21,7 @@ describe("WalletController", () => {
 
     describe("getWallet", () => {
         it("should return 404 if wallet is not found", async () => {
-            req.params = { userId: "1" };
+            req.params = { userCvu: "123456" };
             await walletController.getWallet(req as Request, res as Response);
             expect(res.status).toHaveBeenCalledWith(404);
             expect(res.json).toHaveBeenCalledWith({ message: "Wallet not found" });
@@ -30,7 +30,7 @@ describe("WalletController", () => {
         it("should return wallet if found", async () => {
             const wallet: WalletDto = { userCvu: 1, balance: 100 };
             fakeWalletService.wallets.push(wallet);
-            req.params = { userId: "1" };
+            req.params = { userCvu: "1" };
             await walletController.getWallet(req as Request, res as Response);
             expect(res.json).toHaveBeenCalledWith(wallet);
         });

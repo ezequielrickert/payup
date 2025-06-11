@@ -59,28 +59,48 @@ export const TransferScreen = () => {
         if (Object.keys(newErrors).length === 0) {
             setIsLoading(true);
             try {
-                const response = await fetch('http://localhost:3001/payment/transferByCvu', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
+                const endpoint = recipientType === 'email' 
+                    ? 'http://localhost:3001/payment/transferByEmail'
+                    : 'http://localhost:3001/payment/transferByCvu';
+
+                const requestBody = recipientType === 'email'
+                    ? {
+                        senderCvu: Number(user.user?.cvu),
+                        receiverEmail: form.recipient,
+                        amount: Number(form.amount),
+                        description: form.description
+                    }
+                    : {
                         senderCvu: Number(user.user?.cvu),
                         receiverCvu: Number(form.recipient),
                         amount: Number(form.amount),
                         description: form.description
-                    })
+                    };
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
                 });
+
                 if (!response.ok) {
-                    throw new Error('Failed to transfer money');
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to transfer money');
                 }
+
                 const data = await response.json();
-                console.log(data);
+                console.log('Transfer successful:', data);
+                navigate('/dashboard');
             } catch (error) {
                 console.error('Error transferring money:', error);
+                setErrors(prev => ({
+                    ...prev,
+                    general: error instanceof Error ? error.message : 'Error al transferir el dinero'
+                }));
             } finally {
                 setIsLoading(false);
-                navigate('/dashboard');
             }
         }
     };
@@ -91,6 +111,8 @@ export const TransferScreen = () => {
             setForm(prev => ({ ...prev, amount: value }));
         }
     };
+
+    const max_characters = 10;
 
     return (
         <StyledWrapper>
@@ -195,11 +217,11 @@ export const TransferScreen = () => {
                                 value={form.description}
                                 onChange={(e) => setForm(prev => ({ ...prev, description: e.target.value }))}
                                 placeholder="¿Para qué es esta transferencia?"
-                                maxLength={100}
+                                maxLength={max_characters}
                                 disabled={isLoading}
                             />
                             <HelpText>
-                                {form.description.length}/100 caracteres
+                                {form.description.length}/{max_characters} caracteres
                             </HelpText>
                         </FormSection>
                     </FormCard>
@@ -241,6 +263,8 @@ const StyledWrapper = styled.div`
     min-height: 100vh;
     background: linear-gradient(to bottom right, #1a1a1a, #2d2d2d);
     color: #fff;
+    width: 100%;
+    box-sizing: border-box;
     
     .screen-content {
         max-width: 600px;
@@ -249,11 +273,23 @@ const StyledWrapper = styled.div`
         display: flex;
         flex-direction: column;
         gap: 20px;
+        box-sizing: border-box;
+        width: 100%;
+
+        @media (max-width: 480px) {
+            padding: 16px;
+            gap: 16px;
+        }
 
         form {
             display: flex;
             flex-direction: column;
             gap: 20px;
+            width: 100%;
+
+            @media (max-width: 480px) {
+                gap: 16px;
+            }
         }
     }
 `;
@@ -302,6 +338,8 @@ const Label = styled.label`
     color: rgba(255, 255, 255, 0.8);
     font-size: 14px;
     font-weight: 500;
+    text-align: left;
+    display: block;
 `;
 
 const InputWrapper = styled.div`
@@ -368,11 +406,14 @@ const ErrorText = styled.p`
     color: #ef4444;
     font-size: 14px;
     margin-top: 4px;
+    text-align: left;
 `;
 
 const HelpText = styled.p`
     color: rgba(255, 255, 255, 0.6);
     font-size: 12px;
+    text-align: left;
+    margin-top: 4px;
 `;
 
 const SubmitButton = styled.button`

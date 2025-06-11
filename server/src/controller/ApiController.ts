@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 import {LoadDto} from "../dto/LoadDto";
 import { IWalletService } from '../application/port/IWalletService';
+import {ITransactionService} from "../application/port/ITransactionService";
 
 export class ApiController {
-    constructor(private walletService: IWalletService) {}
+    constructor(private walletService: IWalletService, private transactionService: ITransactionService) {}
 
     async callApi(req: Request, res: Response): Promise<void> {
         try {
@@ -19,13 +20,13 @@ export class ApiController {
                 return;
             }
 
-            // Simulate an API call
             const loadDto: LoadDto = {
                 email,
                 cvu,
                 amount: parsedAmount
             };
 
+            // Simulate an API call
             const response = await fetch('http://api:3002/api/load', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -54,6 +55,22 @@ export class ApiController {
             }
 
             const depositResponse = await this.walletService.deposit(cvu, parsedAmount);
+
+            // Create a transaction record
+            const transactionDto = {
+                amount: parsedAmount,
+                senderCvu: cvu,
+                receiverCvu: cvu,
+                description: 'Carga de saldo'
+            };
+
+            try {
+                await this.transactionService.createTransaction(transactionDto);
+            } catch (error) {
+                console.error('Error creating transaction:', error);
+                res.status(500).json({ message: 'Error al registrar la transacción' });
+                return;
+            }
 
             if (!depositResponse) {
                 res.status(409).json({ message: 'Saldo insuficiente' });

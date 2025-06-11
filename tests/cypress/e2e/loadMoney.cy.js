@@ -1,4 +1,4 @@
-// cypress/e2e/loadMoney.cy.js
+// tests/e2e/loadMoney.cy.js
 
 describe('LoadMoney Screen', () => {
   const login = (email, password) => {

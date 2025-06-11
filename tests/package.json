@@ -1,0 +1,13 @@
+{
+  "name": "cypress",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "open": "cypress open",
+    "run": "cypress run"
+  },
+  "devDependencies": {
+    "cypress": "^14.4.1",
+    "typescript": "^5.8.3"
+  }
+}

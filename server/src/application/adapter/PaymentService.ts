@@ -22,10 +22,20 @@ export class PaymentService implements IPaymentService {
             await this.walletService.deposit(receiverCvu, amount);
             // 3. Record the transaction
             const transactionDto = new TransactionDto(amount, senderCvu, receiverCvu, description);
-            console.log(JSON.stringify(transactionDto, null, 2));
             return await this.transactionService.createTransaction(transactionDto);
         } catch (error) {
-            console.error("Error al transferir dinero:", error);
+            console.error("Error al transferir dinero: ", error);
+            throw error;
+        }
+    }
+
+    async withdrawTransfer(cvu: number, amount: number, description: string): Promise<TransactionDto> {
+        try {
+            await this.walletService.withdraw(cvu, amount);
+            const transactionDto = new TransactionDto(amount, cvu, cvu, description);
+            return await this.transactionService.createTransaction(transactionDto);
+        } catch (error) {
+            console.log("Error al extraer dinero: ", error);
             throw error;
         }
     }

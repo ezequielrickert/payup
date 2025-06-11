@@ -281,6 +281,8 @@ const Label = styled.label`
     color: rgba(255, 255, 255, 0.8);
     font-size: 14px;
     font-weight: 500;
+    text-align: left;
+    display: block;
 `;
 
 const QuickAmounts = styled.div`
@@ -301,6 +303,10 @@ const QuickAmountButton = styled.button<QuickAmountButtonProps>`
     color: ${props => props.selected ? '#00bfff' : '#fff'};
     font-weight: 500;
     transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 
     &:hover:not(:disabled) {
         background: ${props => props.selected ? 'rgba(0, 191, 255, 0.15)' : '#2a2a2a'};
@@ -376,11 +382,14 @@ const ErrorText = styled.p`
     color: #ef4444;
     font-size: 14px;
     margin-top: 4px;
+    text-align: left;
 `;
 
 const HelpText = styled.p`
     color: rgba(255, 255, 255, 0.6);
     font-size: 12px;
+    text-align: left;
+    margin-top: 4px;
 `;
 
 const SubmitButton = styled.button`

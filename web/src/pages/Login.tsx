@@ -94,20 +94,35 @@ const StyledWrapper = styled.div`
   align-items: center;
   justify-content: center;
   background: linear-gradient(to bottom right, #4F46E5, #7C3AED);
-  padding: 10px;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 
   .form {
     display: flex;
     flex-direction: column;
     gap: 10px;
     width: 100%;
-    max-width: 350px;
+    max-width: 400px;
     padding: 20px;
     border-radius: 20px;
     position: relative;
     background-color: #1a1a1a;
     color: #fff;
     border: 1px solid #333;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 480px) {
+    padding: 16px;
+    
+    .form {
+      padding: 16px;
+    }
   }
 
   .title {
@@ -116,7 +131,7 @@ const StyledWrapper = styled.div`
     position: relative;
     display: flex;
     align-items: center;
-    padding-left: 30px;
+    padding-left: 40px;
     margin-bottom: 10px;
     color: #00bfff;
   }
@@ -124,12 +139,14 @@ const StyledWrapper = styled.div`
   .title::before {
     width: 18px;
     height: 18px;
+    left: 8px;
   }
 
   .title::after {
     width: 18px;
     height: 18px;
     animation: pulse 1s linear infinite;
+    left: 8px;
   }
 
   .title::before,
@@ -139,7 +156,6 @@ const StyledWrapper = styled.div`
     height: 16px;
     width: 16px;
     border-radius: 50%;
-    left: 0px;
     background-color: #00bfff;
   }
 
@@ -147,6 +163,7 @@ const StyledWrapper = styled.div`
   .signin {
     font-size: 14.5px;
     color: rgba(255, 255, 255, 0.7);
+    text-align: left;
   }
 
   .signin {
@@ -161,6 +178,10 @@ const StyledWrapper = styled.div`
     color: #00bfff;
     text-decoration: none;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .form label {
@@ -182,7 +203,6 @@ const StyledWrapper = styled.div`
     color: rgba(255, 255, 255, 0.5);
     position: absolute;
     left: 10px;
-    top: 0px;
     font-size: 0.9em;
     cursor: text;
     transition: 0.3s ease;
@@ -196,7 +216,6 @@ const StyledWrapper = styled.div`
   .form label .input:focus + span,
   .form label .input:valid + span {
     color: #00bfff;
-    top: 0px;
     font-size: 0.7em;
     font-weight: 600;
   }
@@ -213,6 +232,10 @@ const StyledWrapper = styled.div`
     color: #fff;
     font-size: 16px;
     background-color: #00bfff;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .submit:hover {

@@ -1,20 +1,15 @@
-import prisma, {resetDatabase, createUserRepository, createWalletRepository, createTransactionRepository} from "../testUtils";
-import {beforeEach} from "@jest/globals";
+import {createPrismaClient, resetDatabase, createUserRepository, createWalletRepository, createTransactionRepository} from "../testUtils";
+import {beforeEach, afterEach} from "@jest/globals";
 import {IWalletRepository} from "../../repository/port/IWalletRepository";
 import {Wallet} from "../../domain/adapter/Wallet";
 import {PrismaUserRepository} from "../../repository/adapter/prisma/PrismaUserRepository";
 import {User} from "../../domain/adapter/User";
 import {PrismaTransactionRepository} from "../../repository/adapter/prisma/PrismaTransactionRepository";
+import {PrismaClient} from "@prisma/client";
 
 
 describe('Transaction integration tests', () => {
-    beforeAll(async () => {
-    });
-
-    afterAll(async () => {
-        await prisma.$disconnect();
-    });
-
+    let prisma: PrismaClient;
     let walletRepository: IWalletRepository;
     let userRepository: PrismaUserRepository;
     let transactionRepository: PrismaTransactionRepository;
@@ -22,18 +17,29 @@ describe('Transaction integration tests', () => {
     let aliceCvu: number;
 
     beforeEach(async () => {
-        await resetDatabase();
-        walletRepository = createWalletRepository();
-        userRepository = createUserRepository();
-        transactionRepository = createTransactionRepository();
+        prisma = createPrismaClient();
+        await resetDatabase(prisma);
+        walletRepository = createWalletRepository(prisma);
+        userRepository = createUserRepository(prisma);
+        transactionRepository = createTransactionRepository(prisma);
         let testUser1 = new User('Bob', 'bob@example.com', 'securepassword', 847123);
         let testUser2 = new User('Alice', 'alice@example.com', 'securepassword', 133679);
 
         await userRepository.save(testUser1);
         await userRepository.save(testUser2);
 
-        let bob = await userRepository.findByEmail(testUser1.email);
-        let alice = await userRepository.findByEmail(testUser2.email);
+        // Retry fetching users up to 5 times with a short delay
+        async function fetchUserWithRetry(email: string, retries = 5, delay = 50): Promise<User | null> {
+            for (let i = 0; i < retries; i++) {
+                const user = await userRepository.findByEmail(email);
+                if (user) return user;
+                await new Promise(res => setTimeout(res, delay));
+            }
+            return null;
+        }
+
+        let bob = await fetchUserWithRetry(testUser1.email);
+        let alice = await fetchUserWithRetry(testUser2.email);
         if (!bob || !alice) {
             throw new Error('Users should have been created but where not found');
         }
@@ -45,6 +51,10 @@ describe('Transaction integration tests', () => {
         let aliceWallet = new Wallet(aliceCvu, 500); // Initialize a wallet with the user's CVU
         await walletRepository.save(bobWallet);
         await walletRepository.save(aliceWallet);
+    });
+
+    afterEach(async () => {
+        await prisma.$disconnect();
     });
 
     it('should create a transaction and retrieve it for sender', async () => {

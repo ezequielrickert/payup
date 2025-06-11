@@ -1,8 +1,9 @@
-import prisma, {resetDatabase, createUserRepository} from "../testUtils";
+import {resetDatabase, createUserRepository, createPrismaClient} from "../testUtils";
 import {beforeEach, expect, it} from "@jest/globals";
 import {IUserRepository} from "../../repository/port/IUserRepository";
 import {IUser} from "../../domain/port/IUser";
 import {User} from "../../domain/adapter/User";
+import {PrismaClient} from "@prisma/client";
 
 describe('User integration tests', () => {
     beforeAll(async () => {
@@ -12,13 +13,14 @@ describe('User integration tests', () => {
         await prisma.$disconnect();
     });
 
-
+    let prisma: PrismaClient;
     let userRepository: IUserRepository;
     let testUser: IUser;
 
     beforeEach(async () => {
-        await resetDatabase();
-        userRepository = createUserRepository();
+        prisma = createPrismaClient();
+        await resetDatabase(prisma);
+        userRepository = createUserRepository(prisma);
         testUser = new User('John Doe', 'john@example.com', 'securepassword', 1234567890);
     });
 

@@ -10,7 +10,7 @@
     "prisma:reset": "prisma migrate reset",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:db": "jest src/tests/dbintegration"
+    "test:db": "jest --runInBand src/tests/dbintegration"
   },
   "keywords": [],
   "author": "",

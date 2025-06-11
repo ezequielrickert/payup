@@ -38,23 +38,23 @@ describe("WalletController", () => {
 
     describe("deposit", () => {
         it("should deposit to wallet and return updated wallet", async () => {
-            const wallet: WalletDto = { userCvu: 3, balance: 10 };
+            const wallet: WalletDto = { userCvu: 123456, balance: 10 };
             fakeWalletService.wallets.push(wallet);
-            req.params = { userId: "3" };
+            req.params = { userCvu: "123456" };
             req.body = { amount: 15 };
             await walletController.deposit(req as Request, res as Response);
-            expect(res.json).toHaveBeenCalledWith({ userId: 3, balance: 25 });
+            expect(res.json).toHaveBeenCalledWith({ userCvu: 123456, balance: 25 });
         });
     });
 
     describe("withdraw", () => {
         it("should withdraw from wallet and return updated wallet", async () => {
-            const wallet: WalletDto = { userCvu: 4, balance: 30 };
+            const wallet: WalletDto = { userCvu: 123456, balance: 30 };
             fakeWalletService.wallets.push(wallet);
-            req.params = { userId: "4" };
+            req.params = { userCvu: "123456" };
             req.body = { amount: 10 };
             await walletController.withdraw(req as Request, res as Response);
-            expect(res.json).toHaveBeenCalledWith({ userId: 4, balance: 20 });
+            expect(res.json).toHaveBeenCalledWith({ userCvu: 123456, balance: 20 });
         });
     });
 });

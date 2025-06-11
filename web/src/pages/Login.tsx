@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
+import { getIp } from '../hooks/ipHook';
 
 interface LoginForm {
   email: string;
@@ -13,6 +14,7 @@ export const LoginScreen = () => {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const navigate = useNavigate();
   const { login } = useAuth();
+  const ip = getIp();
 
   const isValidEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -32,7 +34,7 @@ export const LoginScreen = () => {
     setErrors(newErrors);
 
     try {
-      const res = await fetch('http://localhost:3001/users/authenticate', {
+      const res = await fetch(`http://${ip}:3001/users/authenticate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

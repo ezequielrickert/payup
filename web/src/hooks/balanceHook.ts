@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
+import { getIp } from '../hooks/ipHook';
 
 export function fetchBalance(cvu?: number) {
     const [balance, setBalance] = useState<number | null>(null);
+    const ip = getIp();
 
     useEffect(() => {
         if (!cvu) return;
 
         const fetchWallet = async () => {
             try {
-                const response = await fetch(`http://localhost:3001/wallet/${cvu}`);
+                const response = await fetch(`http://${ip}:3001/wallet/${cvu}`);
                 if (!response.ok) {
                     throw new Error('Error fetching wallet');
                 }

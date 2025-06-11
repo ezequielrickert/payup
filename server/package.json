@@ -9,7 +9,8 @@
     "prisma:dev": "prisma migrate dev --name init",
     "prisma:reset": "prisma migrate reset",
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:db": "jest --runInBand src/tests/dbintegration"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +19,7 @@
   "dependencies": {
     "@prisma/client": "^6.6.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "prisma": "^6.6.0"
   },

@@ -67,7 +67,7 @@ app.use('/users', userRouter);
 app.use('/connection', connectionRouter);
 app.use('/wallet', walletRouter);
 app.use('/api', apiRouter);
-app.use('/payment', paymentRouter)
+app.use('/payment', paymentRouter);
 
 
 const PORT = process.env.PORT || 3001;

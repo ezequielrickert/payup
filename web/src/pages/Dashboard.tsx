@@ -120,7 +120,8 @@ export const DashboardScreen = () => {
                         </div>
                         <CreditCard className="card-icon" />
                     </div>
-                    <p className="email" style={{ textAlign: 'left' }}>{user?.email}</p>
+                    <p className="email" style={{ textAlign: 'left', fontSize: '14px' }}>Email: {user?.email}</p>
+                    <p className="cvu" style={{ textAlign: 'left', marginTop: '4px', opacity: 0.8, fontSize: '14px' }}>CVU: {user?.cvu}</p>
                 </Card>
 
                 {/* Quick Actions */}

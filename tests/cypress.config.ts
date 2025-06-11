@@ -1,7 +1,8 @@
 import { defineConfig } from 'cypress'
-import dotenv from 'dotenv'
+import { config as dotenvConfig } from 'dotenv'
+import { resolve } from 'path'
 
-dotenv.config()
+dotenvConfig({ path: resolve(__dirname, '.env') })
 
 const ip = process.env.IP
 

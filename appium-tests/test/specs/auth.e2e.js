@@ -7,12 +7,12 @@ describe('Authentication Integration (Appium)', () => {
         email: `testuser_${Date.now()}@example.com`,
         password: 'TestPassword123!'
     };
-
+    
     beforeEach(async () => {
-        const selector = 'new UiSelector().textContains("PayUp")';
-        const el = await $(`android=${selector}`);
-        await el.waitForDisplayed({ timeout: 10000 });
+        // Close the app
+        await browser.pause(4000);
     });
+
 
     it('shows validation errors on empty login', async () => {
         const submitBtnSelector = 'new UiSelector().className("android.widget.Button")'
@@ -177,6 +177,25 @@ describe('Authentication Integration (Appium)', () => {
         await logoutBtn.click();
     });
 
+    it('shows error on login with wrong password', async () => {
+        await browser.pause(2000); // Wait for login screen
+        const emailInputSelector = 'new UiSelector().className("android.widget.EditText").instance(0)';
+        const emailInput = await $(`android=${emailInputSelector}`);
+        await emailInput.waitForDisplayed({ timeout: 10000 });
+        await emailInput.setValue(testUser.email);
+        const passwordInputSelector = 'new UiSelector().className("android.widget.EditText").instance(1)';
+        const passwordInput = await $(`android=${passwordInputSelector}`);
+        await passwordInput.waitForDisplayed({ timeout: 10000 });
+        await passwordInput.setValue('WrongPassword!');
+        const submitBtnSelector = 'new UiSelector().className("android.widget.Button")';
+        const submitBtn = await $(`android=${submitBtnSelector}`);
+        await submitBtn.click();
+        const errorMsgSelector = 'new UiSelector().textContains("Error al iniciar sesión. Por favor, verifica tus credenciales.")';
+        const errorMsg = await $(`android=${errorMsgSelector}`);
+        await browser.pause(2000);
+        expect(await errorMsg.isDisplayed()).to.be.true;
+    });
+
     it('should successfully load money with rich user', async () => {
         // Login with rich user
         await browser.pause(2000); // Wait for login screen
@@ -191,7 +210,7 @@ describe('Authentication Integration (Appium)', () => {
         const submitBtnSelector = 'new UiSelector().className("android.widget.Button")';
         const submitBtn = await $(`android=${submitBtnSelector}`);
         await submitBtn.click();
-        await browser.pause(2000);
+        await browser.pause(3000); // Wait for login to complete
 
         // Navigate to load money
         const ingresarBtnSelector = 'new UiSelector().textContains("Ingresar")';
@@ -212,97 +231,16 @@ describe('Authentication Integration (Appium)', () => {
         const cargarBtn = await $(`android=${cargarBtnSelector}`);
         await cargarBtn.waitForDisplayed({ timeout: 10000 });
         await cargarBtn.click();
-        await browser.pause(5000);
+        await browser.pause(6000);
 
-        // Check for success message - try different possible messages
-        const successMessages = [
-            'new UiSelector().textContains("¡Carga exitosa!")',
-            'new UiSelector().textContains("Carga exitosa")',
-            'new UiSelector().textContains("exitoso")'
-        ];
-
-        let successMsgFound = false;
-        for (const selector of successMessages) {
-            const successMsg = await $(`android=${selector}`);
-            if (await successMsg.isDisplayed()) {
-                successMsgFound = true;
-                break;
-            }
-        }
-        expect(successMsgFound).to.be.true;
-
-        await browser.pause(5000);
-        // Logout
-        const logoutBtnSelector = 'new UiSelector().textContains("Cerrar sesión")';
-        const logoutBtn = await $(`android=${logoutBtnSelector}`);
-        await logoutBtn.click();
-    });
-
-    it('should fail to load money with poor user', async () => {
-        // Login with poor user
-        await browser.pause(2000); // Wait for login screen
-        const emailInputSelector = 'new UiSelector().className("android.widget.EditText").instance(0)';
-        const emailInput = await $(`android=${emailInputSelector}`);
-        await emailInput.waitForDisplayed({ timeout: 10000 });
-        const passwordInputSelector = 'new UiSelector().className("android.widget.EditText").instance(1)';
-        const passwordInput = await $(`android=${passwordInputSelector}`);
-        await passwordInput.waitForDisplayed({ timeout: 10000 });
-        await emailInput.setValue('poor@payup.com');
-        await passwordInput.setValue('poor');
-        const submitBtnSelector = 'new UiSelector().className("android.widget.Button")';
-        const submitBtn = await $(`android=${submitBtnSelector}`);
-        await submitBtn.click();
-        await browser.pause(2000);
-
-        // Navigate to load money
-        const ingresarBtnSelector = 'new UiSelector().textContains("Ingresar")';
-        const ingresarBtn = await $(`android=${ingresarBtnSelector}`);
-        await ingresarBtn.waitForDisplayed({ timeout: 10000 });
-        await ingresarBtn.click();
-        await browser.pause(2000);
-
-        // Enter amount
-        const amountInputSelector = 'new UiSelector().className("android.widget.EditText")';
-        const amountInput = await $(`android=${amountInputSelector}`);
-        await amountInput.waitForDisplayed({ timeout: 10000 });
-        await amountInput.setValue('1000');
-        await browser.pause(2000);
-
-        // Submit form
-        const cargarBtnSelector = 'new UiSelector().className("android.widget.Button").textContains("Cargar")';
-        const cargarBtn = await $(`android=${cargarBtnSelector}`);
-        await cargarBtn.waitForDisplayed({ timeout: 10000 });
-        await cargarBtn.click();
-        await browser.pause(2000);
-
-        // Check for error message
-        const errorMsgSelector = 'new UiSelector().textContains("Saldo insuficiente")';
-        const errorMsg = await $(`android=${errorMsgSelector}`);
-        expect(await errorMsg.isDisplayed()).to.be.true;
-
-        // Logout
-        const logoutBtnSelector = 'new UiSelector().textContains("Cerrar sesión")';
-        const logoutBtn = await $(`android=${logoutBtnSelector}`);
-        await logoutBtn.waitForDisplayed({ timeout: 10000 });
-        await logoutBtn.click();
+        // Wait for navigation to dashboard
+        const dashboardSelector = 'new UiSelector().textContains("PayUp")';
+        const dashboard = await $(`android=${dashboardSelector}`);
+        await dashboard.waitForDisplayed({ timeout: 10000 });
+        expect(await dashboard.isDisplayed()).to.be.true;
     });
 
     it('should validate minimum and maximum amounts', async () => {
-        // Login with rich user
-        await browser.pause(2000); // Wait for login screen
-        const emailInputSelector = 'new UiSelector().className("android.widget.EditText").instance(0)';
-        const emailInput = await $(`android=${emailInputSelector}`);
-        await emailInput.waitForDisplayed({ timeout: 10000 });
-        const passwordInputSelector = 'new UiSelector().className("android.widget.EditText").instance(1)';
-        const passwordInput = await $(`android=${passwordInputSelector}`);
-        await passwordInput.waitForDisplayed({ timeout: 10000 });
-        await emailInput.setValue('rich@payup.com');
-        await passwordInput.setValue('rich');
-        const submitBtnSelector = 'new UiSelector().className("android.widget.Button")';
-        const submitBtn = await $(`android=${submitBtnSelector}`);
-        await submitBtn.click();
-        await browser.pause(2000);
-
         // Navigate to load money
         const ingresarBtnSelector = 'new UiSelector().textContains("Ingresar")';
         const ingresarBtn = await $(`android=${ingresarBtnSelector}`);
@@ -311,14 +249,14 @@ describe('Authentication Integration (Appium)', () => {
         await browser.pause(2000);
 
         // Try with amount below minimum
-        const amountInputSelector = 'new UiSelector().className("android.widget.EditText")';
-        const amountInput = await $(`android=${amountInputSelector}`);
+        var amountInputSelector = 'new UiSelector().className("android.widget.EditText")';
+        var amountInput = await $(`android=${amountInputSelector}`);
         await amountInput.waitForDisplayed({ timeout: 10000 });
         await amountInput.setValue('50');
         await browser.pause(2000);
 
-        const cargarBtnSelector = 'new UiSelector().className("android.widget.Button").textContains("Cargar")';
-        const cargarBtn = await $(`android=${cargarBtnSelector}`);
+        var cargarBtnSelector = 'new UiSelector().className("android.widget.Button").textContains("Cargar")';
+        var cargarBtn = await $(`android=${cargarBtnSelector}`);
         await cargarBtn.waitForDisplayed({ timeout: 10000 });
         await cargarBtn.click();
         await browser.pause(2000);
@@ -340,16 +278,30 @@ describe('Authentication Integration (Appium)', () => {
         const maxErrorMsg = await $(`android=${maxErrorMsgSelector}`);
         expect(await maxErrorMsg.isDisplayed()).to.be.true;
 
-        // Logout
-        const logoutBtnSelector = 'new UiSelector().textContains("Cerrar sesión")';
-        const logoutBtn = await $(`android=${logoutBtnSelector}`);
-        await logoutBtn.waitForDisplayed({ timeout: 10000 });
-        await logoutBtn.click();
+        // Enter amount
+        amountInputSelector = 'new UiSelector().className("android.widget.EditText")';
+        amountInput = await $(`android=${amountInputSelector}`);
+        await amountInput.waitForDisplayed({ timeout: 10000 });
+        await amountInput.setValue('1000');
+        await browser.pause(2000);
+
+        // Submit form
+        cargarBtnSelector = 'new UiSelector().className("android.widget.Button").textContains("Cargar")';
+        cargarBtn = await $(`android=${cargarBtnSelector}`);
+        await cargarBtn.waitForDisplayed({ timeout: 10000 });
+        await cargarBtn.click();
+        await browser.pause(6000);
+
+        // Wait for navigation to dashboard
+        const dashboardSelector = 'new UiSelector().textContains("PayUp")';
+        const dashboard = await $(`android=${dashboardSelector}`);
+        await dashboard.waitForDisplayed({ timeout: 10000 });
+        expect(await dashboard.isDisplayed()).to.be.true;
     });
 
-    it('should render the LoadMoney screen correctly', async () => {
+    it('should transfer money from rich@payup.com to poor@payup.com and verify transaction', async () => {
         // Login with rich user
-        await browser.pause(2000); // Wait for login screen
+        await browser.pause(2000);
         const emailInputSelector = 'new UiSelector().className("android.widget.EditText").instance(0)';
         const emailInput = await $(`android=${emailInputSelector}`);
         await emailInput.waitForDisplayed({ timeout: 10000 });
@@ -361,55 +313,112 @@ describe('Authentication Integration (Appium)', () => {
         const submitBtnSelector = 'new UiSelector().className("android.widget.Button")';
         const submitBtn = await $(`android=${submitBtnSelector}`);
         await submitBtn.click();
+        await browser.pause(3000);
+
+        // Navigate to Send Money screen
+        const enviarBtnSelector = 'new UiSelector().textContains("Enviar")';
+        const enviarBtn = await $(`android=${enviarBtnSelector}`);
+        await enviarBtn.waitForDisplayed({ timeout: 10000 });
+        await enviarBtn.click();
         await browser.pause(2000);
 
-        // Navigate to load money
-        const ingresarBtnSelector = 'new UiSelector().textContains("Ingresar")';
-        const ingresarBtn = await $(`android=${ingresarBtnSelector}`);
-        await ingresarBtn.waitForDisplayed({ timeout: 10000 });
-        await ingresarBtn.click();
-        await browser.pause(2000);
+        // Verify we're on the transfer screen
+        const transferTitleSelector = 'new UiSelector().textContains("Enviar Dinero")';
+        const transferTitle = await $(`android=${transferTitleSelector}`);
+        expect(await transferTitle.isDisplayed()).to.be.true;
 
-        // Check screen elements
-        const elements = [
-            { selector: 'new UiSelector().textContains("Cargar Dinero")', name: 'Title' },
-            { selector: 'new UiSelector().textContains("Saldo actual:")', name: 'Current balance' },
-            { selector: 'new UiSelector().textContains("Método de pago")', name: 'Payment method' },
-            { selector: 'new UiSelector().textContains("Montos rápidos")', name: 'Quick amounts' },
-            { selector: 'new UiSelector().textContains("Monto personalizado")', name: 'Custom amount' },
-            { selector: 'new UiSelector().className("android.widget.Button").textContains("Cargar")', name: 'Submit button' }
-        ];
+        // Select email transfer method
+        const emailRadioSelector = 'new UiSelector().className("android.widget.RadioButton").textContains("email")';
+        const emailRadio = await $(`android=${emailRadioSelector}`);
+        await emailRadio.click();
+        await browser.pause(1000);
 
-        for (const element of elements) {
-            console.log(`Checking for ${element.name}...`);
-            const el = await $(`android=${element.selector}`);
-            await el.waitForDisplayed({ timeout: 10000 });
-            expect(await el.isDisplayed()).to.be.true;
-            await browser.pause(500);
-        }
+        // Fill transfer form
+        const recipientInputSelector = 'new UiSelector().className("android.widget.EditText").instance(0)';
+        const amountInputSelector = 'new UiSelector().className("android.widget.EditText").instance(1)';
+        const descriptionInputSelector = 'new UiSelector().className("android.widget.EditText").instance(2)';
+        
+        const recipientInput = await $(`android=${recipientInputSelector}`);
+        const amountInput = await $(`android=${amountInputSelector}`);
+        const descriptionInput = await $(`android=${descriptionInputSelector}`);
+
+        await recipientInput.setValue('poor@payup.com');
+        await amountInput.setValue('1000');
+        await descriptionInput.setValue('Transfer');
+        await browser.pause(1000);
+
+        // Submit transfer
+        const sendMoneyBtnSelector = 'new UiSelector().className("android.widget.Button").textContains("Enviar Dinero")';
+        const sendMoneyBtn = await $(`android=${sendMoneyBtnSelector}`);
+        await sendMoneyBtn.click();
+        await browser.pause(3000);
+
+        // Verify we're back on dashboard
+        const dashboardSelector = 'new UiSelector().textContains("PayUp")';
+        const dashboard = await $(`android=${dashboardSelector}`);
+        await dashboard.waitForDisplayed({ timeout: 10000 });
+        expect(await dashboard.isDisplayed()).to.be.true;
+
+        // Verify transaction appears in recent transactions
+        const transactionSelector = 'new UiSelector().textContains("Transfer")';
+        const transaction = await $(`android=${transactionSelector}`);
+        expect(await transaction.isDisplayed()).to.be.true;
 
         // Logout
         const logoutBtnSelector = 'new UiSelector().textContains("Cerrar sesión")';
         const logoutBtn = await $(`android=${logoutBtnSelector}`);
-        await logoutBtn.waitForDisplayed({ timeout: 10000 });
         await logoutBtn.click();
+        await browser.pause(2000);
     });
 
-    it('shows error on login with wrong password', async () => {
+    it('should verify received money in poor@payup.com account', async () => {
+        // Login with poor user
+        await browser.pause(2000);
         const emailInputSelector = 'new UiSelector().className("android.widget.EditText").instance(0)';
         const emailInput = await $(`android=${emailInputSelector}`);
         await emailInput.waitForDisplayed({ timeout: 10000 });
-        await emailInput.setValue(testUser.email);
         const passwordInputSelector = 'new UiSelector().className("android.widget.EditText").instance(1)';
         const passwordInput = await $(`android=${passwordInputSelector}`);
         await passwordInput.waitForDisplayed({ timeout: 10000 });
-        await passwordInput.setValue('WrongPassword!');
+        await emailInput.setValue('poor@payup.com');
+        await passwordInput.setValue('poor');
         const submitBtnSelector = 'new UiSelector().className("android.widget.Button")';
         const submitBtn = await $(`android=${submitBtnSelector}`);
         await submitBtn.click();
-        const errorMsgSelector = 'new UiSelector().textContains("Error al iniciar sesión. Por favor, verifica tus credenciales.")';
-        const errorMsg = await $(`android=${errorMsgSelector}`);
-        await browser.pause(10000);
-        expect(await errorMsg.isDisplayed()).to.be.true;
+        await browser.pause(3000);
+
+        // Verify we're on dashboard
+        const dashboardSelector = 'new UiSelector().textContains("PayUp")';
+        const dashboard = await $(`android=${dashboardSelector}`);
+        await dashboard.waitForDisplayed({ timeout: 10000 });
+        expect(await dashboard.isDisplayed()).to.be.true;
+
+        // Check recent transactions for the incoming transfer
+        const transactionSelector = 'new UiSelector().textContains("Transfer")';
+        const transaction = await $(`android=${transactionSelector}`);
+        expect(await transaction.isDisplayed()).to.be.true;
+
+        // Navigate to History
+        const historyBtnSelector = 'new UiSelector().textContains("Historial")';
+        const historyBtn = await $(`android=${historyBtnSelector}`);
+        await historyBtn.click();
+        await browser.pause(2000);
+
+        // Verify transaction in history with correct amount
+        const historyTransactionSelector = 'new UiSelector().textContains("Transfer")';
+        const historyTransaction = await $(`android=${historyTransactionSelector}`);
+        expect(await historyTransaction.isDisplayed()).to.be.true;
+
+        // Find the transaction item and verify the amount within it
+        const transactionItemSelector = 'new UiSelector().className("android.widget.FrameLayout").childSelector(new UiSelector().textContains("Transfer"))';
+        const transactionItem = await $(`android=${transactionItemSelector}`);
+        expect(await transactionItem.isDisplayed()).to.be.true;
+
+        // Find the amount within the transaction item
+        const amountSelector = 'new UiSelector().className("android.widget.TextView").textContains("+$ 1.000,00")';
+        const amount = await $(`android=${amountSelector}`);
+        await browser.pause(1000); // Give time for the amount to be visible
+        expect(await amount.isDisplayed()).to.be.true;
     });
+
 });

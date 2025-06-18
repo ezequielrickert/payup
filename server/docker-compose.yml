@@ -26,6 +26,11 @@ services:
       - db
       - api
     command: npm run dev
+    deploy:
+      resources:
+        limits:
+          cpus: '0.35'
+          memory: 75M
 
   api:
     build:
